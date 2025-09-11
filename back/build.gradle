@@ -1,0 +1,88 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.2'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.hamcam'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral() // ✅ LiveKit도 여기서 다운받음
+}
+
+dependencies {
+    // ✅ Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // ✅ 확장 기능
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-data-ldap'
+    implementation 'org.springframework.boot:spring-boot-starter-integration'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // ✅ Spring Integration
+    implementation 'org.springframework.integration:spring-integration-http'
+    implementation 'org.springframework.integration:spring-integration-jdbc'
+    implementation 'org.springframework.integration:spring-integration-jpa'
+    implementation 'org.springframework.integration:spring-integration-mail'
+    implementation 'org.springframework.integration:spring-integration-redis'
+    implementation 'org.springframework.integration:spring-integration-stomp'
+    implementation 'org.springframework.integration:spring-integration-websocket'
+
+    // ✅ 세션, Redis
+    implementation 'org.springframework.session:spring-session-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // ✅ JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // ✅ LiveKit 서버 SDK (Cloud용 JWT 발급 서버)
+    implementation 'io.livekit:livekit-server:0.9.0'
+
+    // ✅ 유틸
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+    // ✅ Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // ✅ 개발 도구
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // ✅ JDBC 드라이버
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.oracle.database.jdbc:ojdbc11:23.3.0.23.09'
+
+    // ✅ 테스트
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+    testImplementation 'org.springframework.integration:spring-integration-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

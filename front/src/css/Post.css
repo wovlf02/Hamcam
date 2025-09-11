@@ -1,0 +1,303 @@
+/* Post.css */
+
+.postpage-root {
+  margin-left: 160px; /* 왼쪽 사이드바 너비만큼 오른쪽으로 밀기 */
+  max-width: 1400px;
+  margin-top: 0;
+  margin-bottom: 60px;
+  padding: 0 40px;
+  min-width: 0;
+  box-sizing: border-box;
+  transition: margin-left 0.3s ease;
+}
+
+.postpage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 0 10px 0;
+}
+
+.postpage-breadcrumb {
+  color: #6b7280;
+  font-size: 1.08rem;
+  margin-bottom: 8px;
+}
+
+.postpage-write-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 18px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.postpage-write-btn:hover {
+  background: #1d4ed8;
+}
+
+.postpage-main {
+  display: flex;
+  gap: 36px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.postpage-left {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.postpage-right {
+  flex: 0 0 340px;
+  min-width: 320px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.postpage-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.postpage-tab {
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
+  border-radius: 5px 5px 0 0;
+  padding: 8px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.postpage-tab.selected {
+  background: #fff;
+  color: #2563eb;
+  font-weight: 600;
+  border-bottom: 2px solid #2563eb;
+}
+
+/* PostList에서 사용하는 테이블 등은 기존 CSS 유지 */
+
+.postpage-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px 18px 16px 18px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  margin-bottom: 0;
+}
+
+.postpage-box-title {
+  font-size: 1.08rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #23272f;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.postpage-popular-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.postpage-popular-list li {
+  padding: 7px 0;
+  border-bottom: 1px solid #f3f4f7;
+}
+
+.postpage-popular-list li:last-child {
+  border-bottom: none;
+}
+
+.postpage-popular-title {
+  font-size: 1rem;
+  color: #23272f;
+  font-weight: 500;
+}
+
+.postpage-popular-meta {
+  font-size: 0.93rem;
+  color: #9fa6b2;
+  display: flex;
+  gap: 10px;
+}
+
+.postpage-study-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.postpage-study-item {
+  border-radius: 8px;
+  padding: 12px 12px 8px 12px;
+  position: relative;
+}
+
+.postpage-study-name {
+  font-weight: 600;
+  color: #23272f;
+  font-size: 1rem;
+}
+
+.postpage-study-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 500;
+  border-radius: 5px;
+  padding: 2px 10px;
+  display: inline-block;
+}
+
+.postpage-study-info {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-top: 8px;
+}
+
+.postpage-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.postpage-tag {
+  background: #f3f4f6;
+  color: #2563eb;
+  font-size: 0.97rem;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-weight: 500;
+}
+.postpage-bottom-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 30px 0 0 0;
+  justify-content: flex-end;
+}
+
+.post-search-bar {
+  display: flex;
+  align-items: center;
+}
+
+.post-search-input {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px 13px;
+  font-size: 1rem;
+  background: #f9fafb;
+  color: #23272f;
+  outline: none;
+  transition: border 0.15s;
+}
+.post-search-input:focus {
+  border: 1.5px solid #2563eb;
+  background: #fff;
+}
+.postpage-bottom-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 30px 0 0 0;
+  justify-content: flex-end;
+}
+
+.post-pagination {
+  display: flex;
+  gap: 6px;
+}
+
+.post-pagination-btn {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 5px;
+  padding: 7px 14px;
+  font-size: 1rem;
+  color: #2563eb;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.post-pagination-btn.active,
+.post-pagination-btn:hover {
+  background: #2563eb;
+  color: #fff;
+}
+
+.post-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.post-search-select {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px 8px;
+  font-size: 1rem;
+  background: #f9fafb;
+  color: #23272f;
+  outline: none;
+  transition: border 0.15s;
+}
+.post-search-input {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px 13px;
+  font-size: 1rem;
+  background: #f9fafb;
+  color: #23272f;
+  outline: none;
+  transition: border 0.15s;
+}
+.post-search-input:focus,
+.post-search-select:focus {
+  border: 1.5px solid #2563eb;
+  background: #fff;
+}
+
+/* 반응형 처리 */
+@media (max-width: 1050px) {
+  .postpage-root {
+    margin-left: 0;
+    padding: 0 8px 40px 8px;
+  }
+  .postpage-main {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .postpage-right {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .postpage-header {
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px 4px 4px 4px;
+  }
+  .postpage-root {
+    padding: 0 2px 24px 2px;
+  }
+}
