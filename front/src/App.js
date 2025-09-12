@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import NavBar from './components/component/NavBar';
+import NavBar from './global/component/NavBar';
 import UnitEvaluation from './features/evaluation/pages/UnitEvaluation';
 import UnitEvaluationStart from './features/evaluation/pages/UnitEvaluationStart';
 import Dashboard from './features/dashboard/pages/Dashboard';
@@ -22,7 +22,7 @@ import QuizResult from './features/study/pages/QuizResult';
 import UnitEvaluationPlan from './features/evaluation/pages/UnitEvaluationPlan';
 import UnitEvaluationFeedback from './features/evaluation/pages/UnitEvaluationFeedback';
 import UnitEvaluationSchedule from './features/evaluation/pages/UnitEvaluationSchedule';
-import './css/style.css';
+import './global/styles/style.css';
 import Post from './features/community/pages/Post';
 import Notice from './features/community/pages/Notice';
 import Chat from './features/community/pages/Chat';
