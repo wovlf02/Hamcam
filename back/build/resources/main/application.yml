@@ -27,3 +27,11 @@ spring:
             enable: true
           socketFactory:
             class: javax.net.ssl.SSLSocketFactory
+
+  ai:
+    openai:
+      api-key: AIzaSyD6p4lqaa_hk1t830gowNIhKKJZDjy_bmo
+livekit:
+  ws-url: ws://192.168.0.2:7880    # 예: ws://192.168.137.10:7880
+  api-key: devkey123
+  api-secret: 78c9344275a8a63390768f35ccb864205edee5445cdb1e4b941878958d09e4b9e8475f678398e3d3927777bc82a8087c1d39db0d6497aa200c072ef4f8fac88b
