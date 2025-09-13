@@ -29,7 +29,7 @@ front/
 
 ## 2. 상세 파일 구조 및 역할
 
-전체 파일 및 디렉터리의 상세 구조와 각 역할은 다음과 같습니다.
+전체 파일 및 디렉터리의 상세 구조와 각 역할은 다음과 같습니다. 설명(#) 부분을 일괄적으로 정렬하여 가독성을 높였습니다.
 
 ```
 front/
@@ -42,7 +42,9 @@ front/
 │  ├─ robots.txt               # 검색 엔진 크롤러의 사이트 접근 정책을 정의합니다.
 │  └─ models/                  # 얼굴 인식 기능(face-api.js)에 사용되는 AI 모델 가중치 파일들을 저장합니다.
 └─ src/                        # 실제 애플리케이션의 소스 코드가 위치하는 메인 디렉터리입니다.
+   ├─ App.css                   # App.js 컴포넌트에 적용되는 기본 스타일입니다.
    ├─ App.js                    # 애플리케이션의 최상위 컴포넌트로, React Router를 사용해 전체 페이지 라우팅 구조를 정의하고 관리합니다.
+   ├─ index.css                 # 애플리케이션 전역에 영향을 미치는 최상위 스타일시트입니다.
    ├─ index.js                  # React 애플리케이션의 최초 진입점으로, `App` 컴포넌트를 `root` DOM에 렌더링합니다.
    ├─ api/                      # 서버와의 통신을 담당하는 모듈이 위치합니다.
    │  ├─ api.js                 # `axios` 라이브러리를 사용해 API 요청을 보내는 인스턴스를 생성합니다. 세션 유지를 위해 `withCredentials` 옵션이 활성화되어 있습니다.
@@ -53,9 +55,9 @@ front/
    │  │  ├─ pages/
    │  │  │  ├─ Login.js        # 아이디와 비밀번호로 로그인을 처리하고, 성공 시 WebSocket 연결 및 대시보드로 이동시킵니다.
    │  │  │  └─ Register.js     # 사용자로부터 회원 정보를 입력받아 API를 통해 회원가입을 처리합니다.
-   │  │  └─ styles/            # 인증 관련 페이지들의 스타일시트입니다.
-   │  │     ├─ Login.css
-   │  │     └─ Register.css
+   │  │  └─ styles/
+   │  │     ├─ Login.css       # 로그인 페이지 스타일시트
+   │  │     └─ Register.css    # 회원가입 페이지 스타일시트
    │  ├─ community/             # 💬 커뮤니티 기능 관련 파일들을 관리합니다.
    │  │  ├─ pages/
    │  │  │  ├─ Community.js    # 공지, 인기글, 온라인 친구 목록 등을 보여주는 커뮤니티의 메인 허브 페이지입니다.
@@ -82,6 +84,19 @@ front/
    │  │  │  └─ friend/
    │  │  │     └─ FriendCard.js          # 친구 검색 결과, 요청 등 다양한 상태의 유저 정보를 카드로 표시합니다.
    │  │  └─ styles/            #   - 커뮤니티 각 페이지 및 컴포넌트의 스타일시트입니다.
+   │  │     ├─ Chat.css
+   │  │     ├─ ChatFriendList.css
+   │  │     ├─ ChatRoom.css
+   │  │     ├─ ChatRoomList.css
+   │  │     ├─ Community.css
+   │  │     ├─ CreateGroupModal.css
+   │  │     ├─ Friend.css
+   │  │     ├─ FriendCard.css
+   │  │     ├─ Notice.css
+   │  │     ├─ Post.css
+   │  │     ├─ PostDetail.css
+   │  │     ├─ PostTable.css
+   │  │     └─ PostWritePage.css
    │  ├─ dashboard/             # 📊 대시보드 기능 관련 파일들을 관리합니다.
    │  │  ├─ pages/
    │  │  │  └─ Dashboard.js    # 캘린더, D-Day, 할일 목록 등 여러 위젯을 조합하여 대시보드 메인 화면을 구성합니다.
@@ -92,7 +107,11 @@ front/
    │  │  │  ├─ DashboardNotice.js     # 주요 공지사항을 목록 형태로 보여줍니다.
    │  │  │  ├─ DashboardTimeDetail.js # 주간/오늘 목표 학습 시간을 상세 설정하는 UI를 제공합니다.
    │  │  │  └─ DashboardTodo.js       # 날짜별 할일(Todo) 목록을 관리하고, 완료 상태를 토글할 수 있습니다.
-   │  │  └─ styles/            #   - 대시보드 관련 스타일시트입니다.
+   │  │  └─ styles/
+   │  │     ├─ Dashboard.css
+   │  │     ├─ DashboardCalendar.css
+   │  │     ├─ DashboardDday.css
+   │  │     └─ DashboardTodo.css
    │  ├─ devtools/
    │  │  └─ BackendTest.js      #   - 개발 단계에서 백엔드 API와의 연동을 간단히 테스트하기 위한 페이지입니다.
    │  ├─ evaluation/            # 📝 단원 평가 기능 관련 파일들을 관리합니다.
@@ -107,7 +126,13 @@ front/
    │  │  │  └─ units.js        #   - 학년, 과목, 단원명 등 평가에 사용되는 정적 데이터를 정의합니다.
    │  │  ├─ entry/
    │  │  │  └─ evaluation.js   #   - 단원 평가 관련 하위 메뉴(일정, 시험보기, 학습계획 등)로 연결되는 진입점 페이지입니다.
-   │  │  └─ styles/            #   - 단원 평가 관련 페이지들의 스타일시트입니다.
+   │  │  └─ styles/
+   │  │     ├─ Evaluation.css
+   │  │     ├─ UnitEvaluationFeedback.css
+   │  │     ├─ UnitEvaluationPlan.css
+   │  │     ├─ UnitEvaluationPlanList.css
+   │  │     ├─ UnitEvaluationSchedule.css
+   │  │     └─ UnitEvaluationStart.css
    │  ├─ plan/
    │  │  └─ pages/
    │  │     └─ PlanMenu.js      #   - 'AI 학습 계획 생성'과 '내 학습 계획 보기' 두 가지 메뉴를 제공하는 페이지입니다.
@@ -153,6 +178,14 @@ front/
    │     │  ├─ useFocusTimer.js     #   - 공부방의 집중 시간을 측정하고 서버와 동기화하는 훅입니다.
    │     │  └─ useTeamRoomSocket.js #   - 팀 스터디방의 실시간 채팅 및 이벤트 통신을 위한 STOMP 소켓 로직을 관리하는 훅입니다.
    │     └─ styles/              #   - 학습 관련 페이지들의 스타일시트입니다.
+   │        ├─ CamStudyPage.css
+   │        ├─ FocusChat.css
+   │        ├─ FocusRanking.css
+   │        ├─ FocusRoom.css
+   │        ├─ FocusVideoGrid.css
+   │        ├─ QuizRoom.css
+   │        ├─ StudyStart.css
+   │        └─ TeamStudy.css
    ├─ global/                   # 🌐 여러 페이지에서 공통으로 사용되는 전역 모듈입니다.
    │  ├─ component/
    │  │  └─ NavBar.js           #   - 모든 페이지 좌측에 고정되어 메뉴 네비게이션을 제공하는 컴포넌트입니다.
