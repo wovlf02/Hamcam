@@ -2,4 +2,3 @@
 node_modules
 
 livekit-local/
-docker-compose.yml
