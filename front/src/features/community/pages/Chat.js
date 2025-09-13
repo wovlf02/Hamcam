@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../styles/Chat.css';
 import ChatRoom from '../components/chat/ChatRoom';
 import ChatRoomList from '../components/chat/ChatRoomList';
-import CreateGroupModal from '../../../pages/Community/CreateGroupModal';
+import CreateGroupModal from '../components/chat/CreateGroupModal';
 
 const Chat = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);

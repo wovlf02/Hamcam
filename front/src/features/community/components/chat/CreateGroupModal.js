@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import '../../features/community/styles/CreateGroupModal.css';
+import '../../styles/CreateGroupModal.css';
 import { FaTimes } from 'react-icons/fa';
-import api from '../../api/api';
-import baseProfile from '../../assets/icons/base_profile.png';
+import api from '../../../../api/api';
+import baseProfile from '../../../../assets/icons/base_profile.png';
 
 const CreateGroupModal = ({ onClose, onCreate }) => {
     const [roomName, setRoomName] = useState('');
