@@ -1,0 +1,18 @@
+# C:\Project\Hamcam\livekit.yml
+port: 7880
+log_level: info
+
+rtc:
+  tcp_port: 7881
+  port_range_start: 40000
+  port_range_end: 40100
+  # --node-ip로 LAN IP를 넘길 것이므로 기본값 유지
+  # use_external_ip: false
+
+# turn:
+#   enabled: false
+#   udp_port: 3478
+
+# ★ keys는 'API_KEY: API_SECRET' 형태의 맵이어야 함
+keys:
+  devkey123: "78c9344275a8a63390768f35ccb864205edee5445cdb1e4b941878958d09e4b9e8475f678398e3d3927777bc82a8087c1d39db0d6497aa200c072ef4f8fac88b"

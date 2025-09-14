@@ -1,6 +1,6 @@
 // src/hooks/useQuizRoom.js
 import { useState, useEffect } from 'react';
-import useTeamRoomSocket from './useTeamRoomSocket';
+import useTeamRoomSocket from '../features/study/hooks/useTeamRoomSocket';
 
 /**
  * 문제풀이방 발표 및 투표 흐름 관리 Hook

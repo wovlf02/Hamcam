@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: livekit
+    command: ["--config", "/etc/livekit/livekit.yml", "--node-ip", "192.168.0.2"] # 서버 PC의 LAN IP로 변경
+    volumes:
+      - "C:/Project/Hamcam/livekit.yml:/etc/livekit/livekit.yml:ro"  # 네가 만든 livekit.yml 마운트
+    ports:
+      - "7880:7880/tcp"                 # WebSocket/API
+      - "7881:7881/tcp"                 # ICE/TCP (fallback)
+      - "40000-40100:40000-40100/udp"   # ICE/UDP (livekit.yml의 rtc.port_range_start/end와 일치)
+    restart: unless-stopped

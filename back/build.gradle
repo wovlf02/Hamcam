@@ -20,7 +20,7 @@ configurations {
 }
 
 repositories {
-    mavenCentral() // ✅ LiveKit도 여기서 다운받음
+    mavenCentral()
 }
 
 dependencies {
@@ -73,8 +73,8 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // ✅ JDBC 드라이버
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    runtimeOnly 'com.oracle.database.jdbc:ojdbc11:23.3.0.23.09'
+    implementation 'com.mysql:mysql-connector-j'     // ← Spring Boot BOM이 버전 관리
+    // runtimeOnly 'com.oracle.database.jdbc:ojdbc11:23.3.0.23.09'  // 필요 시만 사용
 
     // ✅ 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
