@@ -38,7 +38,8 @@ public enum ErrorCode {
     ALREADY_JOINED(HttpStatus.BAD_REQUEST, "E4014", "이미 방에 참여한 상태입니다."),
     INVALID_ROOM_TYPE(HttpStatus.BAD_REQUEST, "E4015", "유효하지 않은 방 타입입니다."),
     INVALID_OPERATION(HttpStatus.BAD_REQUEST, "E4016", "허용되지 않는 작업입니다."),
-    EXAM_SCHEDULE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "E40010", "시험 일정은 최대 3개까지만 등록할 수 있습니다."),
+    EXAM_SCHEDULE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "E4017", "시험 일정은 최대 3개까지만 등록할 수 있습니다."),
+    INVALID_ROOM_NAME(HttpStatus.BAD_REQUEST, "E4018", "유효하지 않은 방 이름입니다."),
 
 
     // ❌ 중복 (409)

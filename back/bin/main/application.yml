@@ -47,7 +47,7 @@ spring:
   # uploads 경로 정적 리소스 인식
   web:
     resources:
-      static-locations: file:C:/FinalProject/uploads
+      #      static-locations: file:C:/Project/Hamcam/uploads/
       add-mappings: true
 
   # 첨부파일 크기 제한

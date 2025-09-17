@@ -1,10 +1,10 @@
 package com.hamcam.back.controller.study.team;
 
-import com.hamcam.back.dto.livekit.response.LiveKitTokenResponse;
+import com.hamcam.back.dto.livekit.response.LivekitTokenResponse;
 import com.hamcam.back.dto.study.team.rest.request.*;
 import com.hamcam.back.dto.study.team.rest.response.*;
 import com.hamcam.back.service.study.team.rest.TeamStudyRestService;
-import com.hamcam.back.service.livekit.LiveKitService;
+import com.hamcam.back.service.livekit.LivekitService;
 import com.hamcam.back.util.SessionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.List;
 public class TeamStudyRestController {
 
     private final TeamStudyRestService teamStudyRestService;
-    private final LiveKitService liveKitService;
+    private final LivekitService liveKitService;
 
     /** ✅ 팀방 생성 */
     @PostMapping("/create")
@@ -102,29 +102,6 @@ public class TeamStudyRestController {
         Long userId = extractUserId(httpRequest);
         teamStudyRestService.postFailureToCommunity(request, userId);
         return ResponseEntity.ok().build();
-    }
-
-    /**
-     * ✅ LiveKit 토큰 발급 (기본: 발표자 아님)
-     * - roomName을 기준으로 토큰을 생성하고, presenter 권한은 false로 설정됨
-     * - JWT + WebSocket URL + presenter 여부 + 만료 시각 반환
-     */
-    @GetMapping("/livekit-token")
-    public ResponseEntity<LiveKitTokenResponse> getLivekitToken(
-            @RequestParam String roomName,
-            HttpServletRequest httpRequest
-    ) {
-        Long userId = extractUserId(httpRequest);
-        String identity = String.valueOf(userId);
-
-        // ✅ 발표자 권한 없이 토큰 발급
-        boolean isPresenter = false;
-        String token = liveKitService.createAccessToken(identity, roomName, isPresenter);
-
-        long expiresAt = System.currentTimeMillis() + (60 * 60 * 1000); // 1시간 TTL
-        String wsUrl = liveKitService.getWsUrl();
-
-        return ResponseEntity.ok(new LiveKitTokenResponse(token, wsUrl, isPresenter, expiresAt));
     }
 
     /** ✅ 세션 유저 ID 추출 공통 메서드 */
