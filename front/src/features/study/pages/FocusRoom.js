@@ -87,7 +87,7 @@ const FocusRoom = () => {
     };
 
     const connectLiveKitSession = async (identity) => {
-        const res = await api.post('/livekit/token', {room_name: roomName});
+        const res = await api.post('/livekit/token', { roomId: Number(roomId), roomType: 'focus', ttl: 60 });
         const {token, ws_url} = res.data;
         const room = await connectToLiveKit(identity, roomName, ws_url, token, 'video-container');
         roomRef.current = room;
@@ -130,7 +130,7 @@ const FocusRoom = () => {
 
     const fetchChatHistory = async () => {
         try {
-            const res = await api.get(`/api/focus/chat/${roomId}`);
+            const res = await api.get(`/focus/chat/${roomId}`);
             setChatList(res.data || []);
         } catch {
         }
