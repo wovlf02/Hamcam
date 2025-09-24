@@ -54,9 +54,9 @@ server:
     max-http-form-post-size: -1 # 폼 POST 한도 해제
 
 livekit:
-  ws-url: ws://192.168.0.2:7880
-  http-url: http://192.168.0.2:7880
-  signal-url: ws://192.168.0.2:7880
+  ws-url: ws://10.20.65.239:7880
+  http-url: http://10.20.65.239:7880
+  signal-url: ws://10.20.65.239:7880
   ttl-cap: 3600
   api-key: devkey123
   api-secret: 78c9344275a8a63390768f35ccb864205edee5445cdb1e4b941878958d09e4b9e8475f678398e3d3927777bc82a8087c1d39db0d6497aa200c072ef4f8fac88b
