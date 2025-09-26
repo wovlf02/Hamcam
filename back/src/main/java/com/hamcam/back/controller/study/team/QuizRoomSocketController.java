@@ -2,11 +2,11 @@ package com.hamcam.back.controller.study.team;
 
 import com.hamcam.back.dto.community.chat.request.ChatMessageRequest;
 import com.hamcam.back.dto.community.chat.response.ChatMessageResponse;
-import com.hamcam.back.dto.livekit.response.LiveKitTokenResponse;
+import com.hamcam.back.dto.livekit.response.LivekitTokenResponse;
 import com.hamcam.back.dto.study.team.socket.request.*;
 import com.hamcam.back.dto.study.team.socket.response.FileUploadNoticeResponse;
 import com.hamcam.back.dto.study.team.socket.response.VoteResultResponse;
-import com.hamcam.back.service.livekit.LiveKitService;
+import com.hamcam.back.service.livekit.LivekitService;
 import com.hamcam.back.service.study.team.chat.StudyChatService;
 import com.hamcam.back.service.study.team.socket.QuizRoomSocketService;
 import com.hamcam.back.util.SessionUtil;
@@ -27,26 +27,12 @@ public class QuizRoomSocketController {
 
     private final QuizRoomSocketService quizRoomSocketService;
     private final SimpMessagingTemplate messagingTemplate;
-    private final LiveKitService liveKitService;
+    private final LivekitService liveKitService;
     private final StudyChatService studyChatService;
 
     // ✅ 세션에서 userId 추출 유틸
     private Long extractUserId(HttpServletRequest request) {
         return SessionUtil.getUserId(request);
-    }
-
-    /**
-     * ✅ REST 방식 토큰 발급 API (LiveKit 접속용)
-     */
-    @GetMapping("/livekit-token")
-    public ResponseEntity<LiveKitTokenResponse> getLivekitToken(
-            @RequestParam String roomName,
-            @RequestParam(defaultValue = "false") boolean isPresenter,
-            HttpServletRequest httpRequest
-    ) {
-        Long userId = extractUserId(httpRequest);
-        LiveKitTokenResponse response = liveKitService.issueTokenResponse(userId.toString(), roomName, isPresenter);
-        return ResponseEntity.ok(response);
     }
 
     /**
@@ -70,7 +56,6 @@ public class QuizRoomSocketController {
                 dto.getLevel()
         );
     }
-
 
     /**
      * ✅ 손들기 - 발표자 후보 등록

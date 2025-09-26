@@ -34,6 +34,24 @@ spring:
   ai:
     openai:
       api-key: AIzaSyD6p4lqaa_hk1t830gowNIhKKJZDjy_bmo
+  web:
+    resources:
+      add-mappings: true
+      static-locations: file://C:/Project/Hamcam
+  mvc:
+    static-path-pattern: /**
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+      file-size-threshold: 2KB
+      location: C:/Project/Hamcam
+      
+server:
+  tomcat:
+    max-swallow-size: -1 # 업로드 중단 시 버퍼 제한 해제
+    max-http-form-post-size: -1 # 폼 POST 한도 해제
 
 # Gemini AI API 설정
 gemini:
@@ -42,6 +60,9 @@ gemini:
     url: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
 
 livekit:
-  ws-url: ws://192.168.0.2:7880
+  ws-url: ws://10.20.65.239:7880
+  http-url: http://10.20.65.239:7880
+  signal-url: ws://10.20.65.239:7880
+  ttl-cap: 3600
   api-key: devkey123
   api-secret: 78c9344275a8a63390768f35ccb864205edee5445cdb1e4b941878958d09e4b9e8475f678398e3d3927777bc82a8087c1d39db0d6497aa200c072ef4f8fac88b

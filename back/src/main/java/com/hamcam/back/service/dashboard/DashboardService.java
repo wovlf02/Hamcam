@@ -24,13 +24,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.hamcam.back.global.exception.ErrorCode;
-import com.hamcam.back.repository.TodoRepository;
+import com.hamcam.back.repository.dashboard.TodoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.hamcam.back.service.auth.SessionService;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
