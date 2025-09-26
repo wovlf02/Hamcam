@@ -19,6 +19,25 @@ public class Problem {
     @Column(nullable = false, length = 50)
     private String subject;
 
+    /**
+     * 문제 제목
+     */
+    @Column(name = "title", length = 200)
+    private String title;
+
+    /**
+     * 문제 내용
+     */
+    @Lob
+    @Column(name = "content")
+    private String content;
+
+    /**
+     * 선택지 (JSON 형태 또는 구분자로 저장)
+     */
+    @Column(name = "choices", length = 1000)
+    private String choices;
+
     @Column(name = "correct_rate")
     private Double correctRate;
 
@@ -47,4 +66,25 @@ public class Problem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "unit_id", nullable = false)
     private Unit unit;
+
+    /**
+     * 선택지를 배열로 반환
+     */
+    public String[] getChoicesArray() {
+        if (choices == null || choices.isEmpty()) {
+            return new String[0];
+        }
+        return choices.split("\\|"); // "|" 구분자 사용
+    }
+
+    /**
+     * 선택지 배열을 문자열로 설정
+     */
+    public void setChoicesArray(String[] choicesArray) {
+        if (choicesArray == null || choicesArray.length == 0) {
+            this.choices = null;
+        } else {
+            this.choices = String.join("|", choicesArray);
+        }
+    }
 }

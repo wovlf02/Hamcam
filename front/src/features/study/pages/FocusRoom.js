@@ -6,6 +6,7 @@ import {Stomp} from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import {connectToLiveKit} from '../../rtc/utils/livekit';
 import * as faceapi from 'face-api.js';
+import ModelLoader from '../../../utils/ModelLoader';
 
 const FocusRoom = () => {
     const {roomId} = useParams();
@@ -181,12 +182,19 @@ const FocusRoom = () => {
 
     const loadModels = async () => {
         try {
-            await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
-            await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
-            await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+            console.log('FocusRoom 모델 로딩 시작...');
+            await ModelLoader.loadModels();
             setModelsLoaded(true);
-        } catch (err) {
-            alert('모델 로딩 실패: ' + err);
+            console.log('FocusRoom 모델 로딩 완료!');
+        } catch (error) {
+            console.error('FocusRoom 모델 로드 오류:', error);
+            
+            // 사용자에게 친화적인 오류 메시지
+            const errorMessage = error.message.includes('Load failed') 
+                ? '모델 파일을 불러올 수 없습니다. 페이지를 새로고침해주세요.'
+                : `모델 로딩 실패: ${error.message}`;
+                
+            alert(errorMessage);
         }
     };
 

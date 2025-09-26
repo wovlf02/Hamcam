@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/hamcam?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/hamcam?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
     username: root
-    password: elskvhfh12
+    password: merk
   jpa:
     open-in-view: false
     show-sql: true
@@ -34,6 +34,12 @@ spring:
   ai:
     openai:
       api-key: AIzaSyD6p4lqaa_hk1t830gowNIhKKJZDjy_bmo
+
+# Gemini AI API 설정
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:} # 환경변수 또는 빈 값
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
 
 livekit:
   ws-url: ws://192.168.0.2:7880

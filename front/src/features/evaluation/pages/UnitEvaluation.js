@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 
 const subjects = ['국어', '수학', '영어', '과학', '사회', '기타'];
-const levels = ['쉬움', '보통', '어려움'];
+const levels = ['1등급', '2등급', '3등급', '4등급', '5등급 이하'];
 
 const UnitEvaluation = () => {
     const location = useLocation();

@@ -91,6 +91,9 @@ function Evaluation() {
     const handleStudyPlan = () => navigate('/plan/menu');
     const handleSchedule = () => navigate('/unit-evaluation/schedule');
     const handleAIFeedback = () => navigate('/unit-evaluation/feedback');
+    const handleMathEvaluation = () => navigate('/math-evaluation/start', {
+        state: { unitName: '수학', subject: '수학' }
+    });
 
     return (
         <div className="evaluation-container">
@@ -98,6 +101,7 @@ function Evaluation() {
                 <h1>단원 평가</h1>
                 <div className="evaluation-header-actions">
                     <button className="primary" onClick={() => setShowAddModal(true)}>+ 새 평가 추가</button>
+                    <button onClick={handleMathEvaluation} style={{backgroundColor: '#22c55e', color: 'white'}}>📐 수학 평가</button>
                     <button onClick={handleSchedule}>일정</button>
                     <button onClick={() => navigate('/unit-evaluation')}>시험 보기</button>
                     <button onClick={handleStudyPlan}>학습 계획</button>
