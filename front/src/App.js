@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import NavBar from './global/component/NavBar';
 import UnitEvaluation from './features/evaluation/pages/UnitEvaluation';
-import UnitEvaluationStart from './features/evaluation/pages/UnitEvaluationStart';
+import MathEvaluationStart from './features/evaluation/pages/MathEvaluationStart';
 import Dashboard from './features/dashboard/pages/Dashboard';
 import TeamStudy from './features/study/pages/TeamStudy';
 import StudyStart from './features/study/pages/StudyStart';
@@ -34,6 +34,7 @@ import StudyDetail from './features/community/components/community/StudyDetail';
 import StudyCreatePage from './features/community/components/community/StudyCreatePage';
 import UnitEvaluationPlanList from './features/evaluation/pages/UnitEvaluationPlanList';
 import PlanMenu from './features/plan/pages/PlanMenu';
+import MathEvaluationResult from './features/evaluation/pages/MathEvaluationResult';
 
 // ✅ 새로 추가된 팀 학습 관련 페이지
 import QuizRoom from './features/study/pages/QuizRoom';
@@ -67,7 +68,7 @@ function App() {
                 <Route element={<LayoutWithSidebar />}>
                     <Route path="/" element={<Navigate to="/login" />} />
                     <Route path="/unit-evaluation" element={<UnitEvaluation />} />
-                    <Route path="/unit-evaluation/start" element={<UnitEvaluationStart />} />
+                    <Route path="/unit-evaluation/start" element={<MathEvaluationStart />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/teamStudy" element={<TeamStudy />} />
                     <Route path="/studyStart" element={<StudyStart />} />
@@ -97,6 +98,10 @@ function App() {
                     <Route path="/unit-evaluation/plan" element={<UnitEvaluationPlan />} />
                     <Route path="/unit-evaluation/feedback" element={<UnitEvaluationFeedback />} />
                     <Route path="/unit-evaluation/schedule" element={<UnitEvaluationSchedule />} />
+                    
+                    {/* 수학 평가 라우트 */}
+                    <Route path="/math-evaluation/start" element={<MathEvaluationStart />} />
+                    <Route path="/math-evaluation/result" element={<MathEvaluationResult />} />
 
                     {/* ✅ 팀 학습 방 진입 URL 통일 */}
                     <Route path="/team-study/quiz/:roomId" element={<QuizRoom />} />

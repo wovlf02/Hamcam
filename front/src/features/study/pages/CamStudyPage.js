@@ -2,6 +2,7 @@ import React, {useEffect, useState, useRef} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import * as faceapi from 'face-api.js';
 import '../styles/CamStudyPage.css';
+import ModelLoader from '../../../utils/ModelLoader';
 
 const CamStudyPage = () => {
     const location = useLocation();
@@ -20,12 +21,19 @@ const CamStudyPage = () => {
     useEffect(() => {
         const loadModels = async () => {
             try {
-                await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
-                await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
-                await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+                console.log('CamStudyPage 모델 로딩 시작...');
+                await ModelLoader.loadModels();
                 setModelsLoaded(true);
+                console.log('CamStudyPage 모델 로딩 완료!');
             } catch (error) {
-                alert('모델 로드 실패: ' + error);
+                console.error('CamStudyPage 모델 로드 오류:', error);
+                
+                // 사용자에게 친화적인 오류 메시지
+                const errorMessage = error.message.includes('Load failed') 
+                    ? '모델 파일을 불러올 수 없습니다. 페이지를 새로고침해주세요.'
+                    : `모델 로드 실패: ${error.message}`;
+                    
+                alert(errorMessage);
             }
         };
         loadModels();

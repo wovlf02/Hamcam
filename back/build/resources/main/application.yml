@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/hamcam?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/hamcam?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
     username: root
-    password: elskvhfh12
+    password: merk
   jpa:
     open-in-view: false
     show-sql: true
@@ -52,6 +52,12 @@ server:
   tomcat:
     max-swallow-size: -1 # 업로드 중단 시 버퍼 제한 해제
     max-http-form-post-size: -1 # 폼 POST 한도 해제
+
+# Gemini AI API 설정
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:} # 환경변수 또는 빈 값
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
 
 livekit:
   ws-url: ws://10.20.65.239:7880
