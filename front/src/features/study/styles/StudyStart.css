@@ -1,98 +1,210 @@
-.study-start-container {
-    padding: 32px 24px;
-    background: #fafbfc;
-    min-height: 100%;
-    width: 100%;
+/* StudyStart.css */
+
+/* Global styles from style_improve.md */
+:root {
+    --primary-blue-500: #4A85F6;
+    --primary-blue-700: #3B6ACF;
+    --primary-blue-100: #D9E5FC;
+    --accent-green-500: #34A853;
+    --accent-yellow-500: #FBBC04;
+    --accent-red-500: #EA4335;
+    --gray-900: #202124;
+    --gray-700: #5F6368;
+    --gray-500: #9AA0A6;
+    --gray-300: #DADBDE;
+    --gray-100: #F0F2F5;
+    --white: #FFFFFF;
+    --clay-shadow-outer: 5px 5px 10px rgba(0, 0, 0, 0.05), -5px -5px 10px rgba(255, 255, 255, 0.5);
+    --clay-shadow-hover: 8px 8px 15px rgba(0, 0, 0, 0.08), -8px -8px 15px rgba(255, 255, 255, 0.7);
 }
 
-@media (max-width: 900px) {
-    .study-start-container {
-        margin-left: 0;
-        width: 100%;
-        padding: 24px 12px;
-    }
+.study-start-container {
+    padding: 40px 40px; /* Adjusted padding: reduced top padding */
+    background: var(--gray-100); /* Soft background */
+    min-height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Align content to the top */
 }
 
 .study-start-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 30px;
-    margin-left: 6px;
+    font-size: 2.5rem; /* H1 size */
+    font-weight: 700; /* Bold */
+    color: var(--gray-900); /* Primary text color */
+    margin-bottom: 50px; /* Increased margin */
+    text-align: center;
+    letter-spacing: -0.5px;
 }
 
 .study-start-card-row {
     display: flex;
-    gap: 36px;
+    gap: 40px; /* Increased gap */
     justify-content: center;
-    align-items: flex-start;
+    align-items: stretch; /* Ensure cards have equal height */
     width: 100%;
+    max-width: 1000px; /* Limit row width for better aesthetics */
 }
 
 .study-start-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    padding: 38px 38px 32px 38px;
+    background: var(--card-background); /* White background */
+    border-radius: 20px; /* Softer corners */
+    box-shadow: var(--clay-shadow-outer); /* Claymorphism shadow */
+    padding: 40px 30px; /* Generous padding */
     width: 420px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    border: 1px solid var(--gray-300); /* Subtle border */
+}
+
+.study-start-card:hover {
+    box-shadow: var(--clay-shadow-hover); /* Deeper shadow on hover */
+    transform: translateY(-5px); /* Slight lift effect */
 }
 
 .study-start-card-icon {
-    font-size: 44px;
-    margin-bottom: 12px;
+    font-size: 3.5rem; /* Larger icon */
+    color: var(--primary-blue-500); /* Primary color for icon */
+    margin-bottom: 20px;
 }
 
 .study-start-card-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 10px;
+    font-size: 1.75rem; /* H3 size */
+    font-weight: 600; /* Semi-bold */
+    color: var(--gray-900); /* Primary text color */
+    margin-bottom: 15px;
 }
 
 .study-start-card-desc {
-    color: #444;
-    font-size: 15px;
-    margin-bottom: 14px;
-    text-align: center;
+    color: var(--gray-700); /* Secondary text color */
+    font-size: 1rem; /* Body medium size */
+    line-height: 1.5;
+    margin-bottom: 25px;
 }
 
 .study-start-card-list {
     list-style: none;
     padding: 0;
-    margin: 0 0 26px 0;
-    color: #222;
-    font-size: 15px;
+    margin: 0 0 30px 0;
+    color: var(--gray-700); /* Secondary text color */
+    font-size: 0.95rem;
+    text-align: left;
+    width: 100%;
 }
 
 .study-start-card-list li {
-    margin-bottom: 7px;
+    margin-bottom: 10px;
     position: relative;
-    padding-left: 22px;
+    padding-left: 30px;
+    line-height: 1.4;
 }
 
 .study-start-card-list li::before {
-    content: "✔";
+    content: "\2713"; /* Unicode checkmark */
     position: absolute;
     left: 0;
-    color: #222;
-    font-size: 15px;
+    color: var(--accent-green-500); /* Green checkmark */
+    font-size: 1.1rem;
+    font-weight: bold;
 }
 
 .study-start-card-btn {
-    background: #111;
-    color: #fff;
+    background: var(--primary-blue-500); /* Primary blue background */
+    color: var(--white); /* White text */
     border: none;
-    border-radius: 6px;
-    padding: 12px 0;
-    font-size: 16px;
-    font-weight: 600;
+    border-radius: 12px; /* Rounded button */
+    padding: 15px 30px; /* Generous padding */
+    font-size: 1.1rem; /* Larger font */
+    font-weight: 600; /* Semi-bold */
     width: 100%;
     cursor: pointer;
     margin-top: 10px;
-    transition: background 0.18s;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .study-start-card-btn:hover {
-    background: #222;
+    background: var(--primary-blue-700); /* Darker blue on hover */
+    transform: translateY(-2px); /* Slight lift */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .study-start-card-row {
+        flex-direction: column;
+        align-items: center;
+    }
+    .study-start-card {
+        width: 90%;
+        max-width: 450px;
+    }
+    .study-start-title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .study-start-container {
+        padding: 40px 20px;
+    }
+    .study-start-card-row {
+        gap: 30px;
+    }
+    .study-start-card {
+        padding: 30px 20px;
+    }
+    .study-start-title {
+        font-size: 1.8rem;
+        margin-bottom: 40px;
+    }
+    .study-start-card-icon {
+        font-size: 3rem;
+    }
+    .study-start-card-title {
+        font-size: 1.5rem;
+    }
+    .study-start-card-btn {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .study-start-container {
+        padding: 30px 15px;
+    }
+    .study-start-card {
+        width: 100%;
+        max-width: 350px;
+    }
+    .study-start-title {
+        font-size: 1.5rem;
+        margin-bottom: 30px;
+    }
+    .study-start-card-icon {
+        font-size: 2.5rem;
+    }
+    .study-start-card-title {
+        font-size: 1.3rem;
+    }
+    .study-start-card-desc {
+        font-size: 0.9rem;
+    }
+    .study-start-card-list li {
+        font-size: 0.85rem;
+        padding-left: 25px;
+    }
+    .study-start-card-list li::before {
+        font-size: 1rem;
+    }
+    .study-start-card-btn {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+    }
 }
