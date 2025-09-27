@@ -98,3 +98,82 @@
     border: 2px solid #e0e0e0;
     background: #f4f4f4;
 }
+
+/* 등급 수정 관련 스타일 */
+.mypage-grade-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mypage-grade-edit-btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.mypage-grade-edit-btn:hover {
+    background: #1d4ed8;
+}
+
+.mypage-grade-edit {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.mypage-grade-select {
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background: white;
+    cursor: pointer;
+}
+
+.mypage-grade-select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.mypage-grade-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.mypage-grade-save-btn {
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.mypage-grade-save-btn:hover {
+    background: #059669;
+}
+
+.mypage-grade-cancel-btn {
+    background: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.mypage-grade-cancel-btn:hover {
+    background: #4b5563;
+}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import PersonalizedStudyPlan from '../components/PersonalizedStudyPlan';
 import '../styles/MathEvaluationResult.css';
 
 const MathEvaluationResult = () => {
@@ -12,7 +13,8 @@ const MathEvaluationResult = () => {
         totalCount = 0,
         difficultyScores = {},
         unitName = '수학',
-        subject = '수학'
+        subject = '수학',
+        aiAnalysis = null
     } = location.state || {};
 
     const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
@@ -188,40 +190,75 @@ const MathEvaluationResult = () => {
                 </div>
             </div>
 
-            {/* 성능 분석 */}
-            <div className="performance-analysis">
-                <h2>성능 분석</h2>
-                <div className="analysis-grid">
-                    {analysis.strengths.length > 0 && (
-                        <div className="analysis-section strengths">
-                            <h3>✅ 잘한 점</h3>
-                            <ul>
-                                {analysis.strengths.map((strength, index) => (
-                                    <li key={index}>{strength}</li>
-                                ))}
-                            </ul>
+            {/* AI 성능 분석 (Gemini 분석 결과가 있을 때) */}
+            {aiAnalysis ? (
+                <div className="ai-performance-analysis">
+                    <h2>🤖 AI 맞춤 분석</h2>
+                    <div className="ai-analysis-content">
+                        <div className="ai-section overall-assessment">
+                            <h3>📊 전반적 평가</h3>
+                            <div className="ai-text">{aiAnalysis.overallAssessment}</div>
                         </div>
-                    )}
-                    {analysis.weaknesses.length > 0 && (
-                        <div className="analysis-section weaknesses">
-                            <h3>📝 보완할 점</h3>
-                            <ul>
-                                {analysis.weaknesses.map((weakness, index) => (
-                                    <li key={index}>{weakness}</li>
-                                ))}
-                            </ul>
+                        
+                        <div className="ai-analysis-grid">
+                            <div className="ai-section strengths">
+                                <h3>✅ 강점</h3>
+                                <div className="ai-text">{aiAnalysis.strengths}</div>
+                            </div>
+                            
+                            <div className="ai-section weaknesses">
+                                <h3>📝 약점</h3>
+                                <div className="ai-text">{aiAnalysis.weaknesses}</div>
+                            </div>
                         </div>
-                    )}
-                    <div className="analysis-section recommendations">
-                        <h3>💡 학습 권장사항</h3>
-                        <ul>
-                            {analysis.recommendations.map((recommendation, index) => (
-                                <li key={index}>{recommendation}</li>
-                            ))}
-                        </ul>
+
+                        <div className="ai-section study-plan">
+                            <h3>📚 맞춤 학습 계획</h3>
+                            <div className="ai-text">{aiAnalysis.studyPlan}</div>
+                        </div>
+
+                        <div className="ai-section recommendations">
+                            <h3>💡 추천 학습법</h3>
+                            <div className="ai-text">{aiAnalysis.recommendations}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) : (
+                // 기존 성능 분석 (AI 분석이 없을 때)
+                <div className="performance-analysis">
+                    <h2>성능 분석</h2>
+                    <div className="analysis-grid">
+                        {analysis.strengths.length > 0 && (
+                            <div className="analysis-section strengths">
+                                <h3>✅ 잘한 점</h3>
+                                <ul>
+                                    {analysis.strengths.map((strength, index) => (
+                                        <li key={index}>{strength}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        {analysis.weaknesses.length > 0 && (
+                            <div className="analysis-section weaknesses">
+                                <h3>📝 보완할 점</h3>
+                                <ul>
+                                    {analysis.weaknesses.map((weakness, index) => (
+                                        <li key={index}>{weakness}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        <div className="analysis-section recommendations">
+                            <h3>💡 학습 권장사항</h3>
+                            <ul>
+                                {analysis.recommendations.map((recommendation, index) => (
+                                    <li key={index}>{recommendation}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* 틀린 문제 복습 */}
             {wrongAnswers.length > 0 && (
@@ -298,7 +335,7 @@ const MathEvaluationResult = () => {
                                 
                                 <div className="review-image">
                                     <img 
-                                        src={wrongAnswers[currentReviewIndex].imagePath}
+                                        src={`${process.env.PUBLIC_URL}${wrongAnswers[currentReviewIndex].imagePath}`}
                                         alt={`틀린 문제 ${currentReviewIndex + 1}`}
                                         onError={(e) => {
                                             e.target.style.display = 'none';
@@ -332,6 +369,11 @@ const MathEvaluationResult = () => {
                     )}
                 </div>
             )}
+
+            {/* 맞춤형 학습계획 섹션 */}
+            <div className="study-plan-section">
+                <PersonalizedStudyPlan />
+            </div>
 
             {/* 액션 버튼들 */}
             <div className="action-buttons">

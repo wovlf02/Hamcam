@@ -20,6 +20,7 @@ import com.hamcam.back.dto.dashboard.todo.response.TodoResponse;
 import com.hamcam.back.entity.auth.User;
 import com.hamcam.back.global.response.ApiResponse;
 import com.hamcam.back.service.dashboard.DashboardService;
+import com.hamcam.back.service.dashboard.ExamScheduleService;
 import com.hamcam.back.service.dashboard.GPTReflectionService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -37,6 +38,7 @@ import java.util.List;
 public class DashboardController {
 
     private final DashboardService dashboardService;
+    private final ExamScheduleService examScheduleService;
     private final GPTReflectionService gptReflectionService;
 
     // 📆 월별 캘린더 이벤트
@@ -121,7 +123,7 @@ public class DashboardController {
             @RequestBody ExamScheduleRequest request,
             HttpServletRequest httpRequest
     ) {
-        dashboardService.createExamSchedule(request, httpRequest);
+        examScheduleService.createExamSchedule(request, httpRequest);
         return ResponseEntity.ok(ApiResponse.ok());
     }
 

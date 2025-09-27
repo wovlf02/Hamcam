@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getRandomMathProblems } from '../data/mathProblems';
+import { generateEvaluationSetByGrade } from '../data/mathProblems';
+import EvaluationLoadingScreen from '../components/EvaluationLoadingScreen';
 import '../styles/MathEvaluationStart.css';
 
 const MathEvaluationStart = () => {
@@ -13,12 +14,53 @@ const MathEvaluationStart = () => {
     const [answers, setAnswers] = useState({});
     const [timeLeft, setTimeLeft] = useState(1800); // 30분
     const [showConfirm, setShowConfirm] = useState(false);
+    const [userGrade, setUserGrade] = useState(5); // 기본값: 5등급
+    const [loading, setLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [analysisData, setAnalysisData] = useState(null);
 
-    // 문제 초기화
+    // 사용자 정보 가져오기
     useEffect(() => {
-        const selectedProblems = getRandomMathProblems(10);
-        setProblems(selectedProblems);
+        const fetchUserInfo = async () => {
+            try {
+                const response = await fetch('/api/users/me', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const grade = data.data?.grade || 5; // 기본값: 5등급
+                    setUserGrade(grade);
+                    console.log('사용자 등급:', grade);
+                } else {
+                    console.warn('사용자 정보를 가져올 수 없습니다. 기본 5등급으로 설정합니다.');
+                }
+            } catch (error) {
+                console.error('사용자 정보 가져오기 실패:', error);
+                console.warn('기본 5등급으로 설정합니다.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserInfo();
     }, []);
+
+    // 문제 초기화 - 사용자 등급 기반
+    useEffect(() => {
+        if (!loading && userGrade) {
+            console.log(`${userGrade}등급에 맞는 문제를 선택합니다.`);
+            const selectedProblems = generateEvaluationSetByGrade(userGrade, 10);
+            setProblems(selectedProblems);
+            console.log('선택된 문제들의 난이도 분포:', 
+                selectedProblems.reduce((acc, p) => {
+                    acc[p.difficultyGrade] = (acc[p.difficultyGrade] || 0) + 1;
+                    return acc;
+                }, {})
+            );
+        }
+    }, [loading, userGrade]);
 
     // 타이머 설정
     useEffect(() => {
@@ -98,7 +140,9 @@ const MathEvaluationStart = () => {
     };
 
     // 평가 제출 및 결과 계산
-    const submitEvaluation = () => {
+    const submitEvaluation = async () => {
+        setIsSubmitting(true);
+
         let correctCount = 0;
         let easyCorrect = 0, mediumCorrect = 0, hardCorrect = 0;
 
@@ -130,22 +174,93 @@ const MathEvaluationStart = () => {
 
         const score = Math.round((correctCount / problems.length) * 100);
         
-        // 결과 페이지로 이동
-        navigate('/math-evaluation/result', {
-            state: {
-                results,
-                score,
-                correctCount,
+        const difficultyScores = {
+            easy: { correct: easyCorrect, total: 3 },
+            medium: { correct: mediumCorrect, total: 4 },
+            hard: { correct: hardCorrect, total: 3 }
+        };
+
+        // Gemini API를 통한 분석 요청
+        try {
+            const wrongAnswers = results
+                .map((result, index) => ({
+                    problemNumber: result.problemNumber || index + 1,
+                    difficulty: result.difficulty,
+                    topic: result.topic || '일반',
+                    subjectDetail: result.subjectDetail || result.topic || '수학 문제',
+                    examMonthYear: result.examMonthYear || '2025_06',
+                    userAnswer: result.userAnswer,
+                    correctAnswer: result.correctAnswer
+                }))
+                .filter(result => result.userAnswer !== result.correctAnswer);
+
+            const analysisRequest = {
+                userGrade: userGrade,
+                score: score,
+                correctCount: correctCount,
                 totalCount: problems.length,
                 difficultyScores: {
-                    easy: { correct: easyCorrect, total: 3 },
-                    medium: { correct: mediumCorrect, total: 4 },
-                    hard: { correct: hardCorrect, total: 3 }
+                    easy: { correct: difficultyScores.easy.correct, total: difficultyScores.easy.total },
+                    medium: { correct: difficultyScores.medium.correct, total: difficultyScores.medium.total },
+                    hard: { correct: difficultyScores.hard.correct, total: difficultyScores.hard.total }
                 },
-                unitName,
-                subject
+                wrongAnswers: wrongAnswers,
+                unitName: unitName
+            };
+
+            console.log('분석 요청 데이터:', analysisRequest);
+
+            const response = await fetch('/api/math-evaluation/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(analysisRequest)
+            });
+
+            let aiAnalysis = null;
+            if (response.ok) {
+                const analysisResult = await response.json();
+                aiAnalysis = analysisResult.data;
+                console.log('AI 분석 결과:', aiAnalysis);
+            } else {
+                console.warn('AI 분석 요청 실패:', response.status);
             }
-        });
+
+            // 결과 페이지로 이동
+            navigate('/math-evaluation/result', {
+                state: {
+                    results,
+                    score,
+                    correctCount,
+                    totalCount: problems.length,
+                    difficultyScores,
+                    unitName,
+                    subject,
+                    aiAnalysis // Gemini 분석 결과 추가
+                }
+            });
+
+        } catch (error) {
+            console.error('분석 요청 중 오류:', error);
+            
+            // 오류 발생 시 기본 결과 페이지로 이동
+            navigate('/math-evaluation/result', {
+                state: {
+                    results,
+                    score,
+                    correctCount,
+                    totalCount: problems.length,
+                    difficultyScores,
+                    unitName,
+                    subject,
+                    aiAnalysis: null
+                }
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     // 시간 포맷팅
@@ -156,11 +271,34 @@ const MathEvaluationStart = () => {
     };
 
     // 로딩 중
-    if (problems.length === 0) {
+    if (loading || problems.length === 0) {
         return (
             <div className="math-eval-loading">
-                <div>수학 문제를 준비하고 있습니다...</div>
+                <div>
+                    {loading ? '사용자 등급 정보를 확인하고 있습니다...' : '등급에 맞는 수학 문제를 준비하고 있습니다...'}
+                </div>
+                <div style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
+                    {userGrade && !loading && `현재 등급: ${userGrade}등급`}
+                </div>
             </div>
+        );
+    }
+
+    // 제출 중 로딩 화면
+    if (isSubmitting) {
+        let correctCount = 0;
+        problems.forEach((problem, index) => {
+            if (answers[index] === problem.correctAnswer) {
+                correctCount++;
+            }
+        });
+        const estimatedScore = Math.round((correctCount / problems.length) * 100);
+
+        return (
+            <EvaluationLoadingScreen 
+                grade={userGrade}
+                score={estimatedScore}
+            />
         );
     }
 

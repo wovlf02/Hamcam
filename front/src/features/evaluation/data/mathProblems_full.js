@@ -12,7 +12,7 @@ export const mathProblems = [
         difficultyGrade: 5,
         answer: '3',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_1번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_1번_공통.png',
         difficulty: 'easy',
         correctAnswer: '3'
     },
@@ -25,7 +25,7 @@ export const mathProblems = [
         difficultyGrade: 5,
         answer: '2',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_2번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_2번_공통.png',
         difficulty: 'easy',
         correctAnswer: '2'
     },
@@ -38,7 +38,7 @@ export const mathProblems = [
         difficultyGrade: 5,
         answer: '4',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_3번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_3번_공통.png',
         difficulty: 'easy',
         correctAnswer: '4'
     },
@@ -51,7 +51,7 @@ export const mathProblems = [
         difficultyGrade: 4,
         answer: '3',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_4번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_4번_공통.png',
         difficulty: 'easy',
         correctAnswer: '3'
     },
@@ -64,7 +64,7 @@ export const mathProblems = [
         difficultyGrade: 4,
         answer: '2',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_5번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_5번_공통.png',
         difficulty: 'easy',
         correctAnswer: '2'
     },
@@ -77,7 +77,7 @@ export const mathProblems = [
         difficultyGrade: 4,
         answer: '5',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_6번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_6번_공통.png',
         difficulty: 'easy',
         correctAnswer: '5'
     },
@@ -90,7 +90,7 @@ export const mathProblems = [
         difficultyGrade: 4,
         answer: '1',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_7번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_7번_공통.png',
         difficulty: 'medium',
         correctAnswer: '1'
     },
@@ -103,7 +103,7 @@ export const mathProblems = [
         difficultyGrade: 4,
         answer: '1',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_8번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_8번_공통.png',
         difficulty: 'medium',
         correctAnswer: '1'
     },
@@ -116,7 +116,7 @@ export const mathProblems = [
         difficultyGrade: 3,
         answer: '5',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_9번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_9번_공통.png',
         difficulty: 'medium',
         correctAnswer: '5'
     },
@@ -129,7 +129,7 @@ export const mathProblems = [
         difficultyGrade: 2,
         answer: '3',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_10번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_10번_공통.png',
         difficulty: 'hard',
         correctAnswer: '3'
     },
@@ -142,7 +142,7 @@ export const mathProblems = [
         difficultyGrade: 3,
         answer: '4',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_11번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_11번_공통.png',
         difficulty: 'medium',
         correctAnswer: '4'
     },
@@ -155,7 +155,7 @@ export const mathProblems = [
         difficultyGrade: 3,
         answer: '2',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_12번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_12번_공통.png',
         difficulty: 'medium',
         correctAnswer: '2'
     },
@@ -168,7 +168,7 @@ export const mathProblems = [
         difficultyGrade: 2,
         answer: '3',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_13번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_13번_공통.png',
         difficulty: 'hard',
         correctAnswer: '3'
     },
@@ -181,7 +181,7 @@ export const mathProblems = [
         difficultyGrade: 1,
         answer: '1',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_14번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_14번_공통.png',
         difficulty: 'hard',
         correctAnswer: '1'
     },
@@ -194,7 +194,7 @@ export const mathProblems = [
         difficultyGrade: 1,
         answer: '5',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_15번_공통.png',
+        imagePath: '/math_image/객관식/2025_06_수학_15번_공통.png',
         difficulty: 'hard',
         correctAnswer: '5'
     },
@@ -211,7 +211,7 @@ export const mathProblems = [
         difficultyGrade: 4,
         answer: '8',
         type: 'SHORT_ANSWER',
-        imagePath: '/features/evaluation/math_image/단답형/2025_06_수학_16번_공통.png',
+        imagePath: '/math_image/단답형/2025_06_수학_16번_공통.png',
         difficulty: 'easy',
         correctAnswer: '8'
     },
@@ -224,7 +224,7 @@ export const mathProblems = [
         difficultyGrade: 4,
         answer: '12',
         type: 'SHORT_ANSWER',
-        imagePath: '/features/evaluation/math_image/단답형/2025_06_수학_17번_공통.png',
+        imagePath: '/math_image/단답형/2025_06_수학_17번_공통.png',
         difficulty: 'easy',
         correctAnswer: '12'
     },
@@ -237,7 +237,7 @@ export const mathProblems = [
         difficultyGrade: 3,
         answer: '21',
         type: 'SHORT_ANSWER',
-        imagePath: '/features/evaluation/math_image/단답형/2025_06_수학_18번_공통.png',
+        imagePath: '/math_image/단답형/2025_06_수학_18번_공통.png',
         difficulty: 'medium',
         correctAnswer: '21'
     },
@@ -250,7 +250,7 @@ export const mathProblems = [
         difficultyGrade: 3,
         answer: '15',
         type: 'SHORT_ANSWER',
-        imagePath: '/features/evaluation/math_image/단답형/2025_06_수학_19번_공통.png',
+        imagePath: '/math_image/단답형/2025_06_수학_19번_공통.png',
         difficulty: 'medium',
         correctAnswer: '15'
     },
@@ -263,7 +263,7 @@ export const mathProblems = [
         difficultyGrade: 2,
         answer: '36',
         type: 'SHORT_ANSWER',
-        imagePath: '/features/evaluation/math_image/단답형/2025_06_수학_20번_공통.png',
+        imagePath: '/math_image/단답형/2025_06_수학_20번_공통.png',
         difficulty: 'hard',
         correctAnswer: '36'
     },
@@ -276,7 +276,7 @@ export const mathProblems = [
         difficultyGrade: 2,
         answer: '9',
         type: 'SHORT_ANSWER',
-        imagePath: '/features/evaluation/math_image/단답형/2025_06_수학_21번_공통.png',
+        imagePath: '/math_image/단답형/2025_06_수학_21번_공통.png',
         difficulty: 'hard',
         correctAnswer: '9'
     },
@@ -289,7 +289,7 @@ export const mathProblems = [
         difficultyGrade: 1,
         answer: '168',
         type: 'SHORT_ANSWER',
-        imagePath: '/features/evaluation/math_image/단답형/2025_06_수학_22번_공통.png',
+        imagePath: '/math_image/단답형/2025_06_수학_22번_공통.png',
         difficulty: 'hard',
         correctAnswer: '168'
     },
@@ -307,7 +307,7 @@ export const mathProblems = [
         difficultyGrade: 4,
         answer: '2',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_23번_미적분.png',
+        imagePath: '/math_image/객관식/2025_06_수학_23번_미적분.png',
         difficulty: 'medium',
         correctAnswer: '2'
     },
@@ -320,7 +320,7 @@ export const mathProblems = [
         difficultyGrade: 3,
         answer: '4',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_24번_미적분.png',
+        imagePath: '/math_image/객관식/2025_06_수학_24번_미적분.png',
         difficulty: 'medium',
         correctAnswer: '4'
     },
@@ -333,7 +333,7 @@ export const mathProblems = [
         difficultyGrade: 3,
         answer: '1',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_25번_미적분.png',
+        imagePath: '/math_image/객관식/2025_06_수학_25번_미적분.png',
         difficulty: 'medium',
         correctAnswer: '1'
     },
@@ -346,7 +346,7 @@ export const mathProblems = [
         difficultyGrade: 2,
         answer: '3',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_26번_미적분.png',
+        imagePath: '/math_image/객관식/2025_06_수학_26번_미적분.png',
         difficulty: 'hard',
         correctAnswer: '3'
     },
@@ -359,7 +359,7 @@ export const mathProblems = [
         difficultyGrade: 2,
         answer: '5',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_27번_미적분.png',
+        imagePath: '/math_image/객관식/2025_06_수학_27번_미적분.png',
         difficulty: 'hard',
         correctAnswer: '5'
     },
@@ -372,7 +372,7 @@ export const mathProblems = [
         difficultyGrade: 1,
         answer: '2',
         type: 'MULTIPLE_CHOICE',
-        imagePath: '/features/evaluation/math_image/객관식/2025_06_수학_28번_미적분.png',
+        imagePath: '/math_image/객관식/2025_06_수학_28번_미적분.png',
         difficulty: 'hard',
         correctAnswer: '2'
     },
@@ -385,7 +385,7 @@ export const mathProblems = [
         difficultyGrade: 2,
         answer: '24',
         type: 'SHORT_ANSWER',
-        imagePath: '/features/evaluation/math_image/단답형/2025_06_수학_29번_미적분.png',
+        imagePath: '/math_image/단답형/2025_06_수학_29번_미적분.png',
         difficulty: 'hard',
         correctAnswer: '24'
     },
@@ -398,7 +398,7 @@ export const mathProblems = [
         difficultyGrade: 1,
         answer: '45',
         type: 'SHORT_ANSWER',
-        imagePath: '/features/evaluation/math_image/단답형/2025_06_수학_30번_미적분.png',
+        imagePath: '/math_image/단답형/2025_06_수학_30번_미적분.png',
         difficulty: 'hard',
         correctAnswer: '45'
     }

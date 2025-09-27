@@ -54,9 +54,7 @@ const DashboardDday = () => {
 
         const requestData = {
             title: examTitle,
-            exam_date: formattedDate,
-            description: "",
-            location: ""
+            exam_date: formattedDate
         };
 
         console.log('Request data:', requestData);

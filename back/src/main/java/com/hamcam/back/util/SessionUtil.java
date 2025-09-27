@@ -21,10 +21,13 @@ public class SessionUtil {
     public static Long getUserId(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
-            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
 
         Object userIdAttr = session.getAttribute(USER_ID_ATTR);
+        if (userIdAttr == null) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
         return parseUserId(userIdAttr);
     }
 

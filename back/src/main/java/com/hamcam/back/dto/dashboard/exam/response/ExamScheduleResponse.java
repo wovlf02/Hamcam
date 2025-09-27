@@ -13,12 +13,10 @@ import java.time.LocalDate;
 public class ExamScheduleResponse {
     private Long id;
     private String title;
-    private String subject;
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate examDate;
     
-    private String description;
-    private String location;
+    private String exam_date;
     private Long dDay; // D-Day 계산값
 }

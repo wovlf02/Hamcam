@@ -4,6 +4,7 @@ import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import api from '../../../api/api';
 import { API_BASE_URL_3000 } from '../../../api/apiUrl';
+import hamcamLogo from '../../../assets/icons/logo.png';
 import '../styles/Login.css';
 
 let stompClientGlobal = null;
@@ -79,6 +80,14 @@ const Login = () => {
     return (
         <div className="login-main-root">
             <div className="login-main-left">
+                <div className="login-logo-container">
+                    <img 
+                        src={hamcamLogo} 
+                        alt="함캠 로고" 
+                        className="login-logo"
+                        onClick={() => navigate('/dashboard')}
+                    />
+                </div>
                 <div className="login-title-art-special">
                     <div className="login-title-row">
                         <span className="login-title-ham">함</span>

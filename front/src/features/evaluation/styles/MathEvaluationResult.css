@@ -85,6 +85,87 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
+/* AI 성능 분석 */
+.ai-performance-analysis {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: 2px solid #667eea;
+}
+
+.ai-performance-analysis h2 {
+    color: #667eea;
+    margin: 0 0 25px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ai-analysis-content {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.ai-section {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid #667eea;
+}
+
+.ai-section h3 {
+    color: #374151;
+    margin: 0 0 15px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ai-text {
+    color: #4b5563;
+    line-height: 1.7;
+    font-size: 0.95rem;
+    white-space: pre-line;
+}
+
+.ai-analysis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.ai-section.overall-assessment {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-left-color: #0ea5e9;
+}
+
+.ai-section.strengths {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-left-color: #22c55e;
+}
+
+.ai-section.weaknesses {
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    border-left-color: #ef4444;
+}
+
+.ai-section.study-plan {
+    background: linear-gradient(135deg, #fefce8, #fef3c7);
+    border-left-color: #f59e0b;
+}
+
+.ai-section.recommendations {
+    background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+    border-left-color: #a855f7;
+}
+
 .difficulty-breakdown h2 {
     color: #333;
     margin: 0 0 25px 0;
@@ -547,6 +628,20 @@
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
+    .ai-analysis-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .ai-section {
+        padding: 15px;
+    }
+    
+    .ai-text {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
     .math-result-container {
         padding: 15px;
     }
@@ -602,4 +697,29 @@
         width: 100%;
         max-width: 300px;
     }
+}
+
+/* 맞춤형 학습계획 섹션 */
+.study-plan-section {
+    margin: 30px 0;
+}
+
+.study-plan-section .study-plan-container {
+    background: white;
+    border-radius: 20px;
+    padding: 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.study-plan-section .study-plan-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px 20px 0 0;
+    margin-bottom: 0;
+}
+
+.study-plan-section .study-plan-content {
+    border-radius: 0 0 20px 20px;
+    box-shadow: none;
+    border: none;
 }

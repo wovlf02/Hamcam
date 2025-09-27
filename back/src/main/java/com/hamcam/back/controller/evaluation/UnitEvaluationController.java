@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * 단원평가 API 컨트롤러
  */
@@ -115,6 +117,35 @@ public class UnitEvaluationController {
             
         } catch (Exception e) {
             log.error("평가 히스토리 조회 실패", e);
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    /**
+     * 맞춤형 학습계획 조회 (최근 평가 기반)
+     */
+    @GetMapping("/study-plan")
+    public ResponseEntity<Map<String, Object>> getPersonalizedStudyPlan(HttpSession session) {
+        try {
+            Long userId = (Long) session.getAttribute("userId");
+            if (userId == null) {
+                return ResponseEntity.status(401).build();
+            }
+
+            log.info("맞춤형 학습계획 조회 - 사용자: {}", userId);
+            
+            String studyPlan = unitEvaluationService.getPersonalizedStudyPlan(userId);
+            
+            Map<String, Object> response = Map.of(
+                "success", true,
+                "message", "맞춤형 학습계획 조회 완료",
+                "studyPlan", studyPlan != null ? studyPlan : "아직 평가 기록이 없습니다. 먼저 단원평가를 완료해주세요."
+            );
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            log.error("맞춤형 학습계획 조회 실패", e);
             return ResponseEntity.status(500).build();
         }
     }

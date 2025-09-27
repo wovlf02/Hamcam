@@ -132,21 +132,23 @@ public class DashboardService {
         User user = sessionService.getCurrentUser(httpRequest);
         List<ExamSchedule> schedules = examScheduleRepository.findAllByUserOrderByExamDateAsc(user);
         return schedules.stream()
-                .map(schedule -> ExamScheduleResponse.builder()
-                        .id(schedule.getId())
-                        .title(schedule.getTitle())
-                        .subject(schedule.getSubject())
-                        .examDate(schedule.getExamDate())
-                        .description(schedule.getDescription())
-                        .location(schedule.getLocation())
-                        .build())
+                .map(schedule -> {
+                    long dDay = ChronoUnit.DAYS.between(LocalDate.now(), schedule.getExamDate());
+                    return ExamScheduleResponse.builder()
+                            .id(schedule.getId())
+                            .title(schedule.getTitle())
+                            .examDate(schedule.getExamDate())
+                            .exam_date(schedule.getExamDate().toString())
+                            .dDay(dDay)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public void createExamSchedule(ExamScheduleRequest request, HttpServletRequest httpRequest) {
-        log.info("📝 시험 일정 등록 요청 - title: {}, subject: {}, date: {}", 
-            request.getTitle(), request.getSubject(), request.getExamDate());
+        log.info("📝 시험 일정 등록 요청 - title: {}, date: {}", 
+            request.getTitle(), request.getExamDate());
             
         User user = sessionService.getCurrentUser(httpRequest);
         
@@ -164,10 +166,7 @@ public class DashboardService {
         ExamSchedule schedule = ExamSchedule.builder()
                 .user(user)
                 .title(request.getTitle())
-                .subject(request.getSubject())
                 .examDate(request.getExamDate())
-                .description(request.getDescription())
-                .location(request.getLocation())
                 .build();
                 
         examScheduleRepository.save(schedule);

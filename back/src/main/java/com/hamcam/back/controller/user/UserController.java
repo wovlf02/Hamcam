@@ -1,10 +1,13 @@
 package com.hamcam.back.controller.user;
 
+import com.hamcam.back.dto.user.request.GradeUpdateRequest;
 import com.hamcam.back.dto.user.request.UserProfileImageUpdateRequest;
 import com.hamcam.back.dto.user.response.UserProfileResponse;
 import com.hamcam.back.global.response.ApiResponse;
+import com.hamcam.back.dto.common.MessageResponse;
 import com.hamcam.back.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -47,5 +50,15 @@ public class UserController {
     ) {
         String imageUrl = userService.updateProfileImage(request, httpRequest);
         return ResponseEntity.ok(ApiResponse.ok(imageUrl));
+    }
+
+    /** ✅ 사용자 등급 수정 */
+    @PutMapping("/grade")
+    public ResponseEntity<MessageResponse> updateGrade(
+            @Valid @RequestBody GradeUpdateRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        userService.updateGrade(request, httpRequest);
+        return ResponseEntity.ok(MessageResponse.of("✅ 등급이 성공적으로 수정되었습니다."));
     }
 }

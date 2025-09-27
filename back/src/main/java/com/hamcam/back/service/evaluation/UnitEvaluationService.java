@@ -21,6 +21,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 단원평가 서비스
@@ -246,19 +248,34 @@ public class UnitEvaluationService {
     }
 
     /**
-     * AI 피드백 생성
+     * AI 피드백 생성 (등급별 맞춤형 학습계획 포함)
      */
     private AiFeedback generateAiFeedback(UnitEvaluation evaluation, List<EvaluationAnswer> wrongAnswers) {
         try {
+            // 기본 평가 피드백 생성
             String feedbackContent = geminiService.generateEvaluationFeedback(evaluation, wrongAnswers);
+            
+            // 등급별 맞춤형 학습계획 생성
+            String personalizedPlan = geminiService.generatePersonalizedStudyPlan(
+                evaluation.getUser(), evaluation, wrongAnswers
+            );
+            
+            // 약점 개념 추출 (틀린 문제 기반)
+            String weakConcepts = extractWeakConcepts(wrongAnswers);
+            
+            // 학습 권장사항 생성
+            String studyRecommendations = generateStudyRecommendations(evaluation.getUser().getGrade(), wrongAnswers);
+            
+            // 예상 학습시간 계산 (등급별 차등)
+            int estimatedTime = calculateEstimatedStudyTime(evaluation.getUser().getGrade(), wrongAnswers.size());
             
             AiFeedback feedback = AiFeedback.builder()
                     .evaluation(evaluation)
                     .overallAnalysis(feedbackContent)
-                    .weakConcepts("분석된 약점 개념들")
-                    .studyRecommendations("학습 권장사항")
-                    .futurePlan("향후 학습 계획")
-                    .estimatedStudyTime(120) // 예상 학습시간(분)
+                    .weakConcepts(weakConcepts)
+                    .studyRecommendations(studyRecommendations)
+                    .futurePlan(personalizedPlan) // 맞춤형 학습계획 적용
+                    .estimatedStudyTime(estimatedTime)
                     .build();
 
             return aiFeedbackRepository.save(feedback);
@@ -266,5 +283,163 @@ public class UnitEvaluationService {
             log.error("AI 피드백 생성 실패", e);
             return null;
         }
+    }
+    
+    /**
+     * 틀린 문제에서 약점 개념 추출
+     */
+    private String extractWeakConcepts(List<EvaluationAnswer> wrongAnswers) {
+        if (wrongAnswers.isEmpty()) {
+            return "모든 문제를 정답으로 해결했습니다.";
+        }
+        
+        Map<String, Long> conceptCount = wrongAnswers.stream()
+            .collect(Collectors.groupingBy(
+                answer -> answer.getDifficulty(), 
+                Collectors.counting()
+            ));
+            
+        StringBuilder concepts = new StringBuilder();
+        conceptCount.forEach((difficulty, count) -> {
+            switch (difficulty) {
+                case "easy" -> concepts.append(String.format("기본 개념 (%d문제), ", count));
+                case "medium" -> concepts.append(String.format("응용 문제 (%d문제), ", count));
+                case "hard" -> concepts.append(String.format("고난도 문제 (%d문제), ", count));
+            }
+        });
+        
+        return concepts.length() > 0 ? concepts.substring(0, concepts.length() - 2) : "분석 완료";
+    }
+    
+    /**
+     * 등급별 학습 권장사항 생성
+     */
+    private String generateStudyRecommendations(Integer grade, List<EvaluationAnswer> wrongAnswers) {
+        int userGrade = grade != null ? grade : 5;
+        int wrongCount = wrongAnswers.size();
+        
+        StringBuilder recommendations = new StringBuilder();
+        
+        if (userGrade <= 2) {
+            recommendations.append("• 고난도 문제 해결 능력 강화\n")
+                           .append("• 시간 내 정확도 향상 연습\n")
+                           .append("• 새로운 문제 유형 도전");
+        } else if (userGrade <= 4) {
+            recommendations.append("• 기본 개념 완전 정착\n")
+                           .append("• 중간 난이도 문제 반복 연습\n")
+                           .append("• 실수 방지 습관 형성");
+        } else {
+            recommendations.append("• 기초 개념부터 차근차근 학습\n")
+                           .append("• 쉬운 문제 완전 정복\n")
+                           .append("• 꾸준한 반복 학습");
+        }
+        
+        if (wrongCount > 5) {
+            recommendations.append("\n• 기본기 다지기 집중 필요");
+        }
+        
+        return recommendations.toString();
+    }
+    
+    /**
+     * 등급별 예상 학습시간 계산
+     */
+    private int calculateEstimatedStudyTime(Integer grade, int wrongCount) {
+        int userGrade = grade != null ? grade : 5;
+        
+        // 기본 시간 (분)
+        int baseTime = switch (userGrade) {
+            case 1, 2 -> 90;  // 상위권: 심화 학습
+            case 3, 4 -> 120; // 중위권: 개념 정리 + 연습
+            case 5 -> 150;    // 하위권: 기초부터 차근차근
+            default -> 120;
+        };
+        
+        // 틀린 문제 수에 따른 추가 시간
+        int additionalTime = wrongCount * 15;
+        
+        return Math.min(baseTime + additionalTime, 300); // 최대 5시간
+    }
+    
+    /**
+     * 평가 결과를 데이터베이스에 저장 (수학 평가용)
+     */
+    @Transactional
+    public Long saveEvaluationResult(Long userId, String unitName, double score, 
+                                   int correctCount, int totalCount,
+                                   Map<String, Object> difficultyScores,
+                                   List<Map<String, Object>> wrongAnswers) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        Unit unit = unitRepository.findByUnit(unitName)
+                .orElse(Unit.builder()
+                        .unit(unitName)
+                        .subject("수학")
+                        .build());
+
+        if (unit.getId() == null) {
+            unit = unitRepository.save(unit);
+        }
+
+        // 평가 생성
+        UnitEvaluation evaluation = UnitEvaluation.builder()
+                .user(user)
+                .unit(unit)
+                .startedAt(LocalDateTime.now().minusMinutes(30)) // 30분 전 시작으로 가정
+                .totalQuestions(totalCount)
+                .correctAnswers(correctCount)
+                .score((double) Math.round((correctCount / (double) totalCount) * 100))
+                .completedAt(LocalDateTime.now())
+                .isCompleted(true)
+                .build();
+
+        // 난이도별 점수 설정
+        if (difficultyScores != null) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> easy = (Map<String, Object>) difficultyScores.get("easy");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> medium = (Map<String, Object>) difficultyScores.get("medium");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> hard = (Map<String, Object>) difficultyScores.get("hard");
+
+            if (easy != null) evaluation.setEasyCorrect((Integer) easy.get("correct"));
+            if (medium != null) evaluation.setMediumCorrect((Integer) medium.get("correct"));
+            if (hard != null) evaluation.setHardCorrect((Integer) hard.get("correct"));
+        }
+
+        evaluation = unitEvaluationRepository.save(evaluation);
+
+        // 학생 레벨 업데이트
+        updateStudentLevel(user, evaluation);
+
+        return evaluation.getId();
+    }
+
+    /**
+     * 사용자의 최근 평가 기반 맞춤형 학습계획 조회
+     */
+    @Transactional(readOnly = true)
+    public String getPersonalizedStudyPlan(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 최근 완료된 평가 조회
+        List<UnitEvaluation> recentEvaluations = unitEvaluationRepository
+                .findByUserAndIsCompletedTrueOrderByCompletedAtDesc(user);
+
+        if (recentEvaluations.isEmpty()) {
+            return null; // 평가 기록이 없음
+        }
+
+        // 가장 최근 평가 선택
+        UnitEvaluation latestEvaluation = recentEvaluations.get(0);
+
+        // 해당 평가의 틀린 답안들 조회
+        List<EvaluationAnswer> wrongAnswers = evaluationAnswerRepository
+                .findByEvaluationAndIsCorrectFalse(latestEvaluation);
+
+        // 맞춤형 학습계획 생성
+        return geminiService.generatePersonalizedStudyPlan(user, latestEvaluation, wrongAnswers);
     }
 }

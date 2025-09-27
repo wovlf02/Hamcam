@@ -46,9 +46,26 @@ const initialStudyList = [];
 const LayoutWithSidebar = () => (
     <div style={{ display: 'flex' }}>
         <NavBar />
-        <div style={{ flex: 1, marginTop: '0px' }}>
+        <div style={{ 
+            flex: 1, 
+            marginLeft: 'max(15vw, 180px)', /* 사이드메뉴 너비만큼 여백 */
+            marginTop: '0px',
+            minHeight: '100vh',
+            boxSizing: 'border-box'
+        }}>
             <Outlet />
         </div>
+    </div>
+);
+
+// 사이드바 없는 레이아웃 (문제풀이 화면용)
+const LayoutWithoutSidebar = () => (
+    <div style={{ 
+        width: '100vw',
+        minHeight: '100vh',
+        boxSizing: 'border-box'
+    }}>
+        <Outlet />
     </div>
 );
 
@@ -65,10 +82,18 @@ function App() {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                
+                {/* 문제풀이 화면들 - 사이드바 없음 */}
+                <Route element={<LayoutWithoutSidebar />}>
+                    <Route path="/unit-evaluation/start" element={<MathEvaluationStart />} />
+                    <Route path="/math-evaluation/start" element={<MathEvaluationStart />} />
+                    <Route path="/math-evaluation/result" element={<MathEvaluationResult />} />
+                </Route>
+                
+                {/* 일반 화면들 - 사이드바 있음 */}
                 <Route element={<LayoutWithSidebar />}>
                     <Route path="/" element={<Navigate to="/login" />} />
                     <Route path="/unit-evaluation" element={<UnitEvaluation />} />
-                    <Route path="/unit-evaluation/start" element={<MathEvaluationStart />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/teamStudy" element={<TeamStudy />} />
                     <Route path="/studyStart" element={<StudyStart />} />
@@ -98,10 +123,7 @@ function App() {
                     <Route path="/unit-evaluation/plan" element={<UnitEvaluationPlan />} />
                     <Route path="/unit-evaluation/feedback" element={<UnitEvaluationFeedback />} />
                     <Route path="/unit-evaluation/schedule" element={<UnitEvaluationSchedule />} />
-                    
-                    {/* 수학 평가 라우트 */}
-                    <Route path="/math-evaluation/start" element={<MathEvaluationStart />} />
-                    <Route path="/math-evaluation/result" element={<MathEvaluationResult />} />
+
 
                     {/* ✅ 팀 학습 방 진입 URL 통일 */}
                     <Route path="/team-study/quiz/:roomId" element={<QuizRoom />} />
