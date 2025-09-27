@@ -21,7 +21,7 @@ const useWebRTC = (roomId) => {
     // ✅ 캠+마이크 실행 및 LiveKit 연결
     const startCamera = async () => {
         try {
-            const res = await api.post('/livekit/token', { roomName: roomId });
+            const res = await api.post('/livekit/token', { roomType: 'quiz', roomId: roomId, role: 'publisher', ttl: 3600 });
             const { token, wsUrl } = res.data;
 
             const room = new Room();
