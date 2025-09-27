@@ -1,6 +1,5 @@
 .mypage-container {
-    margin-left: 160px; /* 사이드바 너비 */
-    min-height: 100vh;
+    min-height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;

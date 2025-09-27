@@ -1,8 +1,7 @@
 .dashboard-container {
-    margin-left: 160px;
     padding: 40px 32px 32px 32px;
     background: #f7fafd;
-    min-height: 100vh;
+    min-height: 100%;
 }
 
 .dashboard-title-row {

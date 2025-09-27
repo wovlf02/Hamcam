@@ -43,9 +43,9 @@ import FocusRoom from './features/study/pages/FocusRoom';
 const initialStudyList = [];
 
 const LayoutWithSidebar = () => (
-    <div style={{ display: 'flex' }}>
+    <div className="main-layout-container">
         <NavBar />
-        <div style={{ flex: 1, marginTop: '0px' }}>
+        <div className="content-area">
             <Outlet />
         </div>
     </div>

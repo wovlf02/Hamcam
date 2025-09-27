@@ -2,6 +2,7 @@ html, body {
     width: 100%;
     min-width: 0;
     overflow-x: hidden;
+    height: 100%; /* Ensure html and body take full height */
 }
 
 :root {
@@ -10,7 +11,6 @@ html, body {
     --card-bg: #fff;
     --card-radius: 16px;
     --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    --side-width: 160px;
 }
 
 * {
@@ -24,22 +24,38 @@ body {
     color: #222;
 }
 
-.nav-bar-container {
+.main-layout-container {
     display: flex;
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Full viewport width */
 }
 
 .side-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: var(--side-width);
-    height: 100vh;
+    flex-shrink: 0;
+    width: 9%; /* Default for QHD and above */
+    height: 100vh; /* Ensure it fills its height */
     background: #f8f9fa;
     border-right: 1px solid #e0e4ea;
     display: flex;
     flex-direction: column;
     z-index: 10;
     padding-top: 0;
+}
+
+.content-area {
+    flex-grow: 1;
+    width: 91%; /* Default for QHD and above */
+    overflow-y: auto; /* Enable scrolling for content if it overflows */
+    height: 100vh; /* Ensure it fills its height */
+}
+
+@media (max-width: 1920px) { /* For FHD screens */
+    .side-menu {
+        width: 12%;
+    }
+    .content-area {
+        width: 88%;
+    }
 }
 
 .side-menu-logo {
@@ -113,18 +129,12 @@ body {
     width: 100%;
 }
 
-.main-layout {
-    display: flex;
-    height: 100vh;
-}
-
 .dashboard-main {
     flex: 1;
     padding: 48px 40px 40px 40px;
     min-width: 0;
     background: var(--bg-light);
-    min-height: 100vh;
-    margin-left: var(--side-width);
+    min-height: 100%; /* Changed from 100vh to 100% */
 }
 
 .dashboard-header {
@@ -281,7 +291,7 @@ body {
 }
 
 @media (max-width: 900px) {
-    .main-layout {
+    .main-layout-container {
         flex-direction: column;
         height: auto;
     }
