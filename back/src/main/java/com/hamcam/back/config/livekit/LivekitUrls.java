@@ -16,7 +16,7 @@ import java.util.StringJoiner;
  * 프로토타입/로컬 시연 전제: 최소 기능만 제공.
  */
 @Slf4j
-@Component
+// @Component  // LiveKit 비활성화
 @RequiredArgsConstructor
 public class LivekitUrls {
 

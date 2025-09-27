@@ -41,7 +41,9 @@ gemini:
     key: ${GEMINI_API_KEY:} # 환경변수 또는 빈 값
     url: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
 
-livekit:
-  ws-url: ws://192.168.0.2:7880
-  api-key: devkey123
-  api-secret: 78c9344275a8a63390768f35ccb864205edee5445cdb1e4b941878958d09e4b9e8475f678398e3d3927777bc82a8087c1d39db0d6497aa200c072ef4f8fac88b
+# livekit:
+#   wsUrl: ws://192.168.0.2:7880
+#   apiKey: devkey123
+#   apiSecret: 78c9344275a8a63390768f35ccb864205edee5445cdb1e4b941878958d09e4b9e8475f678398e3d3927777bc82a8087c1d39db0d6497aa200c072ef4f8fac88b
+#   httpUrl: http://192.168.0.2:7880
+#   signalUrl: http://192.168.0.2:7880

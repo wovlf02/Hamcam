@@ -1,0 +1,6 @@
+# ...existing code...
+livekit:
+  signalUrl: "https://your-livekit-signal-url"
+  httpUrl: "https://your-livekit-http-url"
+# ...existing code...
+
