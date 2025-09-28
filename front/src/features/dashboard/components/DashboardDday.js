@@ -41,7 +41,7 @@ const DashboardDday = () => {
                 exam_date: formattedDate,
             };
 
-            const response = await api.post('/dashboard/exams', examData, {
+                        const response = await api.post('/dashboard/exams/register', examData, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
