@@ -6,7 +6,8 @@
     border: 1px solid var(--border-light);
     display: flex;
     flex-direction: column;
-    height: 100%;
+    flex-grow: 1; /* Make it fill available space */
+    overflow-y: auto; /* Enable scrolling for todo list */
 }
 
 .dashboard-todo-header {

@@ -112,15 +112,21 @@ function Dashboard() {
                     highlightedDates={highlightedDates}
                 />
 
-                {/* ✅ 공부 시간 박스 */}
-                <div className="dashboard-card dashboard-study-time-card">
-                    <div className="card-title">공부 시간</div>
-                    <div className="study-time-item">오늘 공부한 시간: <span className="study-time-value">{todayStudyHour}시간 {todayStudyMin}분</span></div>
-                    <div className="study-time-item">오늘 목표 시간: <span className="study-time-value">{todayGoalHour}시간 {todayGoalMin}분</span></div>
-                    <div className="study-time-item">주간 목표 시간: <span className="study-time-value">{weeklyGoalHour}시간 {weeklyGoalMin}분</span></div>
-                    <button className="btn-primary" onClick={() => setShowTimeDetail(true)}>
-                        상세 설정
-                    </button>
+                <div className="dashboard-right-panel">
+                    {/* ✅ 공부 시간 박스 */}
+                    <div className="dashboard-card dashboard-study-time-card">
+                        <div className="card-title">
+                            공부 시간
+                            <button className="btn-primary study-time-detail-button" onClick={() => setShowTimeDetail(true)}>
+                                상세 설정
+                            </button>
+                        </div>
+                        <div className="study-time-item">오늘 공부한 시간: <span className="study-time-value">{todayStudyHour}시간 {todayStudyMin}분</span></div>
+                        <div className="study-time-item">오늘 목표 시간: <span className="study-time-value">{todayGoalHour}시간 {todayGoalMin}분</span></div>
+                        <div className="study-time-item">주간 목표 시간: <span className="study-time-value">{weeklyGoalHour}시간 {weeklyGoalMin}분</span></div>
+                    </div>
+
+                    <DashboardTodo selectedDate={selectedDate} />
                 </div>
 
                 {/* ✅ 상세 설정 모달 */}
@@ -143,7 +149,6 @@ function Dashboard() {
                     />
                 )}
 
-                <DashboardTodo selectedDate={selectedDate} />
                 <DashboardNotice notices={notices} />
                 <DashboardGrowth growth={growth} />
             </div>

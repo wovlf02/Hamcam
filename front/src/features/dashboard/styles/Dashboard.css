@@ -76,17 +76,21 @@
 /* Calendar should span 2 columns on larger screens */
 @media (min-width: 1024px) {
     .dashboard-board-grid {
-        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-columns: 2fr 1fr; /* Calendar (2fr) and Right Panel (1fr) */
     }
-    .dashboard-calendar { /* Assuming DashboardCalendar component has this class */
-        grid-column: span 2;
-    }
+    /* .dashboard-calendar no longer needs grid-column: span 2 as it's explicitly in the first column */
+}
+
+.dashboard-right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px; /* Gap between study time card and todo list */
 }
 
 .dashboard-study-time-card {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    min-height: 200px; /* Increased height for study time card */
 }
 
 .study-time-item {
@@ -98,6 +102,19 @@
 .study-time-value {
     font-weight: 600;
     color: var(--primary-blue);
+}
+
+.dashboard-study-time-card .card-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px; /* Keep original margin-bottom for card-title */
+}
+
+.study-time-detail-button {
+    padding: 6px 12px; /* Smaller padding for a button inside a title */
+    font-size: 0.85rem; /* Smaller font size */
+    margin-bottom: 0; /* Remove any default margin-bottom from btn-primary */
 }
 
 /* 공부시간 상세 카드 */
