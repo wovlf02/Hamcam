@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import moment from 'moment';
 import api from '../../../api/api';
 import '../styles/DashboardTodo.css';
@@ -9,6 +9,7 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
     const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
     const [priority, setPriority] = useState('NORMAL');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [sortOrder, setSortOrder] = useState('NEWEST'); // NEW: State for sorting order
 
     const handleAddTodo = async () => {
         if (!newTodo.trim()) {
@@ -59,11 +60,34 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
         }
     };
 
+    // NEW: Memoized sorted todos
+    const sortedTodos = useMemo(() => {
+        const sorted = [...todos];
+        switch (sortOrder) {
+            case 'NEWEST':
+                return sorted.sort((a, b) => moment(b.date).valueOf() - moment(a.date).valueOf());
+            case 'OLDEST':
+                return sorted.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
+            case 'PRIORITY':
+                const priorityOrder = { 'HIGH': 3, 'NORMAL': 2, 'LOW': 1 };
+                return sorted.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
+            default:
+                return sorted;
+        }
+    }, [todos, sortOrder]);
+
     return (
         <div className="dashboard-todo">
             <div className="dashboard-todo-header">
                 <h3>할일 목록</h3>
-                <button onClick={() => setIsModalOpen(true)}>+ 새 할일</button>
+                <div className="todo-header-controls">
+                    <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="todo-sort-select">
+                        <option value="NEWEST">최신순</option>
+                        <option value="OLDEST">오래된순</option>
+                        <option value="PRIORITY">중요도순</option>
+                    </select>
+                    <button onClick={() => setIsModalOpen(true)}>+ 새 할일</button>
+                </div>
             </div>
 
             {isModalOpen && (
@@ -111,10 +135,10 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
             )}
 
             <div className="todo-list">
-                {todos.length === 0 ? (
+                {sortedTodos.length === 0 ? (
                     <div className="no-todos">등록된 할일이 없습니다.</div>
                 ) : (
-                    todos.map((todo) => (
+                    sortedTodos.map((todo) => (
                         <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`} onClick={() => onItemClick(todo)}>
                             <input
                                 type="checkbox"

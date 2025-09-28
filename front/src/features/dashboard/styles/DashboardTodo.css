@@ -18,6 +18,29 @@
     margin-bottom: 20px;
 }
 
+.todo-header-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.todo-sort-select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    background: var(--bg-white);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.todo-sort-select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+}
+
 .dashboard-todo-header h3 {
     margin: 0;
     font-size: 1.4rem;
