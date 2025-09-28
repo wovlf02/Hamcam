@@ -1,10 +1,13 @@
 .dashboard-calendar {
-  background: white;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--bg-white);
+  border-radius: 16px; /* Consistent with dashboard-card */
+  box-shadow: var(--shadow-clay-1); /* Consistent with dashboard-card */
+  padding: 28px; /* Consistent with dashboard-card */
   width: 100%;
   min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-light);
 }
 
 .calendar-header {
@@ -12,25 +15,36 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  padding: 0 10px;
 }
 
 .calendar-header button {
-  background: none;
+  background: var(--bg-medium);
   border: none;
-  font-size: 20px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.2rem;
   cursor: pointer;
-  padding: 5px 10px;
-  color: #666;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .calendar-header button:hover {
-  color: #333;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
 }
 
 .calendar-header h2 {
   margin: 0;
-  font-size: 1.5rem;
-  color: #333;
+  font-size: 1.6rem;
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .calendar-weekdays {
@@ -38,16 +52,20 @@
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
   margin-bottom: 10px;
+  background: var(--bg-medium);
+  border-radius: 8px;
+  padding: 8px 0;
 }
 
 .weekday {
   text-align: center;
-  font-weight: bold;
-  color: #666;
-  padding: 10px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }
 
 .calendar-grid {
+  flex-grow: 1;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
@@ -55,66 +73,87 @@
 
 .calendar-day {
   min-height: 100px;
-  border: 1px solid #eee;
-  padding: 5px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 8px;
   position: relative;
   cursor: pointer;
   transition: all 0.2s ease;
+  background-color: var(--bg-white);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .calendar-day:hover {
-  background-color: #f8f9fa;
+  background-color: var(--bg-light);
+  box-shadow: var(--shadow-sm);
 }
 
 .calendar-day.other-month {
-  background-color: #f8f9fa;
-  color: #999;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  border-color: var(--bg-medium);
 }
 
 .calendar-day.selected {
-  background-color: #e3f2fd;
-  border-color: #2196f3;
+  background-color: var(--primary-blue-light);
+  border-color: var(--primary-blue);
+  box-shadow: inset 0 0 0 2px var(--primary-blue);
 }
 
 .day-number {
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
   margin-bottom: 5px;
+}
+
+.calendar-day.other-month .day-number {
+  color: var(--text-light);
+}
+
+.calendar-day.selected .day-number {
+  color: var(--primary-blue);
 }
 
 .day-todos {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  width: 100%;
+  overflow: hidden;
 }
 
 .todo-item {
-  font-size: 0.8rem;
-  padding: 2px 4px;
-  border-radius: 3px;
+  font-size: 0.75rem;
+  padding: 3px 6px;
+  border-radius: 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: 500;
 }
 
-.todo-item.priority-high {
-  background-color: #ffebee;
-  color: #c62828;
+.todo-item.priority-HIGH {
+  background-color: var(--secondary-red);
+  color: var(--text-white);
 }
 
-.todo-item.priority-medium {
-  background-color: #fff3e0;
-  color: #ef6c00;
+.todo-item.priority-NORMAL {
+  background-color: var(--secondary-yellow);
+  color: var(--text-primary);
 }
 
-.todo-item.priority-low {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+.todo-item.priority-LOW {
+  background-color: var(--secondary-green);
+  color: var(--text-white);
 }
 
 .todo-item.exam-item {
-  background-color: #e3f2fd;
-  color: #1565c0;
+  background-color: var(--primary-blue);
+  color: var(--text-white);
   font-weight: 500;
-  border-left: 3px solid #1565c0;
-} 
+  border-left: 3px solid var(--primary-blue-dark);
+}
+ 

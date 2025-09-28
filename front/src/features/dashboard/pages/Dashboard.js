@@ -101,7 +101,7 @@ function Dashboard() {
             <h2 className="dashboard-main-title">학습 대시보드</h2>
 
             {/* ✅ D-Day 영역 */}
-            <div style={{ marginBottom: '12px' }}>
+            <div>
                 <DashboardDday />
             </div>
 
@@ -113,12 +113,12 @@ function Dashboard() {
                 />
 
                 {/* ✅ 공부 시간 박스 */}
-                <div className="dashboard-card">
-                    <div style={{ fontWeight: 600, marginBottom: 8 }}>공부 시간</div>
-                    <div>오늘 공부한 시간: {todayStudyHour}시간 {todayStudyMin}분</div>
-                    <div>오늘 목표 시간: {todayGoalHour}시간 {todayGoalMin}분</div>
-                    <div>주간 목표 시간: {weeklyGoalHour}시간 {weeklyGoalMin}분</div>
-                    <button onClick={() => setShowTimeDetail(true)} style={{ marginTop: 8 }}>
+                <div className="dashboard-card dashboard-study-time-card">
+                    <div className="card-title">공부 시간</div>
+                    <div className="study-time-item">오늘 공부한 시간: <span className="study-time-value">{todayStudyHour}시간 {todayStudyMin}분</span></div>
+                    <div className="study-time-item">오늘 목표 시간: <span className="study-time-value">{todayGoalHour}시간 {todayGoalMin}분</span></div>
+                    <div className="study-time-item">주간 목표 시간: <span className="study-time-value">{weeklyGoalHour}시간 {weeklyGoalMin}분</span></div>
+                    <button className="btn-primary" onClick={() => setShowTimeDetail(true)}>
                         상세 설정
                     </button>
                 </div>

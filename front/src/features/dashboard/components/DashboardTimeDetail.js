@@ -70,7 +70,7 @@ const DashboardTimeDetail = ({
             >
                 ×
             </button>
-            <div style={{ fontWeight: 600, marginBottom: 12 }}>공부시간 상세 설정</div>
+            <div className="card-title">공부시간 상세 설정</div>
 
             {/* 주간 목표 시간 */}
             <div className="dashboard-time-detail-row">
@@ -83,7 +83,7 @@ const DashboardTimeDetail = ({
                     value={weeklyGoalHour}
                     onChange={(e) => handleWeeklyChange('hour', e.target.value)}
                 />
-                시간
+                <span className="time-unit">시간</span>
                 <input
                     type="number"
                     min={0}
@@ -92,7 +92,7 @@ const DashboardTimeDetail = ({
                     value={weeklyGoalMin}
                     onChange={(e) => handleWeeklyChange('min', e.target.value)}
                 />
-                분
+                <span className="time-unit">분</span>
             </div>
 
             {/* 오늘 목표 시간 */}
@@ -106,7 +106,7 @@ const DashboardTimeDetail = ({
                     value={todayGoalHour}
                     onChange={(e) => handleTodayChange('hour', e.target.value)}
                 />
-                시간
+                <span className="time-unit">시간</span>
                 <input
                     type="number"
                     min={0}
@@ -115,7 +115,7 @@ const DashboardTimeDetail = ({
                     value={todayGoalMin}
                     onChange={(e) => handleTodayChange('min', e.target.value)}
                 />
-                분
+                <span className="time-unit">분</span>
             </div>
 
             {/* 오늘 공부 시간 (프론트 상태만 변경) */}
@@ -129,7 +129,7 @@ const DashboardTimeDetail = ({
                     value={todayStudyHour}
                     onChange={(e) => handleTodayStudyChange('hour', e.target.value)}
                 />
-                시간
+                <span className="time-unit">시간</span>
                 <input
                     type="number"
                     min={0}
@@ -138,21 +138,21 @@ const DashboardTimeDetail = ({
                     value={todayStudyMin}
                     onChange={(e) => handleTodayStudyChange('min', e.target.value)}
                 />
-                분
+                <span className="time-unit">분</span>
             </div>
 
             {/* 잔여 시간 */}
-            <div className="dashboard-time-detail-row" style={{ marginTop: 10 }}>
-                <span className="dashboard-time-detail-label" style={{ color: '#2563eb' }}>
+            <div className="dashboard-time-detail-row time-remain-row">
+                <span className="dashboard-time-detail-label time-remain-label">
                     오늘 남은 공부시간
                 </span>
-                <span style={{ color: '#2563eb', fontWeight: 700 }}>{todayRemainMinutes}분</span>
+                <span className="time-remain-value">{todayRemainMinutes}분</span>
             </div>
-            <div className="dashboard-time-detail-row">
-                <span className="dashboard-time-detail-label" style={{ color: '#2563eb' }}>
+            <div className="dashboard-time-detail-row time-remain-row">
+                <span className="dashboard-time-detail-label time-remain-label">
                     주간 남은 공부시간
                 </span>
-                <span style={{ color: '#2563eb', fontWeight: 700 }}>{weekRemainMinutes}분</span>
+                <span className="time-remain-value">{weekRemainMinutes}분</span>
             </div>
         </div>
     );

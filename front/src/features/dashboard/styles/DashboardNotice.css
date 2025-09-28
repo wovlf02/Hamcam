@@ -1,0 +1,76 @@
+.dashboard-notice-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.dashboard-notice-card .card-title {
+    margin-bottom: 16px;
+}
+
+.dashboard-notice-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.dashboard-notice-list li {
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.dashboard-notice-list li:last-child {
+    margin-bottom: 0;
+}
+
+.notice-type-badge {
+    display: inline-block;
+    min-width: 45px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-align: center;
+    color: var(--text-white);
+}
+
+.notice-type-badge.type-중요 {
+    background-color: var(--secondary-red);
+}
+
+.notice-type-badge.type-공지 {
+    background-color: var(--primary-blue);
+}
+
+.notice-type-badge.type-일반 {
+    background-color: var(--text-light);
+}
+
+.notice-text {
+    flex-grow: 1;
+    line-height: 1.4;
+}
+
+.notice-date {
+    color: var(--text-light);
+    font-weight: 400;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.no-notices {
+    color: var(--text-light);
+    text-align: center;
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+}
