@@ -46,13 +46,15 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
     };
 
     const handleToggleTodo = async (e, todoId) => {
-        e.stopPropagation(); // Prevent modal from opening
+        e.stopPropagation(); // Prevent event from bubbling up to parent div
+        e.preventDefault();  // Prevent default checkbox behavior (if any propagates)
         try {
             const requestData = { todoId: Number(todoId) };
             await api.put('/dashboard/todos/complete', requestData);
             
+            // Optimistically update the UI
             if (onDataChange) {
-                onDataChange();
+                onDataChange(); // Re-fetch all todos to get the updated state from backend
             }
         } catch (error) {
             console.error('Error toggling todo:', error);
@@ -138,8 +140,12 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
                 {sortedTodos.length === 0 ? (
                     <div className="no-todos">등록된 할일이 없습니다.</div>
                 ) : (
-                    sortedTodos.map((todo) => (
-                        <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`} onClick={() => onItemClick(todo)}>
+                    todos.map((todo) => (
+                        <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`} onClick={(e) => {
+                            if (e.target.type !== 'checkbox') {
+                                onItemClick(todo);
+                            }
+                        }}>
                             <input
                                 type="checkbox"
                                 checked={todo.completed}

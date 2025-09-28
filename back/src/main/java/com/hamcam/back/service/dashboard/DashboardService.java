@@ -123,7 +123,7 @@ public class DashboardService {
         todo.setCompleted(!todo.isCompleted());
         
         if (todo.isCompleted()) {
-            todoRepository.delete(todo);
+            // todoRepository.delete(todo); // Removed deletion on completion
         }
     }
 
