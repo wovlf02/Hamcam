@@ -45,7 +45,6 @@ public class ExamScheduleRequest {
     /**
      * 시험 설명 (선택)
      */
-    @Size(max = 500, message = "시험 설명은 500자 이하여야 합니다.")
     private String description;
 
     /**

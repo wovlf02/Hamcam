@@ -3,8 +3,9 @@ import moment from 'moment';
 import api from '../../../api/api';
 import '../styles/DashboardTodo.css';
 
-const DashboardDday = ({ examSchedules, onDataChange }) => {
+const DashboardDday = ({ examSchedules, onDataChange, onItemClick }) => {
     const [newExamTitle, setNewExamTitle] = useState('');
+    const [description, setDescription] = useState('');
     const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -19,6 +20,7 @@ const DashboardDday = ({ examSchedules, onDataChange }) => {
 
             const examData = {
                 title: newExamTitle,
+                description: description,
                 exam_date: formattedDate,
             };
 
@@ -30,6 +32,7 @@ const DashboardDday = ({ examSchedules, onDataChange }) => {
 
             if (response.data.success) {
                 setNewExamTitle('');
+                setDescription('');
                 setIsModalOpen(false);
                 if (onDataChange) {
                     onDataChange();
@@ -50,7 +53,8 @@ const DashboardDday = ({ examSchedules, onDataChange }) => {
         return target.diff(today, 'days');
     };
 
-    const handleDeleteExam = async (examId) => {
+    const handleDeleteExam = async (e, examId) => {
+        e.stopPropagation(); // Prevent modal from opening
         if (!window.confirm('정말로 이 시험 일정을 삭제하시겠습니까?')) {
             return;
         }
@@ -89,6 +93,14 @@ const DashboardDday = ({ examSchedules, onDataChange }) => {
                                 placeholder="시험 이름을 입력하세요"
                             />
                         </div>
+                        <div className="dashboard-modal-input-group">
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="설명 (선택 사항)"
+                                className="dashboard-modal-textarea"
+                            />
+                        </div>
                         <div className="date-picker">
                             <input
                                 type="date"
@@ -112,7 +124,7 @@ const DashboardDday = ({ examSchedules, onDataChange }) => {
                         const dDay = calculateDday(exam.exam_date);
                         const isPastExam = dDay < 0;
                         return (
-                            <div key={exam.id} className={`todo-item ${isPastExam ? 'completed' : ''}`}>
+                            <div key={exam.id} className={`todo-item ${isPastExam ? 'completed' : ''}`} onClick={() => onItemClick(exam)}>
                                 <span className="todo-title">{exam.title}</span>
                                 <span className="todo-date">{moment(exam.exam_date).format('YYYY-MM-DD')}</span>
                                 <span className={`priority-badge ${dDay === 0 ? 'high' : (dDay > 0 && dDay <= 7 ? 'normal' : 'low')}`}>
@@ -120,7 +132,7 @@ const DashboardDday = ({ examSchedules, onDataChange }) => {
                                 </span>
                                 <button
                                     className="delete-button"
-                                    onClick={() => handleDeleteExam(exam.id)}
+                                    onClick={(e) => handleDeleteExam(e, exam.id)}
                                 >
                                     삭제
                                 </button>

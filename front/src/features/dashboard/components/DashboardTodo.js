@@ -3,8 +3,9 @@ import moment from 'moment';
 import api from '../../../api/api';
 import '../styles/DashboardTodo.css';
 
-const DashboardTodo = ({ todos, onDataChange }) => {
+const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
     const [newTodo, setNewTodo] = useState('');
+    const [description, setDescription] = useState('');
     const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
     const [priority, setPriority] = useState('NORMAL');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,7 +21,7 @@ const DashboardTodo = ({ todos, onDataChange }) => {
 
             const todoData = {
                 title: newTodo,
-                description: '',
+                description: description,
                 date: formattedDate,
                 priority: priority
             };
@@ -32,6 +33,7 @@ const DashboardTodo = ({ todos, onDataChange }) => {
             });
 
             setNewTodo('');
+            setDescription('');
             setIsModalOpen(false);
             if (onDataChange) {
                 onDataChange();
@@ -42,7 +44,8 @@ const DashboardTodo = ({ todos, onDataChange }) => {
         }
     };
 
-    const handleToggleTodo = async (todoId) => {
+    const handleToggleTodo = async (e, todoId) => {
+        e.stopPropagation(); // Prevent modal from opening
         try {
             const requestData = { todoId: Number(todoId) };
             await api.put('/dashboard/todos/complete', requestData);
@@ -84,6 +87,14 @@ const DashboardTodo = ({ todos, onDataChange }) => {
                                 <option value="HIGH">높음</option>
                             </select>
                         </div>
+                        <div className="dashboard-modal-input-group">
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="설명 (선택 사항)"
+                                className="dashboard-modal-textarea"
+                            />
+                        </div>
                         <div className="date-picker">
                             <input
                                 type="date"
@@ -104,11 +115,11 @@ const DashboardTodo = ({ todos, onDataChange }) => {
                     <div className="no-todos">등록된 할일이 없습니다.</div>
                 ) : (
                     todos.map((todo) => (
-                        <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+                        <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`} onClick={() => onItemClick(todo)}>
                             <input
                                 type="checkbox"
                                 checked={todo.completed}
-                                onChange={() => handleToggleTodo(todo.id)}
+                                onChange={(e) => handleToggleTodo(e, todo.id)}
                             />
                             <span className="todo-title">{todo.title}</span>
                             <span className={`priority-badge ${todo.priority.toLowerCase()}`}>

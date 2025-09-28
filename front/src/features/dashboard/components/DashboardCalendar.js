@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import '../styles/DashboardCalendar.css';
 
-const DashboardCalendar = ({ selectedDate: propSelectedDate, setSelectedDate: propSetSelectedDate, todos = [], examSchedules = [] }) => {
+const DashboardCalendar = ({ selectedDate: propSelectedDate, setSelectedDate: propSetSelectedDate, todos = [], examSchedules = [], onItemClick }) => {
     const [currentDate, setCurrentDate] = useState(moment());
     const [selectedDate, setSelectedDate] = useState(propSelectedDate ? moment(propSelectedDate) : null);
 
@@ -46,12 +46,12 @@ const DashboardCalendar = ({ selectedDate: propSelectedDate, setSelectedDate: pr
                     <div className="day-number">{day.format('D')}</div>
                     <div className="day-todos">
                         {todosForDay.map(todo => (
-                            <div key={todo.id} className={`todo-item priority-${todo.priority}`}>
+                            <div key={todo.id} className={`todo-item priority-${todo.priority}`} onClick={() => onItemClick(todo)}>
                                 {todo.title}
                             </div>
                         ))}
                         {examsForDay.map(exam => (
-                            <div key={exam.id} className="todo-item exam-item">
+                            <div key={exam.id} className="todo-item exam-item" onClick={() => onItemClick(exam)}>
                                 {exam.title}
                             </div>
                         ))}

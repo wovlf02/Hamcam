@@ -6,13 +6,14 @@ import DashboardGrowth from "../components/DashboardGrowth";
 import DashboardNotice from "../components/DashboardNotice";
 import DashboardTodo from "../components/DashboardTodo";
 import DashboardStudyTimeCard from "../components/DashboardStudyTimeCard";
+import DetailModal from '../components/DetailModal'; // Import the new modal
 import api from '../../../api/api';
 import moment from 'moment';
 
 function Dashboard() {
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedItem, setSelectedItem] = useState(null); // State for the detail modal
     
-    // State lifted from children components
     const [todos, setTodos] = useState([]);
     const [examSchedules, setExamSchedules] = useState([]);
 
@@ -23,7 +24,14 @@ function Dashboard() {
     const [notices, setNotices] = useState([]);
     const [growth, setGrowth] = useState([]);
 
-    // Fetching functions for lifted state
+    const handleItemClick = (item) => {
+        setSelectedItem(item);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedItem(null);
+    };
+
     const fetchTodos = useCallback(async () => {
         try {
             const response = await api.get('/dashboard/todos');
@@ -47,18 +55,15 @@ function Dashboard() {
         }
     }, []);
 
-    // Combined refresh function
     const refreshDashboardData = useCallback(() => {
         fetchTodos();
         fetchExamSchedules();
     }, [fetchTodos, fetchExamSchedules]);
 
-    // Initial data fetch
     useEffect(() => {
         refreshDashboardData();
     }, [refreshDashboardData]);
 
-    // ✅ 공지사항 불러오기
     useEffect(() => {
         const fetchNotices = async () => {
             try {
@@ -71,7 +76,6 @@ function Dashboard() {
         fetchNotices();
     }, []);
 
-    // ✅ 주간 성장률 불러오기
     useEffect(() => {
         const fetchGrowth = async () => {
             try {
@@ -85,7 +89,6 @@ function Dashboard() {
         fetchGrowth();
     }, []);
 
-    // Other state calculations and handlers remain the same...
     const weeklyGoalHour = Math.floor(weeklyGoalMinutes / 60);
     const weeklyGoalMin = weeklyGoalMinutes % 60;
     const todayGoalHour = Math.floor(todayGoalMinutes / 60);
@@ -122,19 +125,22 @@ function Dashboard() {
                 <DashboardCalendar
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
-                    todos={todos} // Pass state down
-                    examSchedules={examSchedules} // Pass state down
+                    todos={todos}
+                    examSchedules={examSchedules}
+                    onItemClick={handleItemClick} // Pass handler
                 />
 
                 <div className="dashboard-right-panel">
                     <DashboardDday 
-                        examSchedules={examSchedules} // Pass state down
-                        onDataChange={refreshDashboardData} // Pass callback down
+                        examSchedules={examSchedules}
+                        onDataChange={refreshDashboardData}
+                        onItemClick={handleItemClick} // Pass handler
                     />
                     <DashboardTodo 
                         selectedDate={selectedDate} 
-                        todos={todos} // Pass state down
-                        onDataChange={refreshDashboardData} // Pass callback down
+                        todos={todos}
+                        onDataChange={refreshDashboardData}
+                        onItemClick={handleItemClick} // Pass handler
                     />
                 </div>
 
@@ -159,6 +165,9 @@ function Dashboard() {
                     todayStudyMinutes={todayStudyMinutes}
                 />
             </div>
+
+            {/* Render the modal conditionally */}
+            {selectedItem && <DetailModal item={selectedItem} onClose={handleCloseModal} />}
         </div>
     );
 }

@@ -154,12 +154,6 @@ public class DashboardService {
         if (request.getExamDate().isBefore(LocalDate.now())) {
             throw new CustomException(ErrorCode.INVALID_REQUEST);
         }
-
-        // 사용자의 현재 등록된 시험 일정 개수 확인
-        List<ExamSchedule> existingSchedules = examScheduleRepository.findAllByUserOrderByExamDateAsc(user);
-        if (existingSchedules.size() >= 3) {
-            throw new CustomException(ErrorCode.EXAM_SCHEDULE_LIMIT_EXCEEDED);
-        }
         
         ExamSchedule schedule = ExamSchedule.builder()
                 .user(user)
