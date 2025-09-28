@@ -20,7 +20,7 @@ const DashboardNotice = () => {
 
     return (
         <div className="dashboard-card dashboard-notice-card">
-            <div className="card-title">공지사항</div>
+            <div className="dashboard-notice-header"><h3>공지사항</h3></div>
         {notices.length === 0 ? (
             <div className="no-notices">공지사항이 없습니다.</div>
         ) : (

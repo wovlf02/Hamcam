@@ -4,8 +4,18 @@
     height: 100%;
 }
 
-.dashboard-growth-card .card-title {
-    margin-bottom: 16px;
+.dashboard-growth-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dashboard-growth-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    font-weight: bold;
 }
 
 .no-growth-data {

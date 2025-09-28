@@ -51,7 +51,7 @@ const DashboardStudyTimeCard = ({
 
     return (
         <div className="dashboard-card dashboard-study-time-card-component"> {/* Renamed class to avoid conflict */}
-            <div className="card-title">공부 시간 관리</div>
+            <div className="dashboard-study-time-header"><h3>공부 시간 관리</h3></div>
 
             {/* 주간 목표 시간 */}
             <div className="dashboard-time-detail-row">

@@ -9,8 +9,18 @@
     height: 100%;
 }
 
-.dashboard-study-time-card-component .card-title {
+.dashboard-study-time-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
+}
+
+.dashboard-study-time-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    font-weight: bold;
 }
 
 .dashboard-study-time-card-component .dashboard-time-detail-row {

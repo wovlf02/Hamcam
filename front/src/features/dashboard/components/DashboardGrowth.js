@@ -21,7 +21,7 @@ const DashboardGrowth = () => {
 
   return (
       <div className="dashboard-card dashboard-growth-card">
-        <div className="card-title">주간 성장률</div>
+        <div className="dashboard-growth-header"><h3>주간 성장률</h3></div>
         {growthList.length === 0 ? (
             <div className="no-growth-data">이번 주 학습 데이터가 없습니다.</div>
         ) : (
