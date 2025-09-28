@@ -6,6 +6,7 @@ import DashboardGrowth from "../components/DashboardGrowth";
 import DashboardNotice from "../components/DashboardNotice";
 import DashboardTimeDetail from "../components/DashboardTimeDetail";
 import DashboardTodo from "../components/DashboardTodo";
+import DashboardStudyTimeCard from "../components/DashboardStudyTimeCard"; // New import
 import api from '../../../api/api';
 import moment from 'moment';
 
@@ -17,7 +18,7 @@ function Dashboard() {
     const [todayGoalMinutes, setTodayGoalMinutes] = useState(Math.floor(weeklyGoalMinutes / 7));
     const [todayStudyMinutes, setTodayStudyMinutes] = useState(0);
 
-    const [showTimeDetail, setShowTimeDetail] = useState(false);
+
 
     const [notices, setNotices] = useState([]);
     const [growth, setGrowth] = useState([]);
@@ -100,11 +101,6 @@ function Dashboard() {
         <div className="dashboard-container">
             <h2 className="dashboard-main-title">학습 대시보드</h2>
 
-            {/* ✅ D-Day 영역 */}
-            <div>
-                <DashboardDday />
-            </div>
-
             <div className="dashboard-board-grid">
                 <DashboardCalendar
                     selectedDate={selectedDate}
@@ -113,25 +109,18 @@ function Dashboard() {
                 />
 
                 <div className="dashboard-right-panel">
-                    {/* ✅ 공부 시간 박스 */}
-                    <div className="dashboard-card dashboard-study-time-card">
-                        <div className="card-title">
-                            공부 시간
-                            <button className="btn-primary study-time-detail-button" onClick={() => setShowTimeDetail(true)}>
-                                상세 설정
-                            </button>
-                        </div>
-                        <div className="study-time-item">오늘 공부한 시간: <span className="study-time-value">{todayStudyHour}시간 {todayStudyMin}분</span></div>
-                        <div className="study-time-item">오늘 목표 시간: <span className="study-time-value">{todayGoalHour}시간 {todayGoalMin}분</span></div>
-                        <div className="study-time-item">주간 목표 시간: <span className="study-time-value">{weeklyGoalHour}시간 {weeklyGoalMin}분</span></div>
-                    </div>
+                    {/* ✅ 시험 일정 관리 */}
+                    <DashboardDday />
 
                     <DashboardTodo selectedDate={selectedDate} />
                 </div>
 
-                {/* ✅ 상세 설정 모달 */}
-                {showTimeDetail && (
-                    <DashboardTimeDetail
+
+
+                <div className="dashboard-notice-growth-panel">
+                    <DashboardNotice notices={notices} />
+                    <DashboardGrowth growth={growth} />
+                    <DashboardStudyTimeCard
                         weeklyGoalHour={weeklyGoalHour}
                         weeklyGoalMin={weeklyGoalMin}
                         todayGoalHour={todayGoalHour}
@@ -143,14 +132,10 @@ function Dashboard() {
                         handleWeeklyGoalChange={handleWeeklyGoalChange}
                         handleTodayGoalChange={handleTodayGoalChange}
                         handleTodayStudyChange={handleTodayStudyChange}
-                        setShowTimeDetail={setShowTimeDetail}
                         weeklyGoalMinutes={weeklyGoalMinutes}
                         todayGoalMinutes={todayGoalMinutes}
                     />
-                )}
-
-                <DashboardNotice notices={notices} />
-                <DashboardGrowth growth={growth} />
+                </div>
             </div>
         </div>
     );

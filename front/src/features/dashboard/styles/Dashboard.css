@@ -87,6 +87,41 @@
     gap: 24px; /* Gap between study time card and todo list */
 }
 
+.dashboard-board-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to single column on small screens */
+    gap: 24px;
+}
+
+@media (min-width: 1024px) {
+    .dashboard-board-grid {
+        grid-template-columns: 2fr 1fr; /* Calendar (2fr) and Right Panel (1fr) */
+    }
+}
+
+@media (min-width: 1400px) {
+    .dashboard-board-grid {
+        grid-template-columns: 2fr 1fr; /* Calendar (2fr) and Right Panel (1fr) */
+    }
+    .dashboard-notice-growth-panel {
+        grid-column: 1 / 3; /* Span across both columns */
+    }
+}
+
+.dashboard-notice-growth-panel {
+    display: flex;
+    flex-direction: column; /* Default to column on smaller screens */
+    gap: 24px;
+}
+
+@media (min-width: 768px) { /* Adjust breakpoint for side-by-side notice/growth */
+    .dashboard-notice-growth-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr; /* Notice, Growth, and Study Time side-by-side */
+        gap: 24px;
+    }
+}
+
 .dashboard-study-time-card {
     display: flex;
     flex-direction: column;
