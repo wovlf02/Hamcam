@@ -109,32 +109,30 @@ const DashboardDday = () => {
                 {examList.length > 0 ? (
                     <div className="exam-grid">
                         {examList.map((exam) => (
-                            <div key={exam.id} className="exam-item">
-                                <div className="exam-info">
-                                    <div className="exam-title-section">
-                                        <span className="exam-title">{exam.title}</span>
-                                    </div>
-                                    <div className="exam-date-section">
-                                        <span className="exam-date">
-                                            {moment(exam.exam_date).format('YYYY년 MM월 DD일')}
-                                        </span>
-                                        <span className="d-day">
-                                            {calculateDday(exam.exam_date) > 0 
-                                                ? `D-${calculateDday(exam.exam_date)}` 
-                                                : calculateDday(exam.exam_date) === 0 
-                                                    ? 'D-DAY' 
-                                                    : `D+${Math.abs(calculateDday(exam.exam_date))}`}
-                                        </span>
-                                    </div>
-                                </div>
-                                <button 
-                                    className="delete-button"
-                                    onClick={() => deleteExam(exam.id)}
-                                >
-                                    삭제
-                                </button>
-                            </div>
-                        ))}
+                                                        <div key={exam.id} className={`exam-item ${calculateDday(exam.exam_date) < 0 ? 'past-exam' : ''}`}>
+                                                            <div className="exam-info">
+                                                                <div className="exam-title-section">
+                                                                    <span className="exam-title">{exam.title}</span>
+                                                                </div>
+                                                                <div className="exam-date-section">
+                                                                    <span className="exam-date">
+                                                                        {moment(exam.exam_date).format('YYYY년 MM월 DD일')}
+                                                                    </span>
+                                                                                                            <span className={`d-day ${calculateDday(exam.exam_date) === 0 ? 'd-day-zero' : ''}`}>
+                                                                                                                {calculateDday(exam.exam_date) > 0
+                                                                                                                    ? `D-${calculateDday(exam.exam_date)}`
+                                                                                                                    : calculateDday(exam.exam_date) === 0
+                                                                                                                        ? 'D-DAY'
+                                                                                                                        : `D+${Math.abs(calculateDday(exam.exam_date))}`}
+                                                                                                            </span>                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                className="delete-button"
+                                                                onClick={() => deleteExam(exam.id)}
+                                                            >
+                                                                삭제
+                                                            </button>
+                                                        </div>                        ))}
                     </div>
                 ) : (
                     <div className="no-exam">

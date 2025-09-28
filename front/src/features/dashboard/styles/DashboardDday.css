@@ -1,8 +1,8 @@
 .dashboard-dday {
     background: var(--bg-white);
-    border-radius: 16px; /* Consistent with dashboard-card */
-    padding: 28px; /* Consistent with dashboard-card */
-    box-shadow: var(--shadow-clay-1); /* Consistent with dashboard-card */
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: var(--shadow-clay-1);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -13,7 +13,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
 }
 
 .dday-header h2 {
@@ -42,39 +42,49 @@
     box-shadow: var(--shadow-md);
 }
 
-/* 시험 카드 영역 */
 .exam-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Adjusted minmax for better fit */
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Slightly wider minmax */
+    gap: 24px;
     width: 100%;
     flex: 1;
-    padding-bottom: 10px; /* Reduced padding */
+    padding-bottom: 20px;
 }
 
-/* 시험 카드 */
 .exam-item {
-    background: var(--bg-light);
-    border-radius: 12px;
-    padding: 20px;
+    background: var(--bg-white);
+    border-radius: 20px; /* Softer, more rounded corners */
+    padding: 30px; /* Increased padding for more breathing room */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid var(--border-light);
-    height: 200px; /* Slightly reduced height */
-    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease; /* Smoother transitions */
+    border: none; /* Remove direct border for claymorphism */
+    border-left: 10px solid var(--primary-blue); /* Thicker, more prominent left border */
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-light); /* Soft background for claymorphism */
+    box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.08), -8px -8px 16px rgba(255, 255, 255, 0.7); /* Claymorphism shadow */
+    min-height: 200px; /* Slightly increased min-height */
 }
 
 .exam-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-3px); /* Subtle lift on hover */
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.05), -4px -4px 8px rgba(255, 255, 255, 0.6); /* Softer claymorphism shadow on hover */
+}
+
+.exam-item.past-exam {
+    opacity: 0.6; /* Slightly less opaque */
+    background-color: var(--bg-medium); /* Slightly darker background */
+    filter: grayscale(70%); /* More grayscale effect */
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.5); /* Inner shadow for past items */
 }
 
 .exam-info {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    flex-grow: 1;
 }
 
 .exam-title-section {
@@ -84,10 +94,14 @@
 }
 
 .exam-title {
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1.3rem; /* Larger title */
+    font-weight: 700;
     color: var(--text-primary);
     word-break: break-word;
+}
+
+.exam-item.past-exam .exam-title {
+    color: var(--text-secondary);
 }
 
 .exam-date-section {
@@ -97,62 +111,206 @@
 }
 
 .exam-date {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
 }
 
+.exam-item.past-exam .exam-date {
+    color: var(--text-light);
+}
+
 .d-day {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--primary-blue);
-    background: var(--primary-blue-light);
-    padding: 4px 10px;
-    border-radius: 6px;
-    display: inline-block;
+    font-size: 3.2rem; /* Even larger font size */
+    font-weight: 900; /* Extra bold */
+    color: var(--text-white); /* White text for contrast */
+    background: linear-gradient(145deg, var(--primary-blue), var(--primary-blue-dark)); /* Gradient for depth */
+    padding: 20px 0; /* More padding */
+    border-radius: 0 0 20px 20px; /* Rounded only at bottom, matching card */
+    display: block;
     text-align: center;
+    margin-top: 30px; /* More margin from content */
+    width: calc(100% + 60px); /* Span full width including padding */
+    margin-left: -30px; /* Adjust for left padding */
+    margin-right: -30px; /* Adjust for right padding */
+    line-height: 1;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2), inset -2px -2px 5px rgba(255, 255, 255, 0.1); /* Inner shadow for depth */
+}
+
+.exam-item.past-exam .d-day {
+    background: var(--bg-dark); /* Darker background for past exams */
+    color: var(--text-light); /* Lighter text color */
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1), inset -1px -1px 3px rgba(255, 255, 255, 0.05); /* Subtle inner shadow */
+}
+
+.d-day.d-day-zero {
+    background: linear-gradient(145deg, var(--secondary-red), #CC3322); /* Vibrant red gradient */
+    color: var(--text-white);
+    animation: pulse 1.5s infinite; /* Keep the pulse animation */
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
 }
 
 .delete-button {
-    background: var(--secondary-red);
-    color: var(--text-white);
-    border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9); /* More opaque white background */
+    border: 1px solid var(--border-light);
+    color: var(--text-light);
+    font-size: 1.1rem; /* Slightly larger icon */
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.2s;
-    margin-top: auto;
-    width: 100%;
+    transition: all 0.3s ease;
+    padding: 0;
+    border-radius: 50%;
+    width: 36px; /* Larger button */
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0; /* Hidden by default */
     box-shadow: var(--shadow-sm);
 }
 
+.exam-item:hover .delete-button {
+    opacity: 1; /* Visible on hover */
+    transform: scale(1.1); /* Slight scale on hover */
+}
+
 .delete-button:hover {
-    background: #E63939; /* Darker red */
+    color: var(--secondary-red);
+    background-color: var(--bg-white); /* White background on hover */
+    border-color: var(--secondary-red);
     box-shadow: var(--shadow-md);
 }
 
-/* 등록된 시험이 없을 경우 */
 .no-exam {
     text-align: center;
-    padding: 30px 20px;
+    padding: 40px 20px; /* More padding */
     color: var(--text-light);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     flex-grow: 1;
+    font-size: 1.3rem; /* Larger font */
+    font-weight: 500;
+    background: var(--bg-medium); /* Subtle background */
+    border-radius: 16px; /* Match card border-radius */
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.05); /* Inner shadow */
 }
 
 .no-exam p {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 1.2rem; /* Slightly larger font */
+    color: var(--text-secondary);
 }
 
 .no-exam-sub {
-    font-size: 0.85rem;
+    font-size: 1rem; /* Slightly larger font */
     color: var(--text-light);
-    margin-top: 8px;
+    margin-top: 10px; /* More margin */
 }
 
-/* 모달 영역 (already handled in Dashboard.css, but keeping for context if needed) */
-/* The modal styles are now primarily defined in Dashboard.css for consistency */
+/* D-day 시험 설정 모달 */
+.dashboard-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.dashboard-modal-card {
+    background: rgba(255, 255, 255, 0.2); /* Translucent background for glassmorphism */
+    backdrop-filter: blur(10px); /* Frosted glass effect */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle transparent border */
+    padding: 28px;
+    border-radius: 16px;
+    min-width: 350px;
+    max-width: 90%;
+    box-shadow: var(--shadow-lg);
+    animation: fadeIn 0.2s;
+}
+
+.dashboard-modal-card h3 {
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.dashboard-modal-row {
+    margin-bottom: 16px;
+}
+
+.dashboard-modal-row label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.dashboard-modal-row input[type="text"],
+.dashboard-modal-row input[type="date"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: rgba(255, 255, 255, 0.7); /* Slightly opaque input background */
+}
+
+.dashboard-modal-row input[type="text"]:focus,
+.dashboard-modal-row input[type="date"]:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+}
+
+.dashboard-modal-buttons {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.dashboard-modal-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.dashboard-modal-buttons .save-button {
+    background: var(--primary-blue);
+    color: var(--text-white);
+}
+
+.dashboard-modal-buttons .save-button:hover {
+    background: var(--primary-blue-dark);
+    box-shadow: var(--shadow-md);
+}
+
+.dashboard-modal-buttons .cancel-button {
+    background: var(--bg-medium);
+    color: var(--text-secondary);
+}
+
+.dashboard-modal-buttons .cancel-button:hover {
+    background: var(--bg-dark);
+    box-shadow: var(--shadow-md);
+}
