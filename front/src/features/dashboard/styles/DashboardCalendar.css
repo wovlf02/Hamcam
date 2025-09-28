@@ -143,6 +143,22 @@
   z-index: 1; /* Bring to front on hover */
 }
 
+.calendar-day .todo-item.priority-HIGH:hover {
+  background-color: var(--secondary-red);
+}
+
+.calendar-day .todo-item.priority-NORMAL:hover {
+  background-color: var(--secondary-yellow);
+}
+
+.calendar-day .todo-item.priority-LOW:hover {
+  background-color: var(--secondary-green);
+}
+
+.calendar-day .todo-item.exam-item:hover {
+  background-color: var(--primary-blue);
+}
+
 .todo-item.priority-HIGH {
   background-color: var(--secondary-red);
   color: var(--text-white);
