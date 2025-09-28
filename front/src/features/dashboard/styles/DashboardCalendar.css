@@ -86,8 +86,8 @@
 }
 
 .calendar-day:hover {
-  background-color: var(--bg-light);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--primary-blue); /* Change border color on hover */
+  box-shadow: var(--shadow-sm); /* Keep a subtle shadow */
 }
 
 .calendar-day.other-month {
@@ -133,6 +133,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease; /* Ensure smooth transitions */
+}
+
+.calendar-day .todo-item:hover {
+  transform: translateY(-2px); /* Subtle lift */
+  box-shadow: var(--shadow-md); /* More pronounced shadow on hover */
+  z-index: 1; /* Bring to front on hover */
 }
 
 .todo-item.priority-HIGH {
