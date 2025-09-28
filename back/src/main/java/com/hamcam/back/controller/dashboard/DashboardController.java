@@ -61,17 +61,17 @@ public class DashboardController {
      * Todo 생성
      */
     @PostMapping("/todos")
-    public ResponseEntity<MessageResponse> createTodo(
+    public ResponseEntity<ApiResponse<Void>> createTodo(
             @Valid @RequestBody TodoRequest request,
             HttpServletRequest httpRequest) {
-        log.info("📝 Todo 생성 요청 - title: {}, date: {}, priority: {}", 
+        log.info("📝 Todo 생성 요청 - title: {}, date: {}, priority: {}",
             request.getTitle(), request.getTodoDate(), request.getPriority());
-            
+
         User user = dashboardService.getSessionUser(httpRequest);
-        TodoResponse response = dashboardService.createTodo(request, user);
-        log.info("✅ Todo 생성 완료 - id: {}, date: {}", response.getId(), response.getTodoDate());
-        
-        return ResponseEntity.ok(MessageResponse.of("✅ Todo가 생성되었습니다."));
+        dashboardService.createTodo(request, user);
+        log.info("✅ Todo 생성 완료");
+
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     // ✅ Todo 수정

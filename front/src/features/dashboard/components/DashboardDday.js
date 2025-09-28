@@ -1,31 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
 import api from '../../../api/api';
 import '../styles/DashboardTodo.css';
 
-const DashboardDday = () => {
-    const [examSchedules, setExamSchedules] = useState([]);
+const DashboardDday = ({ examSchedules, onDataChange }) => {
     const [newExamTitle, setNewExamTitle] = useState('');
     const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    useEffect(() => {
-        fetchExamSchedules();
-    }, []);
-
-    const fetchExamSchedules = async () => {
-        try {
-            const response = await api.get('/dashboard/exams');
-            if (response.data && response.data.success) {
-                setExamSchedules(response.data.data || []);
-            } else {
-                setExamSchedules([]);
-            }
-        } catch (error) {
-            console.error('Error fetching exam schedules:', error);
-            alert('시험 일정을 불러오는 중 오류가 발생했습니다.');
-        }
-    };
 
     const handleAddExam = async () => {
         if (!newExamTitle.trim()) {
@@ -41,7 +22,7 @@ const DashboardDday = () => {
                 exam_date: formattedDate,
             };
 
-                        const response = await api.post('/dashboard/exams/register', examData, {
+            const response = await api.post('/dashboard/exams/register', examData, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -50,7 +31,9 @@ const DashboardDday = () => {
             if (response.data.success) {
                 setNewExamTitle('');
                 setIsModalOpen(false);
-                fetchExamSchedules();
+                if (onDataChange) {
+                    onDataChange();
+                }
             } else {
                 alert(response.data.message || '시험 일정 추가 중 오류가 발생했습니다.');
             }
@@ -75,7 +58,9 @@ const DashboardDday = () => {
         try {
             const response = await api.delete(`/dashboard/exams/${examId}`);
             if (response.data.success) {
-                fetchExamSchedules();
+                if (onDataChange) {
+                    onDataChange();
+                }
             } else {
                 alert(response.data.message || '시험 일정 삭제에 실패했습니다.');
             }

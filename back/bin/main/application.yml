@@ -12,7 +12,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect  # MySQL 8용 Hibernate Dialect
     hibernate:
-      ddl-auto: update  # 개발 시 update, 운영 시 none 권장
+      ddl-auto: validate  # 개발 시 update, 운영 시 none 권장
     properties:
       hibernate:
         format_sql: true

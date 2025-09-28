@@ -1,29 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
 import api from '../../../api/api';
 import '../styles/DashboardTodo.css';
 
-const DashboardTodo = () => {
-    const [todos, setTodos] = useState([]);
+const DashboardTodo = ({ todos, onDataChange }) => {
     const [newTodo, setNewTodo] = useState('');
     const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
     const [priority, setPriority] = useState('NORMAL');
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    useEffect(() => {
-        fetchTodos();
-    }, []);
-
-    const fetchTodos = async () => {
-        try {
-            const response = await api.get('/dashboard/todos');
-            console.log('Fetched todos:', response.data);
-            setTodos(response.data);
-        } catch (error) {
-            console.error('Error fetching todos:', error);
-            alert('할일 목록을 불러오는 중 오류가 발생했습니다.');
-        }
-    };
 
     const handleAddTodo = async () => {
         if (!newTodo.trim()) {
@@ -33,8 +17,6 @@ const DashboardTodo = () => {
 
         try {
             const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
-            console.log('Selected date:', selectedDate);
-            console.log('Formatted date:', formattedDate);
 
             const todoData = {
                 title: newTodo,
@@ -43,20 +25,16 @@ const DashboardTodo = () => {
                 priority: priority
             };
 
-            console.log('Sending todo data:', todoData);
-
-            const response = await api.post('/dashboard/todos', todoData, {
+            await api.post('/dashboard/todos', todoData, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
 
-            if (response.data.success) {
-                setNewTodo('');
-                setIsModalOpen(false);
-                fetchTodos();
-            } else {
-                alert(response.data.message || '할일 추가 중 오류가 발생했습니다.');
+            setNewTodo('');
+            setIsModalOpen(false);
+            if (onDataChange) {
+                onDataChange();
             }
         } catch (error) {
             console.error('Error adding todo:', error);
@@ -67,14 +45,13 @@ const DashboardTodo = () => {
     const handleToggleTodo = async (todoId) => {
         try {
             const requestData = { todoId: Number(todoId) };
-            console.log('Sending toggle request:', requestData);
-            const response = await api.put('/dashboard/todos/complete', requestData);
-            console.log('Toggle response:', response.data);
-            fetchTodos();
+            await api.put('/dashboard/todos/complete', requestData);
+            
+            if (onDataChange) {
+                onDataChange();
+            }
         } catch (error) {
             console.error('Error toggling todo:', error);
-            console.error('Request data:', { todoId });
-            console.error('Error details:', error.response?.data);
             alert('할일 상태 변경 중 오류가 발생했습니다.');
         }
     };
@@ -88,8 +65,8 @@ const DashboardTodo = () => {
 
             {isModalOpen && (
                 <div className="dashboard-modal">
-                    <h3>할일 추가</h3>
                     <div className="dashboard-modal-content">
+                        <h3>할일 추가</h3>
                         <div className="dashboard-modal-input-group">
                             <input
                                 type="text"
@@ -111,10 +88,7 @@ const DashboardTodo = () => {
                             <input
                                 type="date"
                                 value={selectedDate}
-                                onChange={(e) => {
-                                    console.log('Date selected:', e.target.value);
-                                    setSelectedDate(e.target.value);
-                                }}
+                                onChange={(e) => setSelectedDate(e.target.value)}
                             />
                         </div>
                         <div className="modal-buttons">
