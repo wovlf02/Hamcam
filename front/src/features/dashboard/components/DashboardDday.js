@@ -8,6 +8,8 @@ const DashboardDday = ({ examSchedules, onDataChange, onItemClick }) => {
     const [description, setDescription] = useState('');
     const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingExam, setEditingExam] = useState(null); // State to hold the exam being edited
 
     const handleAddExam = async () => {
         if (!newExamTitle.trim()) {
@@ -74,6 +76,37 @@ const DashboardDday = ({ examSchedules, onDataChange, onItemClick }) => {
         }
     };
 
+    const handleEditExam = (e, exam) => {
+        e.stopPropagation(); // Prevent modal from opening
+        setEditingExam(exam);
+        setIsEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setEditingExam(null);
+    };
+
+    const handleUpdateExam = async (updatedExam) => {
+        try {
+            const requestData = {
+                id: updatedExam.id,
+                title: updatedExam.title,
+                description: updatedExam.description,
+                examDate: updatedExam.exam_date, // Assuming 'exam_date' in frontend maps to 'examDate' in backend
+            };
+            // Assuming there's a PUT /dashboard/exams endpoint for updating exams
+            await api.put('/dashboard/exams', requestData);
+            if (onDataChange) {
+                onDataChange();
+            }
+            handleCloseEditModal();
+        } catch (error) {
+            console.error('Error updating exam schedule:', error);
+            alert('시험 일정 수정 중 오류가 발생했습니다.');
+        }
+    };
+
     return (
         <div className="dashboard-todo">
             <div className="dashboard-todo-header">
@@ -130,16 +163,79 @@ const DashboardDday = ({ examSchedules, onDataChange, onItemClick }) => {
                                 <span className={`priority-badge ${dDay === 0 ? 'high' : (dDay > 0 && dDay <= 7 ? 'normal' : 'low')}`}>
                                     {dDay > 0 ? `D-${dDay}` : (dDay === 0 ? 'D-DAY' : `D+${Math.abs(dDay)}`)}
                                 </span>
-                                <button
-                                    className="delete-button"
-                                    onClick={(e) => handleDeleteExam(e, exam.id)}
-                                >
-                                    삭제
-                                </button>
+                                <div className="todo-actions">
+                                    <button onClick={(e) => handleEditExam(e, exam)} className="edit-button">수정</button>
+                                    <button
+                                        className="delete-button"
+                                        onClick={(e) => handleDeleteExam(e, exam.id)}
+                                    >
+                                        삭제
+                                    </button>
+                                </div>
                             </div>
                         );
                     })
                 )}
+            </div>
+
+            {/* Edit Exam Modal */}
+            {isEditModalOpen && editingExam && (
+                <EditExamModal
+                    exam={editingExam}
+                    onClose={handleCloseEditModal}
+                    onUpdate={handleUpdateExam}
+                />
+            )}
+        </div>
+    );
+};
+
+// EditExamModal Component (placeholder - will be defined separately or inline)
+const EditExamModal = ({ exam, onClose, onUpdate }) => {
+    const [editedTitle, setEditedTitle] = useState(exam.title);
+    const [editedDescription, setEditedDescription] = useState(exam.description || '');
+    const [editedExamDate, setEditedExamDate] = useState(moment(exam.exam_date).format('YYYY-MM-DD'));
+
+    const handleSubmit = () => {
+        onUpdate({
+            ...exam,
+            title: editedTitle,
+            description: editedDescription,
+            exam_date: editedExamDate,
+        });
+    };
+
+    return (
+        <div className="dashboard-modal">
+            <div className="dashboard-modal-content">
+                <h3>시험 일정 수정</h3>
+                <div className="dashboard-modal-input-group">
+                    <input
+                        type="text"
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        placeholder="시험 이름을 입력하세요"
+                    />
+                </div>
+                <div className="dashboard-modal-input-group">
+                    <textarea
+                        value={editedDescription}
+                        onChange={(e) => setEditedDescription(e.target.value)}
+                        placeholder="설명 (선택 사항)"
+                        className="dashboard-modal-textarea"
+                    />
+                </div>
+                <div className="date-picker">
+                    <input
+                        type="date"
+                        value={editedExamDate}
+                        onChange={(e) => setEditedExamDate(e.target.value)}
+                    />
+                </div>
+                <div className="modal-buttons">
+                    <button onClick={handleSubmit}>수정</button>
+                    <button onClick={onClose}>취소</button>
+                </div>
             </div>
         </div>
     );

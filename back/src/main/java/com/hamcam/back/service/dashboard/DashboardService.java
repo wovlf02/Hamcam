@@ -3,6 +3,7 @@ package com.hamcam.back.service.dashboard;
 import com.hamcam.back.dto.dashboard.calendar.CalendarEventDto;
 import com.hamcam.back.dto.dashboard.calendar.request.CalendarRequest;
 import com.hamcam.back.dto.dashboard.exam.request.ExamScheduleRequest;
+import com.hamcam.back.dto.dashboard.exam.request.ExamScheduleUpdateRequest;
 import com.hamcam.back.dto.dashboard.goal.request.GoalUpdateRequest;
 import com.hamcam.back.dto.dashboard.goal.response.GoalSuggestionResponse;
 import com.hamcam.back.dto.community.notice.response.NoticeResponse;
@@ -125,6 +126,15 @@ public class DashboardService {
         if (todo.isCompleted()) {
             // todoRepository.delete(todo); // Removed deletion on completion
         }
+    }
+
+    public void updateExamSchedule(ExamScheduleUpdateRequest request) {
+        ExamSchedule exam = examScheduleRepository.findById(request.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.EXAM_SCHEDULE_NOT_FOUND));
+        exam.setTitle(request.getTitle());
+        exam.setDescription(request.getDescription());
+        exam.setExamDate(request.getExamDate());
+        examScheduleRepository.save(exam);
     }
 
     @Transactional(readOnly = true)

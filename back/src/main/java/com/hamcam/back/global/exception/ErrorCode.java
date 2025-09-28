@@ -65,6 +65,7 @@ public enum ErrorCode {
     APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "E4049", "신청 정보를 찾을 수 없습니다."),
     MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "E4050", "해당 메시지를 찾을 수 없습니다."),
     TODO_NOT_FOUND(HttpStatus.NOT_FOUND, "E4051", "해당 TODO 항목을 찾을 수 없습니다."),
+    EXAM_SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "E4054", "해당 시험 일정을 찾을 수 없습니다."),
     STUDY_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "E4052", "해당 학습방을 찾을 수 없습니다."),
     PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND, "E4053", "해당 문제를 찾을 수 없습니다."),
 

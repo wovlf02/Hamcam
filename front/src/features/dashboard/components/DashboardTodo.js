@@ -11,6 +11,9 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sortOrder, setSortOrder] = useState('NEWEST'); // NEW: State for sorting order
 
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingTodo, setEditingTodo] = useState(null); // State to hold the todo being edited
+
     const handleAddTodo = async () => {
         if (!newTodo.trim()) {
             alert('할일을 입력해주세요.');
@@ -59,6 +62,53 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
         } catch (error) {
             console.error('Error toggling todo:', error);
             alert('할일 상태 변경 중 오류가 발생했습니다.');
+        }
+    };
+
+    const handleDeleteTodo = async (e, todoId) => {
+        e.stopPropagation(); // Prevent modal from opening
+        if (!window.confirm('정말로 이 할일을 삭제하시겠습니까?')) {
+            return;
+        }
+        try {
+            await api.post('/dashboard/todos/delete', { todoId: todoId });
+            if (onDataChange) {
+                onDataChange();
+            }
+        } catch (error) {
+            console.error('Error deleting todo:', error);
+            alert('할일 삭제 중 오류가 발생했습니다.');
+        }
+    };
+
+    const handleEditTodo = (e, todo) => {
+        e.stopPropagation(); // Prevent modal from opening
+        setEditingTodo(todo);
+        setIsEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setEditingTodo(null);
+    };
+
+    const handleUpdateTodo = async (updatedTodo) => {
+        try {
+            const requestData = {
+                todoId: updatedTodo.id,
+                title: updatedTodo.title,
+                description: updatedTodo.description,
+                todoDate: updatedTodo.date, // Assuming 'date' in frontend maps to 'todoDate' in backend
+                priority: updatedTodo.priority
+            };
+            await api.put('/dashboard/todos', requestData);
+            if (onDataChange) {
+                onDataChange();
+            }
+            handleCloseEditModal();
+        } catch (error) {
+            console.error('Error updating todo:', error);
+            alert('할일 수정 중 오류가 발생했습니다.');
         }
     };
 
@@ -140,7 +190,7 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
                 {sortedTodos.length === 0 ? (
                     <div className="no-todos">등록된 할일이 없습니다.</div>
                 ) : (
-                    todos.map((todo) => (
+                    sortedTodos.map((todo) => (
                         <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`} onClick={(e) => {
                             if (e.target.type !== 'checkbox') {
                                 onItemClick(todo);
@@ -156,9 +206,84 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
                                 {todo.priority}
                             </span>
                             <span className="todo-date">{moment(todo.date).format('YYYY-MM-DD')}</span>
+                            <div className="todo-actions">
+                                <button onClick={(e) => handleEditTodo(e, todo)} className="edit-button">수정</button>
+                                <button onClick={(e) => handleDeleteTodo(e, todo.id)} className="delete-button">삭제</button>
+                            </div>
                         </div>
                     ))
                 )}
+            </div>
+
+            {/* Edit Todo Modal */}
+            {isEditModalOpen && editingTodo && (
+                <EditTodoModal
+                    todo={editingTodo}
+                    onClose={handleCloseEditModal}
+                    onUpdate={handleUpdateTodo}
+                />
+            )}
+        </div>
+    );
+};
+
+// EditTodoModal Component (placeholder - will be defined separately or inline)
+const EditTodoModal = ({ todo, onClose, onUpdate }) => {
+    const [editedTitle, setEditedTitle] = useState(todo.title);
+    const [editedDescription, setEditedDescription] = useState(todo.description || '');
+    const [editedDate, setEditedDate] = useState(moment(todo.date).format('YYYY-MM-DD'));
+    const [editedPriority, setEditedPriority] = useState(todo.priority);
+
+    const handleSubmit = () => {
+        onUpdate({
+            ...todo,
+            title: editedTitle,
+            description: editedDescription,
+            date: editedDate,
+            priority: editedPriority
+        });
+    };
+
+    return (
+        <div className="dashboard-modal">
+            <div className="dashboard-modal-content">
+                <h3>할일 수정</h3>
+                <div className="dashboard-modal-input-group">
+                    <input
+                        type="text"
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        placeholder="할 일을 입력하세요"
+                    />
+                    <select
+                        value={editedPriority}
+                        onChange={(e) => setEditedPriority(e.target.value)}
+                        className="priority-select"
+                    >
+                        <option value="LOW">낮음</option>
+                        <option value="NORMAL">보통</option>
+                        <option value="HIGH">높음</option>
+                    </select>
+                </div>
+                <div className="dashboard-modal-input-group">
+                    <textarea
+                        value={editedDescription}
+                        onChange={(e) => setEditedDescription(e.target.value)}
+                        placeholder="설명 (선택 사항)"
+                        className="dashboard-modal-textarea"
+                    />
+                </div>
+                <div className="date-picker">
+                    <input
+                        type="date"
+                        value={editedDate}
+                        onChange={(e) => setEditedDate(e.target.value)}
+                    />
+                </div>
+                <div className="modal-buttons">
+                    <button onClick={handleSubmit}>수정</button>
+                    <button onClick={onClose}>취소</button>
+                </div>
             </div>
         </div>
     );

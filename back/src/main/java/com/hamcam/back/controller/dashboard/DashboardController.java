@@ -5,6 +5,7 @@ import com.hamcam.back.dto.community.notice.response.NoticeResponse;
 import com.hamcam.back.dto.dashboard.calendar.CalendarEventDto;
 import com.hamcam.back.dto.dashboard.calendar.request.CalendarRequest;
 import com.hamcam.back.dto.dashboard.exam.request.ExamScheduleRequest;
+import com.hamcam.back.dto.dashboard.exam.request.ExamScheduleUpdateRequest;
 import com.hamcam.back.dto.dashboard.exam.response.DDayInfoResponse;
 import com.hamcam.back.dto.dashboard.exam.response.ExamScheduleResponse;
 import com.hamcam.back.dto.dashboard.goal.request.GoalUpdateRequest;
@@ -106,6 +107,15 @@ public class DashboardController {
             log.error("❌ Todo 완료 상태 변경 실패: {}", e.getMessage(), e);
             throw e;
         }
+    }
+
+    // 🗓 시험 일정 수정
+    @PutMapping("/exams")
+    public ResponseEntity<MessageResponse> updateExamSchedule(
+            @RequestBody ExamScheduleUpdateRequest request
+    ) {
+        dashboardService.updateExamSchedule(request);
+        return ResponseEntity.ok(MessageResponse.of("✏️ 시험 일정이 수정되었습니다."));
     }
 
     // 🗓 시험 일정 전체 조회

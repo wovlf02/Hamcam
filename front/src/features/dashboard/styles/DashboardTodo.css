@@ -205,6 +205,42 @@
     border: 1px solid var(--border-light);
     transition: all 0.2s ease;
     cursor: pointer;
+    position: relative; /* For positioning action buttons */
+}
+
+.todo-actions {
+    display: flex;
+    gap: 5px;
+    margin-left: auto; /* Push buttons to the right */
+}
+
+.todo-actions button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: background-color 0.2s ease;
+}
+
+.edit-button {
+    background: var(--primary-blue-light);
+    color: var(--primary-blue-dark);
+}
+
+.edit-button:hover {
+    background: var(--primary-blue);
+    color: var(--text-white);
+}
+
+.delete-button {
+    background: var(--secondary-red-light);
+    color: var(--secondary-red-dark);
+}
+
+.delete-button:hover {
+    background: var(--secondary-red);
+    color: var(--text-white);
 }
 
 .todo-item:hover {
