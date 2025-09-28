@@ -47,11 +47,13 @@ const DashboardCalendar = ({ selectedDate: propSelectedDate, setSelectedDate: pr
                     <div className="day-todos">
                         {todosForDay.map(todo => (
                             <div key={todo.id} className={`todo-item priority-${todo.priority}`} onClick={() => onItemClick(todo)}>
+                                <span className="todo-icon">✓</span>
                                 {todo.title}
                             </div>
                         ))}
                         {examsForDay.map(exam => (
                             <div key={exam.id} className="todo-item exam-item" onClick={() => onItemClick(exam)}>
+                                <span className="exam-icon">📝</span>
                                 {exam.title}
                             </div>
                         ))}
