@@ -2,3 +2,40 @@
 node_modules
 
 livekit-local/
+
+# Build files
+## Backend (Gradle/Spring Boot)
+back/build/
+back/.gradle/
+back/out/
+*.jar
+*.war
+*.ear
+*.class
+
+## Frontend (React)
+front/build/
+front/dist/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+logs/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+*.swp
+*.swo
+*~
