@@ -3,6 +3,7 @@ package com.hamcam.back.service.dashboard;
 import com.hamcam.back.dto.dashboard.calendar.CalendarEventDto;
 import com.hamcam.back.dto.dashboard.calendar.request.CalendarRequest;
 import com.hamcam.back.dto.dashboard.exam.request.ExamScheduleRequest;
+import com.hamcam.back.dto.dashboard.exam.request.ExamScheduleUpdateRequest;
 import com.hamcam.back.dto.dashboard.goal.request.GoalUpdateRequest;
 import com.hamcam.back.dto.dashboard.goal.response.GoalSuggestionResponse;
 import com.hamcam.back.dto.community.notice.response.NoticeResponse;
@@ -123,8 +124,17 @@ public class DashboardService {
         todo.setCompleted(!todo.isCompleted());
         
         if (todo.isCompleted()) {
-            todoRepository.delete(todo);
+            // todoRepository.delete(todo); // Removed deletion on completion
         }
+    }
+
+    public void updateExamSchedule(ExamScheduleUpdateRequest request) {
+        ExamSchedule exam = examScheduleRepository.findById(request.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.EXAM_SCHEDULE_NOT_FOUND));
+        exam.setTitle(request.getTitle());
+        exam.setDescription(request.getDescription());
+        exam.setExamDate(request.getExamDate());
+        examScheduleRepository.save(exam);
     }
 
     @Transactional(readOnly = true)
@@ -153,12 +163,6 @@ public class DashboardService {
         // 시험 날짜가 현재보다 이전인지 확인
         if (request.getExamDate().isBefore(LocalDate.now())) {
             throw new CustomException(ErrorCode.INVALID_REQUEST);
-        }
-
-        // 사용자의 현재 등록된 시험 일정 개수 확인
-        List<ExamSchedule> existingSchedules = examScheduleRepository.findAllByUserOrderByExamDateAsc(user);
-        if (existingSchedules.size() >= 3) {
-            throw new CustomException(ErrorCode.EXAM_SCHEDULE_LIMIT_EXCEEDED);
         }
         
         ExamSchedule schedule = ExamSchedule.builder()

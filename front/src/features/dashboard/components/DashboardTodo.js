@@ -1,29 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import moment from 'moment';
 import api from '../../../api/api';
 import '../styles/DashboardTodo.css';
 
-const DashboardTodo = () => {
-    const [todos, setTodos] = useState([]);
+const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
     const [newTodo, setNewTodo] = useState('');
+    const [description, setDescription] = useState('');
     const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
     const [priority, setPriority] = useState('NORMAL');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [sortOrder, setSortOrder] = useState('NEWEST'); // NEW: State for sorting order
 
-    useEffect(() => {
-        fetchTodos();
-    }, []);
-
-    const fetchTodos = async () => {
-        try {
-            const response = await api.get('/dashboard/todos');
-            console.log('Fetched todos:', response.data);
-            setTodos(response.data);
-        } catch (error) {
-            console.error('Error fetching todos:', error);
-            alert('할일 목록을 불러오는 중 오류가 발생했습니다.');
-        }
-    };
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingTodo, setEditingTodo] = useState(null); // State to hold the todo being edited
 
     const handleAddTodo = async () => {
         if (!newTodo.trim()) {
@@ -33,30 +22,25 @@ const DashboardTodo = () => {
 
         try {
             const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
-            console.log('Selected date:', selectedDate);
-            console.log('Formatted date:', formattedDate);
 
             const todoData = {
                 title: newTodo,
-                description: '',
+                description: description,
                 date: formattedDate,
                 priority: priority
             };
 
-            console.log('Sending todo data:', todoData);
-
-            const response = await api.post('/dashboard/todos', todoData, {
+            await api.post('/dashboard/todos', todoData, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
 
-            if (response.data.success) {
-                setNewTodo('');
-                setIsModalOpen(false);
-                fetchTodos();
-            } else {
-                alert(response.data.message || '할일 추가 중 오류가 발생했습니다.');
+            setNewTodo('');
+            setDescription('');
+            setIsModalOpen(false);
+            if (onDataChange) {
+                onDataChange();
             }
         } catch (error) {
             console.error('Error adding todo:', error);
@@ -64,32 +48,104 @@ const DashboardTodo = () => {
         }
     };
 
-    const handleToggleTodo = async (todoId) => {
+    const handleToggleTodo = async (e, todoId) => {
+        e.stopPropagation(); // Prevent event from bubbling up to parent div
+        e.preventDefault();  // Prevent default checkbox behavior (if any propagates)
         try {
             const requestData = { todoId: Number(todoId) };
-            console.log('Sending toggle request:', requestData);
-            const response = await api.put('/dashboard/todos/complete', requestData);
-            console.log('Toggle response:', response.data);
-            fetchTodos();
+            await api.put('/dashboard/todos/complete', requestData);
+            
+            // Optimistically update the UI
+            if (onDataChange) {
+                onDataChange(); // Re-fetch all todos to get the updated state from backend
+            }
         } catch (error) {
             console.error('Error toggling todo:', error);
-            console.error('Request data:', { todoId });
-            console.error('Error details:', error.response?.data);
             alert('할일 상태 변경 중 오류가 발생했습니다.');
         }
     };
+
+    const handleDeleteTodo = async (e, todoId) => {
+        e.stopPropagation(); // Prevent modal from opening
+        if (!window.confirm('정말로 이 할일을 삭제하시겠습니까?')) {
+            return;
+        }
+        try {
+            await api.post('/dashboard/todos/delete', { todoId: todoId });
+            if (onDataChange) {
+                onDataChange();
+            }
+        } catch (error) {
+            console.error('Error deleting todo:', error);
+            alert('할일 삭제 중 오류가 발생했습니다.');
+        }
+    };
+
+    const handleEditTodo = (e, todo) => {
+        e.stopPropagation(); // Prevent modal from opening
+        setEditingTodo(todo);
+        setIsEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setEditingTodo(null);
+    };
+
+    const handleUpdateTodo = async (updatedTodo) => {
+        try {
+            const requestData = {
+                todoId: updatedTodo.id,
+                title: updatedTodo.title,
+                description: updatedTodo.description,
+                todoDate: updatedTodo.date, // Assuming 'date' in frontend maps to 'todoDate' in backend
+                priority: updatedTodo.priority
+            };
+            await api.put('/dashboard/todos', requestData);
+            if (onDataChange) {
+                onDataChange();
+            }
+            handleCloseEditModal();
+        } catch (error) {
+            console.error('Error updating todo:', error);
+            alert('할일 수정 중 오류가 발생했습니다.');
+        }
+    };
+
+    // NEW: Memoized sorted todos
+    const sortedTodos = useMemo(() => {
+        const sorted = [...todos];
+        switch (sortOrder) {
+            case 'NEWEST':
+                return sorted.sort((a, b) => moment(b.date).valueOf() - moment(a.date).valueOf());
+            case 'OLDEST':
+                return sorted.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
+            case 'PRIORITY':
+                const priorityOrder = { 'HIGH': 3, 'NORMAL': 2, 'LOW': 1 };
+                return sorted.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
+            default:
+                return sorted;
+        }
+    }, [todos, sortOrder]);
 
     return (
         <div className="dashboard-todo">
             <div className="dashboard-todo-header">
                 <h3>할일 목록</h3>
-                <button onClick={() => setIsModalOpen(true)}>+ 새 할일</button>
+                <div className="todo-header-controls">
+                    <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="todo-sort-select">
+                        <option value="NEWEST">최신순</option>
+                        <option value="OLDEST">오래된순</option>
+                        <option value="PRIORITY">중요도순</option>
+                    </select>
+                    <button onClick={() => setIsModalOpen(true)}>+ 새 할일</button>
+                </div>
             </div>
 
             {isModalOpen && (
                 <div className="dashboard-modal">
-                    <h3>할일 추가</h3>
                     <div className="dashboard-modal-content">
+                        <h3>할일 추가</h3>
                         <div className="dashboard-modal-input-group">
                             <input
                                 type="text"
@@ -107,14 +163,19 @@ const DashboardTodo = () => {
                                 <option value="HIGH">높음</option>
                             </select>
                         </div>
+                        <div className="dashboard-modal-input-group">
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="설명 (선택 사항)"
+                                className="dashboard-modal-textarea"
+                            />
+                        </div>
                         <div className="date-picker">
                             <input
                                 type="date"
                                 value={selectedDate}
-                                onChange={(e) => {
-                                    console.log('Date selected:', e.target.value);
-                                    setSelectedDate(e.target.value);
-                                }}
+                                onChange={(e) => setSelectedDate(e.target.value)}
                             />
                         </div>
                         <div className="modal-buttons">
@@ -126,24 +187,103 @@ const DashboardTodo = () => {
             )}
 
             <div className="todo-list">
-                {todos.length === 0 ? (
+                {sortedTodos.length === 0 ? (
                     <div className="no-todos">등록된 할일이 없습니다.</div>
                 ) : (
-                    todos.map((todo) => (
-                        <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+                    sortedTodos.map((todo) => (
+                        <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`} onClick={(e) => {
+                            if (e.target.type !== 'checkbox') {
+                                onItemClick(todo);
+                            }
+                        }}>
                             <input
                                 type="checkbox"
                                 checked={todo.completed}
-                                onChange={() => handleToggleTodo(todo.id)}
+                                onChange={(e) => handleToggleTodo(e, todo.id)}
                             />
                             <span className="todo-title">{todo.title}</span>
                             <span className={`priority-badge ${todo.priority.toLowerCase()}`}>
                                 {todo.priority}
                             </span>
                             <span className="todo-date">{moment(todo.date).format('YYYY-MM-DD')}</span>
+                            <div className="todo-actions">
+                                <button onClick={(e) => handleEditTodo(e, todo)} className="edit-button">수정</button>
+                                <button onClick={(e) => handleDeleteTodo(e, todo.id)} className="delete-button">삭제</button>
+                            </div>
                         </div>
                     ))
                 )}
+            </div>
+
+            {/* Edit Todo Modal */}
+            {isEditModalOpen && editingTodo && (
+                <EditTodoModal
+                    todo={editingTodo}
+                    onClose={handleCloseEditModal}
+                    onUpdate={handleUpdateTodo}
+                />
+            )}
+        </div>
+    );
+};
+
+// EditTodoModal Component (placeholder - will be defined separately or inline)
+const EditTodoModal = ({ todo, onClose, onUpdate }) => {
+    const [editedTitle, setEditedTitle] = useState(todo.title);
+    const [editedDescription, setEditedDescription] = useState(todo.description || '');
+    const [editedDate, setEditedDate] = useState(moment(todo.date).format('YYYY-MM-DD'));
+    const [editedPriority, setEditedPriority] = useState(todo.priority);
+
+    const handleSubmit = () => {
+        onUpdate({
+            ...todo,
+            title: editedTitle,
+            description: editedDescription,
+            date: editedDate,
+            priority: editedPriority
+        });
+    };
+
+    return (
+        <div className="dashboard-modal">
+            <div className="dashboard-modal-content">
+                <h3>할일 수정</h3>
+                <div className="dashboard-modal-input-group">
+                    <input
+                        type="text"
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        placeholder="할 일을 입력하세요"
+                    />
+                    <select
+                        value={editedPriority}
+                        onChange={(e) => setEditedPriority(e.target.value)}
+                        className="priority-select"
+                    >
+                        <option value="LOW">낮음</option>
+                        <option value="NORMAL">보통</option>
+                        <option value="HIGH">높음</option>
+                    </select>
+                </div>
+                <div className="dashboard-modal-input-group">
+                    <textarea
+                        value={editedDescription}
+                        onChange={(e) => setEditedDescription(e.target.value)}
+                        placeholder="설명 (선택 사항)"
+                        className="dashboard-modal-textarea"
+                    />
+                </div>
+                <div className="date-picker">
+                    <input
+                        type="date"
+                        value={editedDate}
+                        onChange={(e) => setEditedDate(e.target.value)}
+                    />
+                </div>
+                <div className="modal-buttons">
+                    <button onClick={handleSubmit}>수정</button>
+                    <button onClick={onClose}>취소</button>
+                </div>
             </div>
         </div>
     );

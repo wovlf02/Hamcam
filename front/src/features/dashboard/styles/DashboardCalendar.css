@@ -86,8 +86,8 @@
 }
 
 .calendar-day:hover {
-  background-color: var(--bg-light);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--primary-blue); /* Change border color on hover */
+  box-shadow: var(--shadow-sm); /* Keep a subtle shadow */
 }
 
 .calendar-day.other-month {
@@ -133,6 +133,46 @@
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease; /* Ensure smooth transitions */
+  display: flex; /* Enable flexbox for alignment */
+  align-items: center; /* Vertically align items */
+  gap: 4px; /* Space between icon and text */
+}
+
+.todo-icon {
+  font-size: 0.8em; /* Adjust size relative to parent font size */
+  line-height: 1;
+  flex-shrink: 0; /* Prevent icon from shrinking */
+  margin-left: 2px; /* Push todo icon slightly to the right */
+}
+
+.exam-icon {
+  font-size: 0.8em; /* Adjust size relative to parent font size */
+  line-height: 1;
+  flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.calendar-day .todo-item:hover {
+  transform: translateY(-2px); /* Subtle lift */
+  box-shadow: var(--shadow-md); /* More pronounced shadow on hover */
+  z-index: 1; /* Bring to front on hover */
+}
+
+.calendar-day .todo-item.priority-HIGH:hover {
+  background-color: var(--secondary-red);
+}
+
+.calendar-day .todo-item.priority-NORMAL:hover {
+  background-color: var(--secondary-yellow);
+}
+
+.calendar-day .todo-item.priority-LOW:hover {
+  background-color: var(--secondary-green);
+}
+
+.calendar-day .todo-item.exam-item:hover {
+  background-color: var(--primary-blue);
 }
 
 .todo-item.priority-HIGH {
@@ -154,6 +194,5 @@
   background-color: var(--primary-blue);
   color: var(--text-white);
   font-weight: 500;
-  border-left: 3px solid var(--primary-blue-dark);
 }
  

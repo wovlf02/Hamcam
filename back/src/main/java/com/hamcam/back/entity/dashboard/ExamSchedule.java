@@ -39,7 +39,7 @@ public class ExamSchedule {
     /**
      * 시험 설명 (선택)
      */
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     /**

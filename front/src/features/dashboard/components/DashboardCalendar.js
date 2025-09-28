@@ -1,62 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
-import api from '../../../api/api';
 import '../styles/DashboardCalendar.css';
 
-/**
- * DashboardCalendar
- *
- * @param {Date} selectedDate - 현재 선택된 날짜
- * @param {function} setSelectedDate - 날짜 선택 변경 핸들러
- * @param {string[]} highlightedDates - 하이라이트할 날짜 배열 (형식: 'YYYY-MM-DD')
- */
-const DashboardCalendar = ({ selectedDate: propSelectedDate, setSelectedDate: propSetSelectedDate, highlightedDates = [] }) => {
+const DashboardCalendar = ({ selectedDate: propSelectedDate, setSelectedDate: propSetSelectedDate, todos = [], examSchedules = [], onItemClick }) => {
     const [currentDate, setCurrentDate] = useState(moment());
-    const [todos, setTodos] = useState([]);
-    const [examSchedules, setExamSchedules] = useState([]);
     const [selectedDate, setSelectedDate] = useState(propSelectedDate ? moment(propSelectedDate) : null);
 
-    // 할일 목록을 가져오는 함수
-    const fetchTodos = async () => {
-        try {
-            const response = await api.get('/dashboard/todos');
-            setTodos(response.data);
-        } catch (error) {
-            console.error('Failed to fetch todos:', error);
-        }
-    };
-
-    // 시험 일정을 가져오는 함수
-    const fetchExamSchedules = async () => {
-        try {
-            const response = await api.get('/dashboard/exams');
-            if (response.data && response.data.success) {
-                setExamSchedules(response.data.data || []);
-            } else {
-                setExamSchedules([]);
-            }
-        } catch (error) {
-            console.error('Failed to fetch exam schedules:', error);
-            setExamSchedules([]);
-        }
-    };
-
-    // 컴포넌트 마운트 시와 월이 변경될 때 할일 목록과 시험 일정을 가져옵니다
-    useEffect(() => {
-        fetchTodos();
-        fetchExamSchedules();
-    }, [currentDate]);
-
-    // 1분마다 할일 목록과 시험 일정을 새로고침합니다
-    useEffect(() => {
-        const interval = setInterval(() => {
-            fetchTodos();
-            fetchExamSchedules();
-        }, 60000);
-        return () => clearInterval(interval);
-    }, []);
-
-    // propSelectedDate가 변경될 때 내부 state를 업데이트합니다
     useEffect(() => {
         if (propSelectedDate) {
             setSelectedDate(moment(propSelectedDate));
@@ -97,12 +46,14 @@ const DashboardCalendar = ({ selectedDate: propSelectedDate, setSelectedDate: pr
                     <div className="day-number">{day.format('D')}</div>
                     <div className="day-todos">
                         {todosForDay.map(todo => (
-                            <div key={todo.id} className={`todo-item priority-${todo.priority}`}>
+                            <div key={todo.id} className={`todo-item priority-${todo.priority}`} onClick={() => onItemClick(todo)}>
+                                <span className="todo-icon">✓</span>
                                 {todo.title}
                             </div>
                         ))}
                         {examsForDay.map(exam => (
-                            <div key={exam.id} className="todo-item exam-item">
+                            <div key={exam.id} className="todo-item exam-item" onClick={() => onItemClick(exam)}>
+                                <span className="exam-icon">📝</span>
                                 {exam.title}
                             </div>
                         ))}

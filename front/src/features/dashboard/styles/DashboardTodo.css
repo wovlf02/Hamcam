@@ -7,7 +7,7 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1; /* Make it fill available space */
-    overflow-y: auto; /* Enable scrolling for todo list */
+    overflow: hidden; /* Prevent the whole card from scrolling */
     min-height: 150px; /* Reduced min-height */
 }
 
@@ -16,6 +16,29 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+}
+
+.todo-header-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.todo-sort-select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    background: var(--bg-white);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.todo-sort-select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
 }
 
 .dashboard-todo-header h3 {
@@ -181,6 +204,43 @@
     gap: 10px;
     border: 1px solid var(--border-light);
     transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative; /* For positioning action buttons */
+}
+
+.todo-actions {
+    display: flex;
+    gap: 5px;
+    margin-left: auto; /* Push buttons to the right */
+}
+
+.todo-actions button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: background-color 0.2s ease;
+}
+
+.edit-button {
+    background: var(--primary-blue-light);
+    color: var(--primary-blue-dark);
+}
+
+.edit-button:hover {
+    background: var(--primary-blue);
+    color: var(--text-white);
+}
+
+.delete-button {
+    background: var(--secondary-red-light);
+    color: var(--secondary-red-dark);
+}
+
+.delete-button:hover {
+    background: var(--secondary-red);
+    color: var(--text-white);
 }
 
 .todo-item:hover {
@@ -244,4 +304,21 @@
     align-items: center;
     justify-content: center;
 }
- 
+
+.dashboard-modal-textarea {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+.dashboard-modal-textarea:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+}
