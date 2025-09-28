@@ -1,168 +1,142 @@
-/* 사이드 메뉴 전체 (좌측 15% 고정 비율) */
-.side-menu {
-    width: 15vw;                /* ✅ 고정 px → 비율 기반 */
-    min-width: 180px;           /* ✅ 너무 작아지지 않도록 최소 보장 */
-    background-color: #f9f9f9;
-    height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    overflow-y: auto;
+:root {
+    --primary-color: #4A85F6;
+    --accent-color-green: #34A853;
+    --accent-color-yellow: #FBBC04;
+    --background-color: #F0F2F5;
+    --card-background: #FFFFFF;
+    --text-primary: #202124;
+    --text-secondary: #5F6368;
+    --primary-light-color: #E8F0FE;
 }
 
-/* 로고 또는 상단 타이틀 */
+/* 기본 폰트 및 전환 효과 */
+.side-menu, .side-menu-button, .side-submenu-button {
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+/* 사이드 메뉴 전체 */
+.side-menu {
+    height: 100vh;
+    background-color: var(--background-color);
+    border-right: 1px solid #DBE0E4;
+    padding: 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 로고 */
 .side-menu-logo {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 24px;
+    font-size: 28px; /* 크기 증가 */
+    font-weight: 700; /* 더 굵게 */
+    color: var(--primary-color); /* 기본 색상 적용 */
+    margin-bottom: 32px;
     padding-left: 12px;
+}
+
+/* 메인 네비게이션 영역 */
+.nav-main {
+    flex-grow: 1;
 }
 
 /* 메뉴 리스트 */
 .side-menu-list {
     list-style: none;
-    padding-left: 10px;
+    padding-left: 0;
 }
 
-/* 각 메뉴 항목 */
 .side-menu-list-item {
-    margin-bottom: 14px;
+    margin-bottom: 8px; /* 간격 조정 */
 }
 
-/* 메뉴 버튼 */
-.side-menu-button {
+/* 메뉴 버튼 (공통 스타일) */
+.side-menu-button, .side-submenu-button {
     background: none;
     border: none;
     font-size: 16px;
-    color: #222;
+    color: var(--text-secondary);
     cursor: pointer;
-    padding: 6px 0;
-    font-weight: bold;
+    padding: 12px 24px; /* 패딩 증가 */
+    font-weight: 500;
     text-align: left;
     width: 100%;
-    padding-left: 12px;
-    border-radius: 6px;
+    border-radius: 24px; /* 둥근 모서리 (Pill shape) */
 }
 
+/* 메뉴 버튼 호버 */
+.side-menu-button:hover, .side-submenu-button:hover {
+    background-color: #E4E6E8; /* 부드러운 호버 효과 */
+    color: var(--text-primary);
+}
+
+/* 활성 메뉴 버튼 */
 .side-menu-button.active {
-    color: #1c78dd;
-    background-color: #e6f0ff;
+    background-color: var(--primary-light-color);
+    color: var(--primary-color);
+    font-weight: 700;
 }
 
-/* 서브메뉴 */
+/* 서브메뉴 리스트 */
 .side-submenu-list {
     list-style: none;
-    padding-left: 28px;
-    margin-top: 12px;
-}
-
-.side-submenu-item {
-    margin-bottom: 10px;
-}
-
-.side-submenu-button {
-    background: none;
-    border: none;
-    font-size: 16px;
-    color: #444;
-    cursor: pointer;
-    padding: 6px 8px;
-    text-align: left;
-    width: 100%;
-    border-radius: 6px;
-}
-
-.side-submenu-button.active {
-    background-color: #d8e9ff;
-    color: #1c78dd;
-    font-weight: bold;
-}
-
-/* ✅ 최소한의 hover 효과 */
-.side-menu-button:hover {
-    color: #1c78dd !important;
-    background-color: #ececec !important;
-}
-
-.side-submenu-button:hover {
-    background-color: #ececec;
-}
-
-/* 사용자 프로필 (사이드 하단 등) */
-.side-user-profile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 20px 0;
-}
-
-.side-user-image {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 50%;
+    padding-left: 24px; /* 들여쓰기 조정 */
+    margin-top: 8px;
     margin-bottom: 8px;
 }
 
-.side-user-nickname {
-    font-weight: bold;
-    font-size: 14px;
-    color: #111;
+.side-submenu-item {
+    margin-bottom: 4px;
 }
 
-/* 커뮤니티 글 카드 */
-.community-post-card {
-    background-color: #f9fafc;
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e0e4e8;
+/* 서브메뉴 버튼 */
+.side-submenu-button {
+    font-size: 15px;
+    padding: 10px 16px;
+}
+
+/* 활성 서브메뉴 버튼 */
+.side-submenu-button.active {
+    background-color: transparent; /* 배경 없음 */
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+/* 하단 네비게이션 영역 */
+.nav-bottom {
+    padding-top: 20px;
+    border-top: 1px solid #DBE0E4; /* 구분선 추가 */
+}
+
+/* 사용자 프로필 */
+.side-user-profile {
     display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-/* 글 카드 상단 영역 */
-.post-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 6px;
-}
-
-/* 글 제목 */
-.post-title {
-    font-size: 16px;
-    font-weight: bold;
-    margin: 0;
-    flex: 1;
-}
-
-/* 작성일 + 메뉴 버튼 */
-.post-top-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #888;
-    font-size: 13px;
-}
-
-.post-date {
-    font-size: 13px;
-    color: #888;
-}
-
-.post-menu {
-    font-size: 20px;
-    line-height: 1;
+    align-items: center; /* 가로 정렬 */
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 24px;
     cursor: pointer;
-    user-select: none;
 }
 
-.post-menu:hover {
-    color: #555;
+.side-user-profile:hover {
+    background-color: #E4E6E8;
+}
+
+.side-user-image {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 12px; /* 이미지와 닉네임 간격 */
+}
+
+.side-user-nickname {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+}
+
+/* 마이페이지 버튼 영역 */
+.side-menu-bottom .side-menu-button {
+    /* 기존 버튼 스타일 상속 */
 }

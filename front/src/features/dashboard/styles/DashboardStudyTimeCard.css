@@ -1,0 +1,101 @@
+.dashboard-study-time-card-component {
+    background: var(--bg-white);
+    border-radius: 16px;
+    box-shadow: var(--shadow-clay-1);
+    padding: 28px;
+    border: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.dashboard-study-time-card-component .card-title {
+    margin-bottom: 20px;
+}
+
+.dashboard-study-time-card-component .dashboard-time-detail-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 8px;
+}
+
+.dashboard-study-time-card-component .dashboard-time-detail-label {
+    width: 120px;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.dashboard-study-time-card-component .dashboard-time-detail-input {
+    width: 40px;
+    padding: 6px 8px;
+    border: 1px solid var(--border-medium);
+    border-radius: 6px;
+    font-size: 15px;
+    text-align: center;
+    -moz-appearance: textfield; /* Firefox */
+}
+
+.dashboard-study-time-card-component .time-unit {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-right: 8px;
+}
+
+.dashboard-study-time-card-component .time-remain-row {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-light);
+}
+
+.dashboard-study-time-card-component .time-remain-label {
+    color: var(--primary-blue) !important;
+    font-weight: 600 !important;
+}
+
+.dashboard-study-time-card-component .time-remain-value {
+    color: var(--primary-blue);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.dashboard-study-time-card-component .dashboard-time-detail-input::-webkit-outer-spin-button,
+.dashboard-study-time-card-component .dashboard-time-detail-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.progress-bar-wrapper {
+    margin-top: 5px;
+    margin-bottom: 15px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-bar-container {
+    background: var(--bg-medium);
+    border-radius: 8px;
+    height: 12px;
+    flex-grow: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar-fill {
+    background: var(--primary-blue);
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.3s ease-in-out;
+    width: 0%; /* Initial state */
+}
+
+.progress-percentage {
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 35px; /* Ensure enough space for 100% */
+    text-align: right;
+}

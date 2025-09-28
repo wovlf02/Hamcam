@@ -6,6 +6,7 @@ import DashboardGrowth from "../components/DashboardGrowth";
 import DashboardNotice from "../components/DashboardNotice";
 import DashboardTimeDetail from "../components/DashboardTimeDetail";
 import DashboardTodo from "../components/DashboardTodo";
+import DashboardStudyTimeCard from "../components/DashboardStudyTimeCard"; // New import
 import api from '../../../api/api';
 import moment from 'moment';
 
@@ -17,7 +18,7 @@ function Dashboard() {
     const [todayGoalMinutes, setTodayGoalMinutes] = useState(Math.floor(weeklyGoalMinutes / 7));
     const [todayStudyMinutes, setTodayStudyMinutes] = useState(0);
 
-    const [showTimeDetail, setShowTimeDetail] = useState(false);
+
 
     const [notices, setNotices] = useState([]);
     const [growth, setGrowth] = useState([]);
@@ -100,11 +101,6 @@ function Dashboard() {
         <div className="dashboard-container">
             <h2 className="dashboard-main-title">학습 대시보드</h2>
 
-            {/* ✅ D-Day 영역 */}
-            <div style={{ marginBottom: '12px' }}>
-                <DashboardDday />
-            </div>
-
             <div className="dashboard-board-grid">
                 <DashboardCalendar
                     selectedDate={selectedDate}
@@ -112,40 +108,32 @@ function Dashboard() {
                     highlightedDates={highlightedDates}
                 />
 
-                {/* ✅ 공부 시간 박스 */}
-                <div className="dashboard-card">
-                    <div style={{ fontWeight: 600, marginBottom: 8 }}>공부 시간</div>
-                    <div>오늘 공부한 시간: {todayStudyHour}시간 {todayStudyMin}분</div>
-                    <div>오늘 목표 시간: {todayGoalHour}시간 {todayGoalMin}분</div>
-                    <div>주간 목표 시간: {weeklyGoalHour}시간 {weeklyGoalMin}분</div>
-                    <button onClick={() => setShowTimeDetail(true)} style={{ marginTop: 8 }}>
-                        상세 설정
-                    </button>
+                <div className="dashboard-right-panel">
+                    <DashboardDday />
+                    <DashboardTodo selectedDate={selectedDate} />
                 </div>
 
-                {/* ✅ 상세 설정 모달 */}
-                {showTimeDetail && (
-                    <DashboardTimeDetail
-                        weeklyGoalHour={weeklyGoalHour}
-                        weeklyGoalMin={weeklyGoalMin}
-                        todayGoalHour={todayGoalHour}
-                        todayGoalMin={todayGoalMin}
-                        todayStudyHour={todayStudyHour}
-                        todayStudyMin={todayStudyMin}
-                        todayRemainMinutes={todayRemainMinutes}
-                        weekRemainMinutes={weekRemainMinutes}
-                        handleWeeklyGoalChange={handleWeeklyGoalChange}
-                        handleTodayGoalChange={handleTodayGoalChange}
-                        handleTodayStudyChange={handleTodayStudyChange}
-                        setShowTimeDetail={setShowTimeDetail}
-                        weeklyGoalMinutes={weeklyGoalMinutes}
-                        todayGoalMinutes={todayGoalMinutes}
-                    />
-                )}
 
-                <DashboardTodo selectedDate={selectedDate} />
-                <DashboardNotice notices={notices} />
-                <DashboardGrowth growth={growth} />
+
+                <div className="dashboard-notice-growth-panel">
+                    <DashboardNotice notices={notices} />
+                    <DashboardGrowth growth={growth} />
+                </div>
+                <DashboardStudyTimeCard
+                    weeklyGoalHour={weeklyGoalHour}
+                    weeklyGoalMin={weeklyGoalMin}
+                    todayGoalHour={todayGoalHour}
+                    todayGoalMin={todayGoalMin}
+                    todayStudyHour={todayStudyHour}
+                    todayStudyMin={todayStudyMin}
+                    todayRemainMinutes={todayRemainMinutes}
+                    weekRemainMinutes={weekRemainMinutes}
+                    handleWeeklyGoalChange={handleWeeklyGoalChange}
+                    handleTodayGoalChange={handleTodayGoalChange}
+                    handleTodayStudyChange={handleTodayStudyChange}
+                    weeklyGoalMinutes={weeklyGoalMinutes}
+                    todayGoalMinutes={todayGoalMinutes}
+                />
             </div>
         </div>
     );
