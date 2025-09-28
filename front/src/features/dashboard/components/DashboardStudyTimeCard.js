@@ -139,7 +139,7 @@ const DashboardStudyTimeCard = ({
                                             ></div>
                                         </div>
                                         <span className="progress-percentage">
-                                            {Math.round(Math.min(100, Math.max(0, (Number(todayGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(todayGoalMinutes) || 0)) * 100 : 0)))}%
+                                            {Math.min(100, Math.max(0, (Number(todayGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(todayGoalMinutes) || 0)) * 100 : 0)).toFixed(1)}%
                                         </span>            </div>
             <div className="dashboard-time-detail-row time-remain-row">
                 <span className="dashboard-time-detail-label time-remain-label">
@@ -157,7 +157,7 @@ const DashboardStudyTimeCard = ({
                     ></div>
                 </div>
                 <span className="progress-percentage">
-                    {Math.round(Math.min(100, Math.max(0, (Number(weeklyGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(weeklyGoalMinutes) || 0)) * 100 : 0)))}%
+                    {Math.min(100, Math.max(0, (Number(weeklyGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(weeklyGoalMinutes) || 0)) * 100 : 0)).toFixed(1)}%
                 </span>
             </div>
         </div>

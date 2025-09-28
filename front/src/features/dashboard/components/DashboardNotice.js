@@ -21,19 +21,19 @@ const DashboardNotice = () => {
     return (
         <div className="dashboard-card dashboard-notice-card">
             <div className="card-title">공지사항</div>
+        {notices.length === 0 ? (
+            <div className="no-notices">공지사항이 없습니다.</div>
+        ) : (
             <ul className="dashboard-notice-list">
-                {notices.length === 0 ? (
-                    <li className="no-notices">공지사항이 없습니다.</li>
-                ) : (
-                    notices.map((n, i) => (
-                        <li key={i}>
-                            <span className={`notice-type-badge type-${n.type}`}>{n.type}</span>
-                            <span className="notice-text">{n.text}</span>
-                            <span className="notice-date">{n.date}</span>
-                        </li>
-                    ))
-                )}
+                {notices.map((n, i) => (
+                    <li key={i}>
+                        <span className={`notice-type-badge type-${n.type}`}>{n.type}</span>
+                        <span className="notice-text">{n.text}</span>
+                        <span className="notice-date">{n.date}</span>
+                    </li>
+                ))}
             </ul>
+        )}
         </div>
     );
 };

@@ -133,6 +133,7 @@ function Dashboard() {
                     handleTodayStudyChange={handleTodayStudyChange}
                     weeklyGoalMinutes={weeklyGoalMinutes}
                     todayGoalMinutes={todayGoalMinutes}
+                    todayStudyMinutes={todayStudyMinutes}
                 />
             </div>
         </div>
