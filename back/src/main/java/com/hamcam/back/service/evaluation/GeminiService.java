@@ -26,6 +26,15 @@ public class GeminiService {
 
     @Value("${gemini.api.key:}")
     private String geminiApiKey;
+    
+    @Value("${gemini.api.url:https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent}")
+    private String geminiApiUrl;
+    
+    private final RestTemplate restTemplate;
+    
+    public GeminiService() {
+        this.restTemplate = new RestTemplate();
+    }
 
     /**
      * 단원평가 결과를 바탕으로 학습 피드백 생성
@@ -47,11 +56,15 @@ public class GeminiService {
             // AI 피드백 프롬프트 생성
             String prompt = buildFeedbackPrompt(subject, unit, score, totalQuestions, wrongCount, wrongProblemsAnalysis);
 
-            // 실제 Gemini API 호출 대신 임시 응답 (추후 실제 API 연동)
+            // 실제 Gemini API 호출
+            String aiResponse = callGeminiAPI(prompt);
+            if (aiResponse != null && !aiResponse.trim().isEmpty()) {
+                return aiResponse;
+            }
+            
+            // API 호출 실패 시 fallback
+            log.warn("Gemini API 호출 실패, 기본 피드백 사용");
             return generateMockFeedback(subject, unit, score, wrongCount);
-
-            // TODO: 실제 Gemini API 호출 로직
-            // return callGeminiAPI(prompt);
 
         } catch (Exception e) {
             log.error("피드백 생성 중 오류 발생", e);
@@ -170,11 +183,15 @@ public class GeminiService {
                 difficultyAnalysis, weaknessAnalysis
             );
 
-            // 실제 Gemini API 호출 (현재는 mock 응답)
+            // 실제 Gemini API 호출
+            String aiResponse = callGeminiAPI(prompt);
+            if (aiResponse != null && !aiResponse.trim().isEmpty()) {
+                return aiResponse;
+            }
+            
+            // API 호출 실패 시 fallback
+            log.warn("Gemini API 호출 실패, 기본 학습계획 사용");
             return generateMockPersonalizedPlan(userGrade, subject, unit, score, wrongCount);
-
-            // TODO: 실제 Gemini API 호출
-            // return callGeminiAPI(prompt);
 
         } catch (Exception e) {
             log.error("맞춤형 학습계획 생성 중 오류 발생", e);
@@ -474,7 +491,7 @@ public class GeminiService {
     }
 
     /**
-     * 수학 평가 결과 실시간 분석 (Gemini API 활용)
+     * 수학 평가 결과 상세 분석 (과목, 개념별 분석 포함)
      */
     public String generateMathEvaluationAnalysis(int userGrade, double score, int correctCount, int totalCount, 
                                                 Map<String, Object> difficultyScores, List<Map<String, Object>> wrongAnswers,
@@ -482,13 +499,28 @@ public class GeminiService {
         log.info("수학 평가 결과 실시간 분석 시작 - 등급: {}, 점수: {}, 단원: {}", userGrade, score, unitName);
 
         try {
-            String prompt = buildMathAnalysisPrompt(userGrade, score, correctCount, totalCount, difficultyScores, wrongAnswers, unitName);
+            // 틀린 문제들의 상세 정보 분석
+            String detailedWrongAnalysis = analyzeWrongProblemsInDetail(wrongAnswers);
             
-            // 실제 Gemini API 호출 (현재는 mock 응답)
-            return generateMockMathAnalysis(userGrade, score, correctCount, totalCount, difficultyScores, wrongAnswers, unitName);
-
-            // TODO: 실제 Gemini API 호출
-            // return callGeminiAPI(prompt);
+            // 과목별, 개념별 약점 분석
+            String subjectWeakness = analyzeSubjectWeakness(wrongAnswers);
+            
+            // 향상된 프롬프트 생성 (기존 + 상세 분석)
+            String prompt = buildEnhancedMathAnalysisPrompt(
+                userGrade, score, correctCount, totalCount, 
+                difficultyScores, wrongAnswers, unitName,
+                detailedWrongAnalysis, subjectWeakness
+            );
+            
+            // 실제 Gemini API 호출
+            String aiResponse = callGeminiAPI(prompt);
+            if (aiResponse != null && !aiResponse.trim().isEmpty()) {
+                return aiResponse;
+            }
+            
+            // API 호출 실패 시 fallback
+            log.warn("Gemini API 호출 실패, 상세 분석 fallback 사용");
+            return generateEnhancedMockAnalysis(userGrade, score, wrongAnswers, subjectWeakness);
 
         } catch (Exception e) {
             log.error("수학 평가 결과 분석 실패", e);
@@ -512,14 +544,17 @@ public class GeminiService {
         
         prompt.append("\n**난이도별 성과:**\n");
         if (difficultyScores.containsKey("easy")) {
+            @SuppressWarnings("unchecked")
             Map<String, Integer> easy = (Map<String, Integer>) difficultyScores.get("easy");
             prompt.append(String.format("- 쉬운 문제: %d/%d 정답\n", easy.get("correct"), easy.get("total")));
         }
         if (difficultyScores.containsKey("medium")) {
+            @SuppressWarnings("unchecked")
             Map<String, Integer> medium = (Map<String, Integer>) difficultyScores.get("medium");
             prompt.append(String.format("- 보통 문제: %d/%d 정답\n", medium.get("correct"), medium.get("total")));
         }
         if (difficultyScores.containsKey("hard")) {
+            @SuppressWarnings("unchecked")
             Map<String, Integer> hard = (Map<String, Integer>) difficultyScores.get("hard");
             prompt.append(String.format("- 어려운 문제: %d/%d 정답\n", hard.get("correct"), hard.get("total")));
         }
@@ -596,8 +631,11 @@ public class GeminiService {
         // 난이도별 분석
         analysis.append("\n🔍 **세부 영역 분석**\n");
         
+        @SuppressWarnings("unchecked")
         Map<String, Integer> easy = (Map<String, Integer>) difficultyScores.get("easy");
+        @SuppressWarnings("unchecked")
         Map<String, Integer> medium = (Map<String, Integer>) difficultyScores.get("medium");
+        @SuppressWarnings("unchecked")
         Map<String, Integer> hard = (Map<String, Integer>) difficultyScores.get("hard");
         
         if (easy != null && easy.get("correct") < easy.get("total") - 1) {
@@ -710,9 +748,489 @@ public class GeminiService {
             """, score);
     }
 
-    // TODO: 실제 Gemini API 호출 메서드 구현
-    // private String callGeminiAPI(String prompt) {
-    //     // Gemini API 호출 로직
-    //     return "";
-    // }
+    /**
+     * 실제 Gemini API 호출 메서드
+     */
+    private String callGeminiAPI(String prompt) {
+        try {
+            if (geminiApiKey == null || geminiApiKey.trim().isEmpty()) {
+                log.warn("Gemini API 키가 설정되지 않았습니다.");
+                return null;
+            }
+
+            // API 요청 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            // API 요청 바디 생성
+            Map<String, Object> requestBody = new HashMap<>();
+            Map<String, Object> contents = new HashMap<>();
+            Map<String, Object> partData = new HashMap<>();
+            partData.put("text", prompt);
+            contents.put("parts", List.of(partData));
+            requestBody.put("contents", List.of(contents));
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+            // API 호출
+            String url = geminiApiUrl + "?key=" + geminiApiKey;
+            log.info("Gemini API 호출: {}", url);
+            
+            @SuppressWarnings("rawtypes")
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+            
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> responseBody = response.getBody();
+                
+                // 응답에서 텍스트 추출
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> candidates = (List<Map<String, Object>>) responseBody.get("candidates");
+                if (candidates != null && !candidates.isEmpty()) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
+                    if (content != null) {
+                        @SuppressWarnings("unchecked")
+                        List<Map<String, Object>> responseParts = (List<Map<String, Object>>) content.get("parts");
+                        if (responseParts != null && !responseParts.isEmpty()) {
+                            String text = (String) responseParts.get(0).get("text");
+                            log.info("Gemini API 응답 성공");
+                            return text;
+                        }
+                    }
+                }
+            }
+            
+            log.warn("Gemini API 응답 형식이 예상과 다릅니다: {}", response.getBody());
+            return null;
+            
+        } catch (Exception e) {
+            log.error("Gemini API 호출 중 오류 발생", e);
+            return null;
+        }
+    }
+
+    /**
+     * 틀린 문제들의 상세 정보 분석 (과목, 개념, 난이도 포함)
+     */
+    private String analyzeWrongProblemsInDetail(List<Map<String, Object>> wrongAnswers) {
+        if (wrongAnswers == null || wrongAnswers.isEmpty()) {
+            return "모든 문제를 정답으로 맞혔습니다!";
+        }
+
+        StringBuilder analysis = new StringBuilder();
+        
+        for (Map<String, Object> answer : wrongAnswers) {
+            String subject = (String) answer.getOrDefault("subject", "공통");
+            String subjectDetail = (String) answer.getOrDefault("subjectDetail", "기본 개념");
+            String difficulty = (String) answer.getOrDefault("difficulty", "medium");
+            String correctAnswer = (String) answer.getOrDefault("correctAnswer", "");
+            String userAnswer = (String) answer.getOrDefault("userAnswer", "");
+            Integer problemNumber = (Integer) answer.getOrDefault("problemNumber", 0);
+
+            analysis.append(String.format("• %d번 (%s - %s)\n", problemNumber, subject, subjectDetail));
+            analysis.append(String.format("  난이도: %s, 정답: %s, 학생답안: %s\n\n", 
+                getDifficultyKorean(difficulty), correctAnswer, userAnswer));
+        }
+
+        return analysis.toString();
+    }
+
+    /**
+     * 과목별 약점 분석
+     */
+    private String analyzeSubjectWeakness(List<Map<String, Object>> wrongAnswers) {
+        if (wrongAnswers == null || wrongAnswers.isEmpty()) {
+            return "전 영역에서 우수한 성과를 보였습니다.";
+        }
+
+        Map<String, Integer> subjectCount = new HashMap<>();
+        Map<String, Integer> conceptCount = new HashMap<>();
+
+        for (Map<String, Object> answer : wrongAnswers) {
+            String subject = (String) answer.getOrDefault("subject", "공통");
+            String subjectDetail = (String) answer.getOrDefault("subjectDetail", "기본 개념");
+
+            subjectCount.put(subject, subjectCount.getOrDefault(subject, 0) + 1);
+            conceptCount.put(subjectDetail, conceptCount.getOrDefault(subjectDetail, 0) + 1);
+        }
+
+        StringBuilder weakness = new StringBuilder();
+        weakness.append("**과목별 약점 분석:**\n");
+        
+        subjectCount.entrySet().stream()
+            .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+            .forEach(entry -> weakness.append(String.format("- %s: %d개 문제\n", entry.getKey(), entry.getValue())));
+
+        weakness.append("\n**개념별 약점 분석:**\n");
+        conceptCount.entrySet().stream()
+            .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+            .limit(5) // 상위 5개 개념만 표시
+            .forEach(entry -> weakness.append(String.format("- %s: %d개\n", entry.getKey(), entry.getValue())));
+
+        return weakness.toString();
+    }
+
+    /**
+     * 난이도 한글 변환
+     */
+    private String getDifficultyKorean(String difficulty) {
+        return switch (difficulty) {
+            case "easy" -> "쉬움";
+            case "medium" -> "보통";
+            case "hard" -> "어려움";
+            default -> "보통";
+        };
+    }
+
+    /**
+     * 향상된 수학 평가 결과 분석용 프롬프트 생성 (상세 분석 포함)
+     */
+    private String buildEnhancedMathAnalysisPrompt(int userGrade, double score, int correctCount, int totalCount,
+                                                  Map<String, Object> difficultyScores, List<Map<String, Object>> wrongAnswers,
+                                                  String unitName, String detailedWrongAnalysis, String subjectWeakness) {
+        
+        return String.format("""
+            고등학교 수학 선생님 역할로 학생의 평가 결과를 상세히 분석하고 구체적인 학습 가이드를 제공해주세요.
+
+            **학생 기본 정보:**
+            - 현재 등급: %d등급
+            - 단원: %s
+            - 전체 점수: %.1f점 (%d/%d 문제 정답)
+
+            **난이도별 성과:**
+            %s
+
+            **틀린 문제 상세 분석:**
+            %s
+
+            %s
+
+            **분석 요청사항:**
+            1. 틀린 문제들의 공통점과 패턴 분석
+            2. 부족한 개념들의 우선순위 제시 (어떤 개념부터 먼저 공부해야 하는지)
+            3. 각 개념별 구체적인 학습 방법과 추천 문제 유형
+            4. 현재 등급에서 한 등급 상승하기 위한 구체적인 로드맵
+            5. 다음 2-3주간 실행 가능한 학습 계획
+
+            **답변 스타일:**
+            - 수학 선생님이 직접 상담해주는 듯한 친근하고 전문적인 톤
+            - 학생이 바로 실행할 수 있는 구체적이고 실용적인 조언
+            - 격려와 동기부여를 포함한 따뜻한 피드백
+            - 600자 내외로 핵심만 간결하게 정리
+            """, 
+            userGrade, unitName, score, correctCount, totalCount,
+            buildDifficultyAnalysisText(difficultyScores),
+            detailedWrongAnalysis, subjectWeakness);
+    }
+
+    /**
+     * 난이도별 성과 텍스트 생성
+     */
+    private String buildDifficultyAnalysisText(Map<String, Object> difficultyScores) {
+        StringBuilder analysis = new StringBuilder();
+        
+        if (difficultyScores.containsKey("easy")) {
+            @SuppressWarnings("unchecked")
+            Map<String, Integer> easy = (Map<String, Integer>) difficultyScores.get("easy");
+            int correct = easy.getOrDefault("correct", 0);
+            int total = easy.getOrDefault("total", 0);
+            analysis.append(String.format("- 쉬움: %d/%d (%.1f%%)\n", correct, total, total > 0 ? (correct * 100.0 / total) : 0));
+        }
+        if (difficultyScores.containsKey("medium")) {
+            @SuppressWarnings("unchecked")
+            Map<String, Integer> medium = (Map<String, Integer>) difficultyScores.get("medium");
+            int correct = medium.getOrDefault("correct", 0);
+            int total = medium.getOrDefault("total", 0);
+            analysis.append(String.format("- 보통: %d/%d (%.1f%%)\n", correct, total, total > 0 ? (correct * 100.0 / total) : 0));
+        }
+        if (difficultyScores.containsKey("hard")) {
+            @SuppressWarnings("unchecked")
+            Map<String, Integer> hard = (Map<String, Integer>) difficultyScores.get("hard");
+            int correct = hard.getOrDefault("correct", 0);
+            int total = hard.getOrDefault("total", 0);
+            analysis.append(String.format("- 어려움: %d/%d (%.1f%%)\n", correct, total, total > 0 ? (correct * 100.0 / total) : 0));
+        }
+        
+        return analysis.toString();
+    }
+
+    /**
+     * 향상된 모의 분석 생성
+     */
+    private String generateEnhancedMockAnalysis(int userGrade, double score, List<Map<String, Object>> wrongAnswers, String subjectWeakness) {
+        StringBuilder analysis = new StringBuilder();
+
+        analysis.append(String.format("📊 **%d등급 학생을 위한 맞춤 분석**\n\n", userGrade));
+
+        // 전반적인 성과 평가
+        if (score >= 80) {
+            analysis.append("🎉 우수한 성적입니다! 기본기가 탄탄하네요.\n");
+        } else if (score >= 60) {
+            analysis.append("👍 준수한 성적이에요. 조금만 더 노력하면 큰 향상이 있을 것 같습니다.\n");
+        } else {
+            analysis.append("💪 아직 갈 길이 있지만 포기하지 마세요. 체계적으로 공부하면 반드시 향상됩니다.\n");
+        }
+
+        analysis.append("\n").append(subjectWeakness).append("\n");
+
+        // 등급별 맞춤 조언
+        analysis.append("**등급 향상을 위한 핵심 전략:**\n");
+        switch (userGrade) {
+            case 1, 2 -> analysis.append("- 실수 줄이기에 집중하세요\n- 고난도 문제 정확도 향상이 관건입니다\n");
+            case 3, 4 -> analysis.append("- 중간 난이도 문제 완전 정복이 우선입니다\n- 기본 개념 복습으로 실수를 줄여보세요\n");
+            case 5 -> analysis.append("- 기본 개념부터 차근차근 다시 시작하세요\n- 쉬운 문제부터 확실히 맞히는 연습이 필요합니다\n");
+        }
+
+        analysis.append("\n**추천 학습 순서:**\n");
+        analysis.append("1주차: 틀린 문제 유형 집중 복습\n");
+        analysis.append("2주차: 비슷한 문제 반복 연습\n");
+        analysis.append("3주차: 종합 문제 풀이 및 실전 연습\n");
+
+        return analysis.toString();
+    }
+
+    /**
+     * 상세한 학습 로드맵 생성 (개념별 우선순위 및 주차별 계획 포함)
+     */
+    public String generateDetailedLearningRoadmap(int userGrade, double score, int correctCount, int totalCount,
+                                                 Map<String, Object> difficultyScores, List<Map<String, Object>> wrongAnswers,
+                                                 String unitName) {
+        log.info("상세 학습 로드맵 생성 시작 - 등급: {}, 점수: {}", userGrade, score);
+
+        try {
+            // 개념별 우선순위 분석
+            String conceptPriority = analyzeConceptPriority(wrongAnswers, userGrade);
+            
+            // 주차별 학습 계획 생성
+            String weeklyPlan = generateWeeklyStudyPlan(wrongAnswers, userGrade, score);
+            
+            // 추천 문제 유형 및 학습 자료 제안
+            String recommendedResources = generateRecommendedResources(wrongAnswers, userGrade);
+
+            // 상세 로드맵 프롬프트 생성
+            String prompt = buildDetailedRoadmapPrompt(
+                userGrade, score, correctCount, totalCount, unitName,
+                conceptPriority, weeklyPlan, recommendedResources
+            );
+
+            // 실제 Gemini API 호출
+            String aiResponse = callGeminiAPI(prompt);
+            if (aiResponse != null && !aiResponse.trim().isEmpty()) {
+                return aiResponse;
+            }
+            
+            // API 호출 실패 시 fallback
+            log.warn("Gemini API 호출 실패, 상세 로드맵 fallback 사용");
+            return generateDetailedRoadmapFallback(userGrade, score, conceptPriority, weeklyPlan, recommendedResources);
+
+        } catch (Exception e) {
+            log.error("상세 학습 로드맵 생성 중 오류 발생", e);
+            return generateDefaultRoadmap(userGrade);
+        }
+    }
+
+    /**
+     * 개념별 우선순위 분석
+     */
+    private String analyzeConceptPriority(List<Map<String, Object>> wrongAnswers, int userGrade) {
+        if (wrongAnswers == null || wrongAnswers.isEmpty()) {
+            return "전체적으로 우수한 성과를 보여 특별히 보완이 필요한 개념이 없습니다.";
+        }
+
+        // 개념별 빈도수 계산
+        Map<String, Integer> conceptFrequency = new HashMap<>();
+        Map<String, String> conceptDifficulty = new HashMap<>();
+
+        for (Map<String, Object> answer : wrongAnswers) {
+            String concept = (String) answer.getOrDefault("subjectDetail", "기본 개념");
+            String difficulty = (String) answer.getOrDefault("difficulty", "medium");
+            
+            conceptFrequency.put(concept, conceptFrequency.getOrDefault(concept, 0) + 1);
+            conceptDifficulty.put(concept, difficulty);
+        }
+
+        StringBuilder priority = new StringBuilder();
+        priority.append("**개념별 학습 우선순위:**\n");
+
+        // 빈도순으로 정렬하여 우선순위 결정
+        conceptFrequency.entrySet().stream()
+            .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+            .forEach(entry -> {
+                String concept = entry.getKey();
+                int frequency = entry.getValue();
+                String difficulty = conceptDifficulty.get(concept);
+                
+                priority.append(String.format("🔴 %s (%d개 문제, %s 난이도)\n", 
+                    concept, frequency, getDifficultyKorean(difficulty)));
+            });
+
+        return priority.toString();
+    }
+
+    /**
+     * 주차별 학습 계획 생성
+     */
+    private String generateWeeklyStudyPlan(List<Map<String, Object>> wrongAnswers, int userGrade, double score) {
+        StringBuilder plan = new StringBuilder();
+        plan.append("**3주간 집중 학습 계획:**\n\n");
+
+        // 1주차: 기본 개념 정리
+        plan.append("📅 **1주차 (기본 개념 정리)**\n");
+        plan.append("- 틀린 문제의 기본 개념 복습 (1일 1-2시간)\n");
+        plan.append("- 교과서 관련 단원 정독\n");
+        plan.append("- 기본 예제 문제 풀이\n\n");
+
+        // 2주차: 유형별 문제 풀이
+        plan.append("📅 **2주차 (유형별 문제 연습)**\n");
+        plan.append("- 틀린 문제와 같은 유형 집중 연습\n");
+        plan.append("- 문제집 해당 단원 완전 정복\n");
+        plan.append("- 오답노트 작성 및 복습\n\n");
+
+        // 3주차: 종합 및 실전 연습
+        plan.append("📅 **3주차 (종합 정리 및 실전)**\n");
+        plan.append("- 모의고사 형태의 종합 문제 풀이\n");
+        plan.append("- 시간 제한 내 문제 해결 연습\n");
+        plan.append("- 최종 점검 및 약점 보완\n");
+
+        return plan.toString();
+    }
+
+    /**
+     * 추천 학습 자료 및 문제 유형 제안
+     */
+    private String generateRecommendedResources(List<Map<String, Object>> wrongAnswers, int userGrade) {
+        StringBuilder resources = new StringBuilder();
+        resources.append("**추천 학습 자료 및 방법:**\n\n");
+
+        // 등급별 맞춤 자료 추천
+        switch (userGrade) {
+            case 1, 2 -> {
+                resources.append("📚 **고난도 문제집**\n");
+                resources.append("- 실력정석, 쎈 B단계 이상\n");
+                resources.append("- 기출문제 변형 문제\n");
+                resources.append("- 심화 개념서 참고\n\n");
+            }
+            case 3, 4 -> {
+                resources.append("📚 **표준 문제집**\n");
+                resources.append("- 개념원리, 쎈 A-B단계\n");
+                resources.append("- 기본 개념서 + 유형별 문제집\n");
+                resources.append("- 인터넷 강의 병행\n\n");
+            }
+            case 5 -> {
+                resources.append("📚 **기초 다지기**\n");
+                resources.append("- 개념원리, 라이트쎈\n");
+                resources.append("- 기본 개념서 완전 정복\n");
+                resources.append("- 기초 계산 연습\n\n");
+            }
+        }
+
+        resources.append("💡 **효과적인 학습 방법:**\n");
+        resources.append("- 오답노트 활용으로 실수 패턴 파악\n");
+        resources.append("- 개념 설명을 다른 사람에게 해보기\n");
+        resources.append("- 매일 일정한 시간 꾸준히 학습\n");
+
+        return resources.toString();
+    }
+
+    /**
+     * 상세 로드맵 프롬프트 생성
+     */
+    private String buildDetailedRoadmapPrompt(int userGrade, double score, int correctCount, int totalCount, String unitName,
+                                             String conceptPriority, String weeklyPlan, String recommendedResources) {
+        return String.format("""
+            경험 많은 고등학교 수학 교사로서 학생의 평가 결과를 바탕으로 구체적이고 실행 가능한 개인별 학습 로드맵을 제공해주세요.
+
+            **학생 현황:**
+            - 등급: %d등급
+            - 단원: %s  
+            - 성적: %.1f점 (%d/%d 정답)
+
+            **현재 분석 결과:**
+            %s
+
+            **제안된 학습 계획:**
+            %s
+
+            **추천 자료:**
+            %s
+
+            **로드맵 작성 요청사항:**
+            1. 현재 실력 진단 및 목표 등급까지의 구체적인 단계
+            2. 개념별 학습 순서와 소요 시간 예상
+            3. 일별/주별 구체적인 실행 계획
+            4. 중간 점검 방법과 성과 측정 지표
+            5. 동기부여를 위한 단기 목표 설정
+            6. 학습 효과를 높이는 구체적인 방법론
+
+            **답변 요구사항:**
+            - 실무 경험이 풍부한 교사의 관점에서 작성
+            - 학생이 바로 실행할 수 있는 구체적인 액션 플랜
+            - 격려와 함께 현실적이고 달성 가능한 목표 제시
+            - 800자 내외로 상세하면서도 핵심적인 내용 정리
+            """, 
+            userGrade, unitName, score, correctCount, totalCount,
+            conceptPriority, weeklyPlan, recommendedResources);
+    }
+
+    /**
+     * 상세 로드맵 fallback 생성
+     */
+    private String generateDetailedRoadmapFallback(int userGrade, double score, String conceptPriority, 
+                                                  String weeklyPlan, String recommendedResources) {
+        StringBuilder roadmap = new StringBuilder();
+
+        roadmap.append(String.format("🎯 **%d등급 → %d등급 도약 로드맵**\n\n", userGrade, Math.max(1, userGrade - 1)));
+
+        // 현재 상태 진단
+        roadmap.append("📊 **현재 실력 진단**\n");
+        if (score >= 80) {
+            roadmap.append("우수한 기본기를 바탕으로 실수만 줄이면 상위 등급 도약이 가능합니다.\n");
+        } else if (score >= 60) {
+            roadmap.append("기본 개념은 이해하고 있으나 응용력 향상이 필요한 상황입니다.\n");
+        } else {
+            roadmap.append("기초 개념부터 차근차근 다시 정리하는 것이 최우선입니다.\n");
+        }
+
+        roadmap.append("\n").append(conceptPriority).append("\n");
+        roadmap.append(weeklyPlan).append("\n");
+        roadmap.append(recommendedResources).append("\n");
+
+        roadmap.append("🎖️ **성공을 위한 핵심 포인트**\n");
+        roadmap.append("- 매일 조금씩이라도 꾸준히 하는 것이 가장 중요합니다\n");
+        roadmap.append("- 틀린 문제는 반드시 다시 풀어보고 완전히 이해하세요\n");
+        roadmap.append("- 개념 이해 없는 단순 암기는 피하세요\n");
+        roadmap.append("- 2주마다 모의고사를 통해 실력 점검을 하세요\n");
+
+        return roadmap.toString();
+    }
+
+    /**
+     * 기본 로드맵 생성 (오류 시)
+     */
+    private String generateDefaultRoadmap(int userGrade) {
+        return String.format("""
+            🎯 **%d등급 학생을 위한 기본 학습 가이드**
+
+            **1단계: 기본 개념 정리** (1-2주)
+            - 교과서 해당 단원 완전 정복
+            - 기본 공식과 정리 암기
+            - 간단한 예제 문제 풀이
+
+            **2단계: 유형별 문제 연습** (2-3주)  
+            - 문제집 A단계부터 순차적 학습
+            - 오답노트 작성 및 복습
+            - 비슷한 유형 반복 연습
+
+            **3단계: 실전 연습** (1-2주)
+            - 시간 제한 내 문제 풀이
+            - 모의고사 형태 연습
+            - 최종 점검 및 보완
+
+            **핵심 포인트:**
+            - 꾸준함이 가장 중요합니다
+            - 이해되지 않는 부분은 반드시 질문하세요  
+            - 매주 학습 진도를 점검하세요
+            """, userGrade);
+    }
 }

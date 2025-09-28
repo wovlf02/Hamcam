@@ -5,7 +5,9 @@ const EvaluationLoadingScreen = ({
     title = "평가 결과 분석 중", 
     subtitle = "AI가 여러분의 성과를 분석하고 있습니다...",
     userGrade = null,
-    score = null
+    score = null,
+    progress = null,
+    message = null
 }) => {
     const loadingMessages = [
         "문제별 정답률을 분석하고 있습니다...",
@@ -50,16 +52,23 @@ const EvaluationLoadingScreen = ({
 
                 <div className="loading-progress">
                     <div className="progress-bar">
-                        <div className="progress-fill"></div>
+                        <div 
+                            className="progress-fill" 
+                            style={{ width: progress ? `${progress}%` : '0%' }}
+                        ></div>
                     </div>
                     <div className="loading-percentage">
-                        <span className="percentage-text">분석 중...</span>
+                        <span className="percentage-text">
+                            {progress !== null ? `${progress}%` : '분석 중...'}
+                        </span>
                     </div>
                 </div>
 
                 <div className="loading-message">
                     <div className="message-icon">🔍</div>
-                    <p className="current-message">{loadingMessages[currentMessageIndex]}</p>
+                    <p className="current-message">
+                        {message || loadingMessages[currentMessageIndex]}
+                    </p>
                 </div>
 
                 <div className="loading-footer">

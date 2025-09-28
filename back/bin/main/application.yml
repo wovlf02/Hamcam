@@ -38,7 +38,7 @@ spring:
 # Gemini AI API 설정
 gemini:
   api:
-    key: ${GEMINI_API_KEY:} # 환경변수 또는 빈 값
+    key: AIzaSyDf1mDUQf8QRiMans0QeTuwt6d2ItQxox8
     url: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
 
 # livekit:

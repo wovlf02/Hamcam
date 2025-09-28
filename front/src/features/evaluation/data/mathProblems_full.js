@@ -482,6 +482,48 @@ export const generateSubjectEvaluationSet = (subject, count = 10) => {
     return getRandomProblems(subjectProblems, count);
 };
 
+// 단원명으로 문제 필터링 함수
+export const getProblemsByUnit = (unitName) => {
+    if (!unitName || unitName.trim() === '') {
+        return mathProblems; // 단원명이 없으면 모든 문제 반환
+    }
+    
+    const searchTerm = unitName.trim().toLowerCase();
+    return mathProblems.filter(problem => 
+        problem.subjectDetail.toLowerCase().includes(searchTerm)
+    );
+};
+
+// 단원명 기반 평가 세트 생성 (쉬움 3개, 보통 4개, 어려움 3개)
+export const generateUnitEvaluationSet = (unitName) => {
+    const unitProblems = getProblemsByUnit(unitName);
+    
+    if (unitProblems.length === 0) {
+        console.warn(`'${unitName}' 단원에 해당하는 문제를 찾을 수 없습니다. 전체 문제에서 선택합니다.`);
+        return generateEvaluationSet(); // 해당 단원 문제가 없으면 전체에서 선택
+    }
+    
+    const easyUnit = unitProblems.filter(p => p.difficulty === 'easy');
+    const mediumUnit = unitProblems.filter(p => p.difficulty === 'medium');
+    const hardUnit = unitProblems.filter(p => p.difficulty === 'hard');
+    
+    // 각 난이도별로 문제가 부족하면 가능한 만큼만 선택
+    const selectedEasy = getRandomProblems(easyUnit, Math.min(3, easyUnit.length));
+    const selectedMedium = getRandomProblems(mediumUnit, Math.min(4, mediumUnit.length));
+    const selectedHard = getRandomProblems(hardUnit, Math.min(3, hardUnit.length));
+    
+    let allSelected = [...selectedEasy, ...selectedMedium, ...selectedHard];
+    
+    // 총 10개 문제가 안 되면 부족한 만큼 해당 단원에서 추가로 선택
+    if (allSelected.length < 10) {
+        const remaining = unitProblems.filter(p => !allSelected.includes(p));
+        const additionalProblems = getRandomProblems(remaining, 10 - allSelected.length);
+        allSelected = [...allSelected, ...additionalProblems];
+    }
+    
+    return shuffleArray(allSelected);
+};
+
 // 랜덤 문제 선택 함수
 const getRandomProblems = (problems, count) => {
     const shuffled = shuffleArray([...problems]);

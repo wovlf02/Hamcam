@@ -27,7 +27,7 @@ public class MathEvaluationController {
      * Gemini API를 활용한 수학 평가 결과 실시간 분석
      */
     @PostMapping("/analyze")
-    public ResponseEntity<Map<String, Object>> analyzeMathEvaluation(
+    public ResponseEntity<String> analyzeMathEvaluation(
             @RequestBody MathEvaluationAnalysisRequest request,
             HttpSession session) {
         
@@ -41,7 +41,7 @@ public class MathEvaluationController {
                 userId, request.getUserGrade(), request.getScore());
 
                         // 평가 결과를 데이터베이스에 저장
-            Long evaluationId = unitEvaluationService.saveEvaluationResult(
+            unitEvaluationService.saveEvaluationResult(
                 userId,
                 request.getUnitName(),
                 request.getScore(),
@@ -62,25 +62,54 @@ public class MathEvaluationController {
                 request.getUnitName()
             );
 
-            Map<String, Object> response = Map.of(
-                "success", true,
-                "data", analysis,
-                "evaluationId", evaluationId,
-                "message", "분석이 성공적으로 생성되었습니다."
-            );
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(analysis);
 
         } catch (Exception e) {
             log.error("수학 평가 결과 분석 실패", e);
             
-            Map<String, Object> errorResponse = Map.of(
-                "success", false,
-                "message", "분석 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
-                "analysis", "분석을 생성할 수 없습니다. 기본 분석 결과를 확인해주세요."
-            );
+            String errorMessage = "분석 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.\n\n" +
+                                "기본 분석 결과를 확인해주세요.";
             
-            return ResponseEntity.status(500).body(errorResponse);
+            return ResponseEntity.status(500).body(errorMessage);
+        }
+    }
+
+    /**
+     * 상세한 학습 로드맵 및 개념별 분석 제공
+     */
+    @PostMapping("/detailed-analysis")
+    public ResponseEntity<String> getDetailedAnalysis(
+            @RequestBody MathEvaluationAnalysisRequest request,
+            HttpSession session) {
+        
+        try {
+            Long userId = (Long) session.getAttribute("userId");
+            if (userId == null) {
+                return ResponseEntity.status(401).build();
+            }
+
+            log.info("상세 수학 평가 분석 요청 - 사용자: {}, 등급: {}", userId, request.getUserGrade());
+
+            // 더 상세한 분석 생성 (학습 로드맵, 개념별 우선순위 포함)
+            String detailedAnalysis = geminiService.generateDetailedLearningRoadmap(
+                request.getUserGrade(),
+                request.getScore(),
+                request.getCorrectCount(),
+                request.getTotalCount(),
+                request.getDifficultyScores(),
+                request.getWrongAnswers(),
+                request.getUnitName()
+            );
+
+            return ResponseEntity.ok(detailedAnalysis);
+
+        } catch (Exception e) {
+            log.error("상세 분석 생성 실패", e);
+            
+            String errorMessage = "상세 분석 생성 중 오류가 발생했습니다.\n\n" +
+                                "기본 분석을 먼저 확인해주세요.";
+            
+            return ResponseEntity.status(500).body(errorMessage);
         }
     }
 

@@ -84,8 +84,8 @@ const CamStudyPage = () => {
             setIsPaused(true);
             // 단원평가 모달
             setTimeout(() => {
-                if (window.confirm('공부 시간이 종료되었습니다!\n단원평가를 하시겠습니까?')) {
-                    navigate('/unit-evaluation', {state: {unitName}});
+                if (window.confirm(`공부 시간이 종료되었습니다!\n'${unitName}' 단원 평가를 하시겠습니까?`)) {
+                    navigate('/math-evaluation/start', {state: {unitName, subject: '수학'}});
                 }
             }, 100); // alert와 충돌 방지용
         }

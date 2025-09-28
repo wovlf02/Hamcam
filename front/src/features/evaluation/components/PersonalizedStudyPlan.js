@@ -1,14 +1,146 @@
 import React, { useState, useEffect } from 'react';
 import './PersonalizedStudyPlan.css';
 
-const PersonalizedStudyPlan = () => {
+const PersonalizedStudyPlan = ({ 
+    score = 0, 
+    correctCount = 0, 
+    totalCount = 0, 
+    wrongAnswers = [], 
+    difficultyScores = {}, 
+    unitName = '수학', 
+    subject = '수학' 
+}) => {
     const [studyPlan, setStudyPlan] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetchPersonalizedStudyPlan();
-    }, []);
+        if (wrongAnswers.length > 0 || score > 0) {
+            generateStudyPlanFromResults();
+        } else {
+            fetchPersonalizedStudyPlan();
+        }
+    }, [wrongAnswers, score, correctCount, totalCount]);
+
+    const generateStudyPlanFromResults = () => {
+        const weakSubjects = getWeakSubjects();
+        const weakConcepts = getWeakConcepts();
+        const studyRecommendations = getStudyRecommendations();
+        
+        const planText = `**🎯 ${unitName} 맞춤형 학습계획**
+
+**📊 현재 성과 분석**
+• 총점: ${score}점 (${correctCount}/${totalCount}문제 정답)
+• 틀린 문제: ${wrongAnswers.length}개
+• 학습 필요 영역: ${weakSubjects.length > 0 ? weakSubjects.join(', ') : '전반적으로 우수'}
+
+**🔍 집중 학습 영역**
+${weakConcepts.length > 0 ? 
+    weakConcepts.map(concept => `• ${concept.name} (${concept.count}개 문제 틀림)`).join('\n') : 
+    '• 전반적으로 잘 이해하고 있습니다'
+}
+
+**📚 난이도별 학습 전략**
+${getDifficultyStrategy()}
+
+**🔥 3주간 집중 학습 계획**
+${getWeeklyPlan()}
+
+**💡 맞춤 학습법**
+${studyRecommendations.join('\n')}
+
+**🎯 목표 설정**
+• 1주차 목표: 약점 개념 완전 이해
+• 2주차 목표: 유형별 문제 해결 능력 향상  
+• 3주차 목표: 종합적 문제 해결 및 실전 적응
+
+이 계획을 꾸준히 따라하시면 ${Math.min(100, score + 15)}점 이상의 성과를 기대할 수 있습니다!`;
+
+        setStudyPlan(planText);
+        setLoading(false);
+    };
+
+    const getWeakSubjects = () => {
+        const subjectCount = {};
+        wrongAnswers.forEach(problem => {
+            const subject = problem.subject || '공통';
+            subjectCount[subject] = (subjectCount[subject] || 0) + 1;
+        });
+        
+        return Object.entries(subjectCount)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 3)
+            .map(([subject]) => subject);
+    };
+
+    const getWeakConcepts = () => {
+        const conceptCount = {};
+        wrongAnswers.forEach(problem => {
+            const concept = problem.subjectDetail || '기본 개념';
+            conceptCount[concept] = (conceptCount[concept] || 0) + 1;
+        });
+        
+        return Object.entries(conceptCount)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 5)
+            .map(([concept, count]) => ({ name: concept, count }));
+    };
+
+    const getDifficultyStrategy = () => {
+        const { easy, medium, hard } = difficultyScores;
+        let strategy = '';
+        
+        if (easy && easy.correct < easy.total - 1) {
+            strategy += '• 쉬운 문제: 기본 개념 재학습 필요\n';
+        }
+        if (medium && medium.correct < medium.total - 1) {
+            strategy += '• 보통 문제: 응용 능력 강화 필요\n';
+        }
+        if (hard && hard.correct < hard.total - 1) {
+            strategy += '• 어려운 문제: 심화 학습 및 문제 해결 전략 연습\n';
+        }
+        
+        return strategy || '• 전 난이도에서 우수한 성과를 보이고 있습니다';
+    };
+
+    const getWeeklyPlan = () => {
+        const weeklyPlan = `1주차: 약점 개념 집중 복습
+• 틀린 문제 유형 분석 및 개념 정리
+• 기본 문제로 개념 확인
+• 오답노트 작성 및 정리
+
+2주차: 유형별 문제 연습
+• 약점 영역 문제 집중 풀이
+• 다양한 난이도 문제 도전
+• 시간 관리 연습
+
+3주차: 종합 정리 및 실전 연습
+• 전 단원 통합 문제 풀이
+• 모의고사 형태 연습
+• 최종 점검 및 보완`;
+        
+        return weeklyPlan;
+    };
+
+    const getStudyRecommendations = () => {
+        const recommendations = [];
+        
+        if (score < 60) {
+            recommendations.push('• 기본 개념부터 차근차근 다시 학습하세요');
+            recommendations.push('• 교과서 예제 문제를 반복 연습하세요');
+        } else if (score < 80) {
+            recommendations.push('• 응용 문제 풀이 능력을 기르세요');
+            recommendations.push('• 다양한 유형의 문제를 접해보세요');
+        } else {
+            recommendations.push('• 고난도 문제에 도전해보세요');
+            recommendations.push('• 문제 해결 시간을 단축해보세요');
+        }
+        
+        recommendations.push('• 틀린 문제는 반드시 다시 풀어보세요');
+        recommendations.push('• 꾸준한 복습으로 기억을 강화하세요');
+        
+        return recommendations;
+    };
 
     const generateDefaultStudyPlan = () => {
         return `**🎯 맞춤형 학습계획**

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { generateEvaluationSetByGrade } from '../data/mathProblems';
+import { generateUnitEvaluationSet } from '../data/mathProblems_full';
 import EvaluationLoadingScreen from '../components/EvaluationLoadingScreen';
 import '../styles/MathEvaluationStart.css';
 
@@ -16,6 +17,8 @@ const MathEvaluationStart = () => {
     const [showConfirm, setShowConfirm] = useState(false);
     const [userGrade, setUserGrade] = useState(5); // 기본값: 5등급
     const [loading, setLoading] = useState(true);
+    const [loadingProgress, setLoadingProgress] = useState(0);
+    const [loadingMessage, setLoadingMessage] = useState('사용자 정보를 확인하는 중...');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [analysisData, setAnalysisData] = useState(null);
 
@@ -23,44 +26,83 @@ const MathEvaluationStart = () => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
+                // 진행률 업데이트 시뮬레이션
+                setLoadingProgress(10);
+                setLoadingMessage('서버 연결 중... (약 2초 소요)');
+                
+                await new Promise(resolve => setTimeout(resolve, 300)); // 0.3초 대기
+                setLoadingProgress(30);
+                setLoadingMessage('사용자 인증 확인 중... (약 1초 소요)');
+                
                 const response = await fetch('/api/users/me', {
                     method: 'GET',
                     credentials: 'include'
                 });
                 
+                setLoadingProgress(60);
+                setLoadingMessage('등급 정보 처리 중... (거의 완료)');
+                await new Promise(resolve => setTimeout(resolve, 200)); // 0.2초 대기
+                
                 if (response.ok) {
                     const data = await response.json();
                     const grade = data.data?.grade || 5; // 기본값: 5등급
                     setUserGrade(grade);
+                    setLoadingProgress(90);
+                    setLoadingMessage(`${grade}등급으로 설정 완료! 문제 준비 중...`);
                     console.log('사용자 등급:', grade);
                 } else {
+                    setLoadingProgress(90);
+                    setLoadingMessage('기본 5등급으로 설정 중... (거의 완료)');
                     console.warn('사용자 정보를 가져올 수 없습니다. 기본 5등급으로 설정합니다.');
                 }
+                
+                await new Promise(resolve => setTimeout(resolve, 300)); // 0.3초 대기
+                setLoadingProgress(100);
+                setLoadingMessage('평가 준비 완료! 곧 시작됩니다.');
+                
             } catch (error) {
                 console.error('사용자 정보 가져오기 실패:', error);
-                console.warn('기본 5등급으로 설정합니다.');
+                setLoadingProgress(90);
+                setLoadingMessage('기본 5등급으로 설정 중... (거의 완료)');
+                await new Promise(resolve => setTimeout(resolve, 300));
+                setLoadingProgress(100);
+                setLoadingMessage('평가 준비 완료! 곧 시작됩니다.');
             } finally {
-                setLoading(false);
+                // 완료 메시지를 잠시 보여준 후 로딩 종료
+                setTimeout(() => {
+                    setLoading(false);
+                }, 800); // 완료 메시지를 조금 더 오래 보여줌
             }
         };
 
         fetchUserInfo();
     }, []);
 
-    // 문제 초기화 - 사용자 등급 기반
+    // 문제 초기화 - 단원명 또는 사용자 등급 기반
     useEffect(() => {
         if (!loading && userGrade) {
-            console.log(`${userGrade}등급에 맞는 문제를 선택합니다.`);
-            const selectedProblems = generateEvaluationSetByGrade(userGrade, 10);
+            let selectedProblems;
+            
+            // 단원명이 지정된 경우 해당 단원 문제로 구성
+            if (unitName && unitName.trim() !== '' && unitName !== '수학') {
+                console.log(`'${unitName}' 단원에 맞는 문제를 선택합니다.`);
+                selectedProblems = generateUnitEvaluationSet(unitName);
+                console.log(`'${unitName}' 단원 문제 ${selectedProblems.length}개 선택됨`);
+            } else {
+                // 단원명이 없으면 기존 등급 기반 선택
+                console.log(`${userGrade}등급에 맞는 문제를 선택합니다.`);
+                selectedProblems = generateEvaluationSetByGrade(userGrade, 10);
+            }
+            
             setProblems(selectedProblems);
-            console.log('선택된 문제들의 난이도 분포:', 
-                selectedProblems.reduce((acc, p) => {
-                    acc[p.difficultyGrade] = (acc[p.difficultyGrade] || 0) + 1;
-                    return acc;
-                }, {})
-            );
+            console.log('선택된 문제들:', selectedProblems.map(p => ({
+                id: p.id, 
+                subject: p.subject, 
+                subjectDetail: p.subjectDetail, 
+                difficulty: p.difficulty
+            })));
         }
-    }, [loading, userGrade]);
+    }, [loading, userGrade, unitName]);
 
     // 타이머 설정
     useEffect(() => {
@@ -168,7 +210,12 @@ const MathEvaluationStart = () => {
             return {
                 ...problem,
                 userAnswer: userAnswer || '미답',
-                isCorrect
+                isCorrect,
+                // 추가된 상세 정보
+                subject: problem.subject || '공통',
+                subjectDetail: problem.subjectDetail || '기본 개념',
+                difficulty: problem.difficulty,
+                problemNumber: problem.problemNumber || index + 1
             };
         });
 
@@ -183,11 +230,12 @@ const MathEvaluationStart = () => {
         // Gemini API를 통한 분석 요청
         try {
             const wrongAnswers = results
+                .filter(result => !result.isCorrect)
                 .map((result, index) => ({
                     problemNumber: result.problemNumber || index + 1,
                     difficulty: result.difficulty,
-                    topic: result.topic || '일반',
-                    subjectDetail: result.subjectDetail || result.topic || '수학 문제',
+                    subject: result.subject || '공통',
+                    subjectDetail: result.subjectDetail || '기본 개념',
                     examMonthYear: result.examMonthYear || '2025_06',
                     userAnswer: result.userAnswer,
                     correctAnswer: result.correctAnswer
@@ -273,14 +321,13 @@ const MathEvaluationStart = () => {
     // 로딩 중
     if (loading || problems.length === 0) {
         return (
-            <div className="math-eval-loading">
-                <div>
-                    {loading ? '사용자 등급 정보를 확인하고 있습니다...' : '등급에 맞는 수학 문제를 준비하고 있습니다...'}
-                </div>
-                <div style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
-                    {userGrade && !loading && `현재 등급: ${userGrade}등급`}
-                </div>
-            </div>
+            <EvaluationLoadingScreen 
+                title={loading ? "사용자 정보 확인 중" : "평가 준비 중"}
+                subtitle={loading ? "등급 정보를 확인하고 있습니다" : "등급에 맞는 문제를 준비하고 있습니다"}
+                progress={loading ? loadingProgress : 95}
+                message={loading ? loadingMessage : `${userGrade}등급 맞춤 문제 선별 중...`}
+                userGrade={userGrade}
+            />
         );
     }
 
@@ -298,6 +345,8 @@ const MathEvaluationStart = () => {
             <EvaluationLoadingScreen 
                 grade={userGrade}
                 score={estimatedScore}
+                progress={null} // AI 분석 시에는 무한 로딩
+                message={null} // 기본 로딩 메시지 사용
             />
         );
     }
@@ -329,7 +378,7 @@ const MathEvaluationStart = () => {
             {/* 메인 영역 */}
             <div className="math-eval-main">
                 <div className="eval-header">
-                    <h2>수학 단원평가</h2>
+                    <h2>{unitName && unitName !== '수학' ? `${unitName} 단원평가` : '수학 단원평가'}</h2>
                     <div className="eval-meta">
                         <span>단원: {unitName}</span>
                         <span>문제: {currentIdx + 1}/{problems.length}</span>
