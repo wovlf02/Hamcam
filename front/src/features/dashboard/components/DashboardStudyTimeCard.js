@@ -16,6 +16,7 @@ const DashboardStudyTimeCard = ({
                                  handleTodayStudyChange,
                                  weeklyGoalMinutes,
                                  todayGoalMinutes,
+                                 todayStudyMinutes,
                              }) => {
 
     // ✅ 서버로 목표 시간 저장
@@ -126,13 +127,38 @@ const DashboardStudyTimeCard = ({
                 <span className="dashboard-time-detail-label time-remain-label">
                     오늘 남은 공부시간
                 </span>
-                <span className="time-remain-value">{todayRemainMinutes}분</span>
+                <span className="time-remain-value">
+                    {`${Math.floor(todayRemainMinutes / 60)}시간 ${todayRemainMinutes % 60}분`}
+                </span>
             </div>
+            <div className="progress-bar-wrapper">
+                                        <div className="progress-bar-container">
+                                            <div
+                                                className="progress-bar-fill"
+                                                style={{ width: `${Math.min(100, Math.max(0, (Number(todayGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(todayGoalMinutes) || 0)) * 100 : 0))}%` }}
+                                            ></div>
+                                        </div>
+                                        <span className="progress-percentage">
+                                            {Math.round(Math.min(100, Math.max(0, (Number(todayGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(todayGoalMinutes) || 0)) * 100 : 0)))}%
+                                        </span>            </div>
             <div className="dashboard-time-detail-row time-remain-row">
                 <span className="dashboard-time-detail-label time-remain-label">
                     주간 남은 공부시간
                 </span>
-                <span className="time-remain-value">{weekRemainMinutes}분</span>
+                <span className="time-remain-value">
+                    {`${Math.floor(weekRemainMinutes / 60)}시간 ${weekRemainMinutes % 60}분`}
+                </span>
+            </div>
+            <div className="progress-bar-wrapper">
+                <div className="progress-bar-container">
+                    <div
+                        className="progress-bar-fill"
+                        style={{ width: `${Math.min(100, Math.max(0, (Number(weeklyGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(weeklyGoalMinutes) || 0)) * 100 : 0))}%` }}
+                    ></div>
+                </div>
+                <span className="progress-percentage">
+                    {Math.round(Math.min(100, Math.max(0, (Number(weeklyGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(weeklyGoalMinutes) || 0)) * 100 : 0)))}%
+                </span>
             </div>
         </div>
     );

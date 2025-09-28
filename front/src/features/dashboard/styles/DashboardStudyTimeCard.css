@@ -65,3 +65,37 @@
     -webkit-appearance: none;
     margin: 0;
 }
+
+.progress-bar-wrapper {
+    margin-top: 5px;
+    margin-bottom: 15px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-bar-container {
+    background: var(--bg-medium);
+    border-radius: 8px;
+    height: 12px;
+    flex-grow: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar-fill {
+    background: var(--primary-blue);
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.3s ease-in-out;
+    width: 0%; /* Initial state */
+}
+
+.progress-percentage {
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 35px; /* Ensure enough space for 100% */
+    text-align: right;
+}

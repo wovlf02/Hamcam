@@ -109,9 +109,7 @@ function Dashboard() {
                 />
 
                 <div className="dashboard-right-panel">
-                    {/* ✅ 시험 일정 관리 */}
                     <DashboardDday />
-
                     <DashboardTodo selectedDate={selectedDate} />
                 </div>
 

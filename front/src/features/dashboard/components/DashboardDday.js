@@ -99,41 +99,33 @@ const DashboardDday = () => {
 
     return (
         <div className="dashboard-dday">
-            <div className="dday-header">
-                <h2>시험 일정</h2>
-                <button className="add-exam-button" onClick={() => setShowModal(true)}>
-                    + 시험 일정 추가
+            <div className="dashboard-todo-header">
+                <h3>시험 일정</h3>
+                <button onClick={() => setShowModal(true)}>
+                    + 새 시험
                 </button>
             </div>
             <div className="exam-list">
                 {examList.length > 0 ? (
-                    <div className="exam-grid">
-                        {examList.map((exam) => (
-                                                        <div key={exam.id} className={`exam-item ${calculateDday(exam.exam_date) < 0 ? 'past-exam' : ''}`}>
-                                                            <div className="exam-info">
-                                                                <div className="exam-title-section">
-                                                                    <span className="exam-title">{exam.title}</span>
-                                                                </div>
-                                                                <div className="exam-date-section">
-                                                                    <span className="exam-date">
-                                                                        {moment(exam.exam_date).format('YYYY년 MM월 DD일')}
-                                                                    </span>
-                                                                                                            <span className={`d-day ${calculateDday(exam.exam_date) === 0 ? 'd-day-zero' : ''}`}>
-                                                                                                                {calculateDday(exam.exam_date) > 0
-                                                                                                                    ? `D-${calculateDday(exam.exam_date)}`
-                                                                                                                    : calculateDday(exam.exam_date) === 0
-                                                                                                                        ? 'D-DAY'
-                                                                                                                        : `D+${Math.abs(calculateDday(exam.exam_date))}`}
-                                                                                                            </span>                                                                </div>
-                                                            </div>
-                                                            <button
-                                                                className="delete-button"
-                                                                onClick={() => deleteExam(exam.id)}
-                                                            >
-                                                                삭제
-                                                            </button>
-                                                        </div>                        ))}
-                    </div>
+                    examList.map((exam) => (
+                        <div key={exam.id} className={`exam-item ${calculateDday(exam.exam_date) < 0 ? 'past-exam' : ''}`}>
+                            <span className="exam-title">{exam.title}</span>
+                            <span className="exam-date">{moment(exam.exam_date).format('YYYY-MM-DD')}</span>
+                            <span className={`d-day-badge ${calculateDday(exam.exam_date) === 0 ? 'd-day-zero' : ''}`}>
+                                {calculateDday(exam.exam_date) > 0
+                                    ? `D-${calculateDday(exam.exam_date)}`
+                                    : calculateDday(exam.exam_date) === 0
+                                        ? 'D-DAY'
+                                        : `D+${Math.abs(calculateDday(exam.exam_date))}`}
+                            </span>
+                            <button
+                                className="delete-button"
+                                onClick={() => deleteExam(exam.id)}
+                            >
+                                삭제
+                            </button>
+                        </div>
+                    ))
                 ) : (
                     <div className="no-exam">
                         <p>등록된 시험 일정이 없습니다.</p>
@@ -142,36 +134,32 @@ const DashboardDday = () => {
                 )}
             </div>
             {showModal && (
-                <div className="dashboard-modal-overlay">
-                    <div className="dashboard-modal-card">
-                        <h3>시험 일정 추가</h3>
-                        <div className="dashboard-modal-content">
-                            <div className="dashboard-modal-row">
-                                <label>시험명</label>
-                                <input
-                                    type="text"
-                                    value={examTitle}
-                                    onChange={(e) => setExamTitle(e.target.value)}
-                                    placeholder="예: 중간고사"
-                                />
-                            </div>
-                            <div className="dashboard-modal-row">
-                                <label>시험 날짜</label>
-                                <input
-                                    type="date"
-                                    value={examDate}
-                                    onChange={(e) => setExamDate(e.target.value)}
-                                    min={moment().format('YYYY-MM-DD')}
-                                />
-                            </div>
+                <div className="dashboard-modal">
+                    <h3>시험 일정 추가</h3>
+                    <div className="dashboard-modal-content">
+                        <div className="dashboard-modal-input-group"> {/* Added input-group for consistency */}
+                            <input
+                                type="text"
+                                value={examTitle}
+                                onChange={(e) => setExamTitle(e.target.value)}
+                                placeholder="예: 중간고사"
+                            />
                         </div>
-                        <div className="dashboard-modal-buttons">
-                            <button className="cancel-button" onClick={() => {
+                        <div className="dashboard-modal-input-group"> {/* Added input-group for consistency */}
+                            <input
+                                type="date"
+                                value={examDate}
+                                onChange={(e) => setExamDate(e.target.value)}
+                                min={moment().format('YYYY-MM-DD')}
+                            />
+                        </div>
+                        <div className="modal-buttons">
+                            <button onClick={saveExamSetting}>추가</button> {/* Changed text to '추가' for consistency */}
+                            <button onClick={() => { // Removed class names, will be styled by .modal-buttons button
                                 setShowModal(false);
                                 setExamTitle('');
                                 setExamDate('');
                             }}>취소</button>
-                            <button className="save-button" onClick={saveExamSetting}>저장</button>
                         </div>
                     </div>
                 </div>

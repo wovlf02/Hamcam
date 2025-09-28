@@ -8,6 +8,7 @@
     flex-direction: column;
     flex-grow: 1; /* Make it fill available space */
     overflow-y: auto; /* Enable scrolling for todo list */
+    min-height: 150px; /* Reduced min-height */
 }
 
 .dashboard-todo-header {

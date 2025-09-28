@@ -43,7 +43,7 @@
 }
 
 .card-title {
-    font-size: 1.1rem;
+    font-size: 1.8rem;
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 16px;
@@ -83,7 +83,7 @@
 
 @media (min-width: 1200px) {
     .dashboard-board-grid {
-        grid-template-columns: 2fr 2fr 1fr; /* Calendar/Notice/Growth (2fr+2fr), Right Panel/Study Time (1fr) */
+        grid-template-columns: 1.5fr 1.5fr 1fr; /* Calendar/Notice/Growth (1.5fr+1.5fr), Right Panel/Study Time (1fr) */
         grid-template-rows: auto auto; /* Two rows */
     }
 
