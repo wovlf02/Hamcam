@@ -171,7 +171,7 @@ const MathProblemSolver = () => {
                 
                 <div className="problem-image">
                     <img 
-                        src={`http://localhost:8080/api/images/${currentProblem.type === 'MULTIPLE_CHOICE' ? '객관식' : '단답형'}/${currentProblem.examMonthYear}_수학_${currentProblem.problemNumber}번_${currentProblem.subject}.png`}
+                        src={`/math_image/${currentProblem.type === 'MULTIPLE_CHOICE' ? '객관식' : '단답형'}/${currentProblem.examMonthYear}_수학_${currentProblem.problemNumber}번_${currentProblem.subject}.png`}
                         alt={`${currentProblem.examMonthYear} ${currentProblem.problemNumber}번 문제`}
                         onError={(e) => {
                             console.error('이미지 로드 실패:', e.target.src);
@@ -181,7 +181,7 @@ const MathProblemSolver = () => {
                     />
                     <div className="image-fallback" style={{display: 'none'}}>
                         <p>문제 이미지를 불러올 수 없습니다.</p>
-                        <p>경로: http://localhost:8080/api/images/{currentProblem.type === 'MULTIPLE_CHOICE' ? '객관식' : '단답형'}/{currentProblem.examMonthYear}_수학_{currentProblem.problemNumber}번_{currentProblem.subject}.png</p>
+                        <p>경로: /math_image/{currentProblem.type === 'MULTIPLE_CHOICE' ? '객관식' : '단답형'}/{currentProblem.examMonthYear}_수학_{currentProblem.problemNumber}번_{currentProblem.subject}.png</p>
                     </div>
                 </div>
 

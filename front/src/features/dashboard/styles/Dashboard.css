@@ -49,6 +49,13 @@
     margin-bottom: 16px;
 }
 
+.dashboard-notice-card .card-title,
+.dashboard-growth-card .card-title,
+.dashboard-study-time-card-component .card-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
 .btn-primary {
     background-color: var(--primary-blue);
     color: var(--text-white);
