@@ -120,22 +120,22 @@ function Dashboard() {
                 <div className="dashboard-notice-growth-panel">
                     <DashboardNotice notices={notices} />
                     <DashboardGrowth growth={growth} />
-                    <DashboardStudyTimeCard
-                        weeklyGoalHour={weeklyGoalHour}
-                        weeklyGoalMin={weeklyGoalMin}
-                        todayGoalHour={todayGoalHour}
-                        todayGoalMin={todayGoalMin}
-                        todayStudyHour={todayStudyHour}
-                        todayStudyMin={todayStudyMin}
-                        todayRemainMinutes={todayRemainMinutes}
-                        weekRemainMinutes={weekRemainMinutes}
-                        handleWeeklyGoalChange={handleWeeklyGoalChange}
-                        handleTodayGoalChange={handleTodayGoalChange}
-                        handleTodayStudyChange={handleTodayStudyChange}
-                        weeklyGoalMinutes={weeklyGoalMinutes}
-                        todayGoalMinutes={todayGoalMinutes}
-                    />
                 </div>
+                <DashboardStudyTimeCard
+                    weeklyGoalHour={weeklyGoalHour}
+                    weeklyGoalMin={weeklyGoalMin}
+                    todayGoalHour={todayGoalHour}
+                    todayGoalMin={todayGoalMin}
+                    todayStudyHour={todayStudyHour}
+                    todayStudyMin={todayStudyMin}
+                    todayRemainMinutes={todayRemainMinutes}
+                    weekRemainMinutes={weekRemainMinutes}
+                    handleWeeklyGoalChange={handleWeeklyGoalChange}
+                    handleTodayGoalChange={handleTodayGoalChange}
+                    handleTodayStudyChange={handleTodayStudyChange}
+                    weeklyGoalMinutes={weeklyGoalMinutes}
+                    todayGoalMinutes={todayGoalMinutes}
+                />
             </div>
         </div>
     );
