@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../../api/api';
+import '../styles/DashboardGrowth.css'; // Import the new CSS file
 
 const DashboardGrowth = () => {
   const [growthList, setGrowthList] = useState([]);
@@ -20,15 +21,15 @@ const DashboardGrowth = () => {
 
   return (
       <div className="dashboard-card dashboard-growth-card">
-        <div style={{ fontWeight: 600, marginBottom: 8 }}>주간 성장률</div>
+        <div className="dashboard-growth-header"><h3>주간 성장률</h3></div>
         {growthList.length === 0 ? (
-            <div style={{ color: '#999' }}>이번 주 학습 데이터가 없습니다.</div>
+            <div className="no-growth-data">이번 주 학습 데이터가 없습니다.</div>
         ) : (
             growthList.map((g, i) => (
-                <div key={i} style={{ marginBottom: 10 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>{g.subject}</span>
-                    <span style={{ color: '#2563eb', fontWeight: 600 }}>+{g.rate}%</span>
+                <div key={i} className="growth-item">
+                  <div className="growth-item-header">
+                    <span className="growth-subject">{g.subject}</span>
+                    <span className="growth-rate">+{g.rate}%</span>
                   </div>
                   <div className="dashboard-growth-bar-bg">
                     <div className="dashboard-growth-bar" style={{ width: `${g.rate * 2}%` }} />

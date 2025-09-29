@@ -5,6 +5,7 @@ import com.hamcam.back.dto.community.notice.response.NoticeResponse;
 import com.hamcam.back.dto.dashboard.calendar.CalendarEventDto;
 import com.hamcam.back.dto.dashboard.calendar.request.CalendarRequest;
 import com.hamcam.back.dto.dashboard.exam.request.ExamScheduleRequest;
+import com.hamcam.back.dto.dashboard.exam.request.ExamScheduleUpdateRequest;
 import com.hamcam.back.dto.dashboard.exam.response.DDayInfoResponse;
 import com.hamcam.back.dto.dashboard.exam.response.ExamScheduleResponse;
 import com.hamcam.back.dto.dashboard.goal.request.GoalUpdateRequest;
@@ -63,17 +64,17 @@ public class DashboardController {
      * Todo 생성
      */
     @PostMapping("/todos")
-    public ResponseEntity<MessageResponse> createTodo(
+    public ResponseEntity<ApiResponse<Void>> createTodo(
             @Valid @RequestBody TodoRequest request,
             HttpServletRequest httpRequest) {
-        log.info("📝 Todo 생성 요청 - title: {}, date: {}, priority: {}", 
+        log.info("📝 Todo 생성 요청 - title: {}, date: {}, priority: {}",
             request.getTitle(), request.getTodoDate(), request.getPriority());
-            
+
         User user = dashboardService.getSessionUser(httpRequest);
-        TodoResponse response = dashboardService.createTodo(request, user);
-        log.info("✅ Todo 생성 완료 - id: {}, date: {}", response.getId(), response.getTodoDate());
-        
-        return ResponseEntity.ok(MessageResponse.of("✅ Todo가 생성되었습니다."));
+        dashboardService.createTodo(request, user);
+        log.info("✅ Todo 생성 완료");
+
+        return ResponseEntity.ok(ApiResponse.ok());
     }
 
     // ✅ Todo 수정
@@ -108,6 +109,15 @@ public class DashboardController {
             log.error("❌ Todo 완료 상태 변경 실패: {}", e.getMessage(), e);
             throw e;
         }
+    }
+
+    // 🗓 시험 일정 수정
+    @PutMapping("/exams")
+    public ResponseEntity<MessageResponse> updateExamSchedule(
+            @RequestBody ExamScheduleUpdateRequest request
+    ) {
+        dashboardService.updateExamSchedule(request);
+        return ResponseEntity.ok(MessageResponse.of("✏️ 시험 일정이 수정되었습니다."));
     }
 
     // 🗓 시험 일정 전체 조회

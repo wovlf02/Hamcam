@@ -24,7 +24,7 @@ public class Todo {
     private String title;
 
     /** 할 일 설명 (선택) */
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     /** 할 일 날짜 (YYYY-MM-DD) */

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../../api/api'; // ✅ 공통 axios 인스턴스 사용
+import '../styles/DashboardNotice.css'; // Import the new CSS file
 
 const DashboardNotice = () => {
     const [notices, setNotices] = useState([]);
@@ -19,29 +20,20 @@ const DashboardNotice = () => {
 
     return (
         <div className="dashboard-card dashboard-notice-card">
-            <div style={{ fontWeight: 600, marginBottom: 8 }}>공지사항</div>
+            <div className="dashboard-notice-header"><h3>공지사항</h3></div>
+        {notices.length === 0 ? (
+            <div className="no-notices">공지사항이 없습니다.</div>
+        ) : (
             <ul className="dashboard-notice-list">
-                {notices.length === 0 ? (
-                    <li style={{ color: '#999' }}>공지사항이 없습니다.</li>
-                ) : (
-                    notices.map((n, i) => (
-                        <li key={i} className={`type-${n.type}`}>
-                            <span>[{n.type}]</span>
-                            {n.text}
-                            <span
-                                style={{
-                                    float: 'right',
-                                    color: '#bbb',
-                                    fontWeight: 400,
-                                    fontSize: 13,
-                                }}
-                            >
-                {n.date}
-              </span>
-                        </li>
-                    ))
-                )}
+                {notices.map((n, i) => (
+                    <li key={i}>
+                        <span className={`notice-type-badge type-${n.type}`}>{n.type}</span>
+                        <span className="notice-text">{n.text}</span>
+                        <span className="notice-date">{n.date}</span>
+                    </li>
+                ))}
             </ul>
+        )}
         </div>
     );
 };

@@ -1,7 +1,8 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import api from '../../../api/api';
+import '../../dashboard/styles/DashboardStudyTimeCard.css'; // New CSS file for this component
 
-const DashboardTimeDetail = ({
+const DashboardStudyTimeCard = ({
                                  weeklyGoalHour,
                                  weeklyGoalMin,
                                  todayGoalHour,
@@ -13,22 +14,10 @@ const DashboardTimeDetail = ({
                                  handleWeeklyGoalChange,
                                  handleTodayGoalChange,
                                  handleTodayStudyChange,
-                                 setShowTimeDetail,
                                  weeklyGoalMinutes,
                                  todayGoalMinutes,
+                                 todayStudyMinutes,
                              }) => {
-    const detailRef = useRef();
-
-    // ✅ 외부 클릭 시 닫힘
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (detailRef.current && !detailRef.current.contains(e.target)) {
-                setShowTimeDetail(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [setShowTimeDetail]);
 
     // ✅ 서버로 목표 시간 저장
     const saveStudyGoal = async (weekly, today) => {
@@ -61,16 +50,8 @@ const DashboardTimeDetail = ({
     };
 
     return (
-        <div className="dashboard-time-detail-card" ref={detailRef}>
-            <button
-                className="dashboard-time-detail-close"
-                onClick={() => setShowTimeDetail(false)}
-                title="닫기"
-                aria-label="닫기"
-            >
-                ×
-            </button>
-            <div className="card-title">공부시간 상세 설정</div>
+        <div className="dashboard-card dashboard-study-time-card-component"> {/* Renamed class to avoid conflict */}
+            <div className="dashboard-study-time-header"><h3>공부 시간 관리</h3></div>
 
             {/* 주간 목표 시간 */}
             <div className="dashboard-time-detail-row">
@@ -146,16 +127,41 @@ const DashboardTimeDetail = ({
                 <span className="dashboard-time-detail-label time-remain-label">
                     오늘 남은 공부시간
                 </span>
-                <span className="time-remain-value">{todayRemainMinutes}분</span>
+                <span className="time-remain-value">
+                    {`${Math.floor(todayRemainMinutes / 60)}시간 ${todayRemainMinutes % 60}분`}
+                </span>
             </div>
+            <div className="progress-bar-wrapper">
+                                        <div className="progress-bar-container">
+                                            <div
+                                                className="progress-bar-fill"
+                                                style={{ width: `${Math.min(100, Math.max(0, (Number(todayGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(todayGoalMinutes) || 0)) * 100 : 0))}%` }}
+                                            ></div>
+                                        </div>
+                                        <span className="progress-percentage">
+                                            {Math.min(100, Math.max(0, (Number(todayGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(todayGoalMinutes) || 0)) * 100 : 0)).toFixed(1)}%
+                                        </span>            </div>
             <div className="dashboard-time-detail-row time-remain-row">
                 <span className="dashboard-time-detail-label time-remain-label">
                     주간 남은 공부시간
                 </span>
-                <span className="time-remain-value">{weekRemainMinutes}분</span>
+                <span className="time-remain-value">
+                    {`${Math.floor(weekRemainMinutes / 60)}시간 ${weekRemainMinutes % 60}분`}
+                </span>
+            </div>
+            <div className="progress-bar-wrapper">
+                <div className="progress-bar-container">
+                    <div
+                        className="progress-bar-fill"
+                        style={{ width: `${Math.min(100, Math.max(0, (Number(weeklyGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(weeklyGoalMinutes) || 0)) * 100 : 0))}%` }}
+                    ></div>
+                </div>
+                <span className="progress-percentage">
+                    {Math.min(100, Math.max(0, (Number(weeklyGoalMinutes) || 0) > 0 ? ((Number(todayStudyMinutes) || 0) / (Number(weeklyGoalMinutes) || 0)) * 100 : 0)).toFixed(1)}%
+                </span>
             </div>
         </div>
     );
 };
 
-export default DashboardTimeDetail;
+export default DashboardStudyTimeCard;

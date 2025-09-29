@@ -25,10 +25,28 @@ public class ExamSchedule {
     private String title;
 
     /**
+     * 과목명 (예: 수학, 영어 등)
+     */
+    @Column(length = 50)
+    private String subject;
+
+    /**
      * 시험일 (D-Day 기준)
      */
     @Column(nullable = false)
     private LocalDate examDate;
+
+    /**
+     * 시험 설명 (선택)
+     */
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    /**
+     * 시험 장소 (선택)
+     */
+    @Column(length = 200)
+    private String location;
 
     /**
      * 소속 사용자 (N:1)

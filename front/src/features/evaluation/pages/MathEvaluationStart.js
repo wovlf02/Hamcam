@@ -392,7 +392,7 @@ const MathEvaluationStart = () => {
                 {/* 문제 이미지 */}
                 <div className="problem-image-container">
                     <img 
-                        src={`http://localhost:8080/api/images/${currentProblem.type === 'MULTIPLE_CHOICE' ? '객관식' : '단답형'}/${currentProblem.examMonthYear}_수학_${currentProblem.problemNumber}번_${currentProblem.subject}.png`}
+                        src={`/math_image/${currentProblem.type === 'MULTIPLE_CHOICE' ? '객관식' : '단답형'}/${currentProblem.examMonthYear}_수학_${currentProblem.problemNumber}번_${currentProblem.subject}.png`}
                         alt={`수학 문제 ${currentIdx + 1}`}
                         className="problem-image"
                         onError={(e) => {
@@ -405,7 +405,7 @@ const MathEvaluationStart = () => {
                     <div className="image-error" style={{display: 'none'}}>
                         문제 이미지를 불러올 수 없습니다.
                         <br />
-                        <small>({`http://localhost:8080/api/images/${currentProblem.type === 'MULTIPLE_CHOICE' ? '객관식' : '단답형'}/${currentProblem.examMonthYear}_수학_${currentProblem.problemNumber}번_${currentProblem.subject}.png`})</small>
+                        <small>({`/math_image/${currentProblem.type === 'MULTIPLE_CHOICE' ? '객관식' : '단답형'}/${currentProblem.examMonthYear}_수학_${currentProblem.problemNumber}번_${currentProblem.subject}.png`})</small>
                     </div>
                 </div>
 
