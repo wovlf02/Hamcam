@@ -1,5 +1,5 @@
 .dashboard-study-time-card-component {
-    background: var(--bg-white);
+    background: linear-gradient(135deg, var(--bg-white), var(--bg-light));
     border-radius: 16px;
     box-shadow: var(--shadow-clay-medium);
     padding: 28px;
@@ -98,10 +98,11 @@
     flex-grow: 1;
     overflow: hidden;
     position: relative;
+    box-shadow: var(--shadow-clay-inset-light);
 }
 
 .progress-bar-fill {
-    background: var(--primary-blue);
+    background: linear-gradient(to right, var(--primary-blue-gradient-start), var(--primary-blue-gradient-end));
     height: 100%;
     border-radius: 8px;
     transition: width 0.3s ease-in-out;
