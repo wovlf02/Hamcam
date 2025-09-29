@@ -1,12 +1,49 @@
 :root {
-    --primary-color: #4A85F6;
-    --accent-color-green: #34A853;
-    --accent-color-yellow: #FBBC04;
-    --background-color: #F0F2F5;
-    --card-background: #FFFFFF;
-    --text-primary: #202124;
-    --text-secondary: #5F6368;
-    --primary-light-color: #E8F0FE;
+    /* Modern Google SaaS Palette */
+    --primary-blue: #4285F4; /* Google Blue */
+    --primary-blue-light: #E8F0FE;
+    --primary-blue-dark: #1A73E8;
+    --primary-blue-gradient-start: #4285F4;
+    --primary-blue-gradient-end: #286DE0;
+
+    --secondary-green: #34A853;
+    --secondary-green-light: #E6F4EA;
+    --secondary-red: #EA4335;
+    --secondary-red-light: #FADFE1;
+    --secondary-yellow: #FBBC05;
+    --secondary-yellow-light: #FFF7E6;
+
+    /* Neutrals */
+    --text-primary: #202124; /* Dark Gray */
+    --text-secondary: #5F6368; /* Medium Gray */
+    --text-light: #9AA0A6; /* Light Gray */
+    --text-white: #FFFFFF;
+
+    --bg-light: #F8F9FA; /* Very Light Gray */
+    --bg-medium: #E8EAED; /* Light Gray */
+    --bg-dark: #DADCE0; /* Medium Light Gray */
+    --bg-white: #FFFFFF;
+
+    --border-light: #DADCE0;
+    --border-medium: #BDC1C6;
+
+    /* Shadows for Claymorphism */
+    --shadow-clay-light: 3px 3px 6px rgba(0, 0, 0, 0.08), -3px -3px 6px rgba(255, 255, 255, 0.7);
+    --shadow-clay-medium: 6px 6px 12px rgba(0, 0, 0, 0.1), -6px -6px 12px rgba(255, 255, 255, 0.6);
+    --shadow-clay-dark: 8px 8px 16px rgba(0, 0, 0, 0.12), -8px -8px 16px rgba(255, 255, 255, 0.5);
+
+    /* General Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    /* Inner Shadows for Claymorphism */
+    --shadow-clay-inset-light: inset 2px 2px 5px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.4);
+    --shadow-clay-inset-medium: inset 3px 3px 7px rgba(0, 0, 0, 0.08), inset -3px -3px 7px rgba(255, 255, 255, 0.5);
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-border: rgba(255, 255, 255, 0.3);
 }
 
 /* 기본 폰트 및 전환 효과 */
@@ -17,13 +54,14 @@
 
 /* 사이드 메뉴 전체 */
 .side-menu {
-    height: 100vh;
-    background-color: var(--background-color);
-    border-right: 1px solid #DBE0E4;
+    /* height: 100vh; */ /* Keep height */
+    background-color: var(--bg-white); /* Set background to match logo's white background */
+    /* border-right: 1px solid var(--border-light); */ /* Removed border */
     padding: 24px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    /* box-shadow: var(--shadow-clay-medium); */ /* Removed shadow */
 }
 
 /* 로고 */
@@ -31,7 +69,14 @@
     display: flex;
     justify-content: center;
     margin-bottom: 32px;
-    padding-left: 12px;
+    background-color: transparent; /* Ensure no background is inherited */
+}
+
+.side-menu-logo img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    width: 150px;
 }
 
 /* 메인 네비게이션 영역 */
@@ -65,15 +110,17 @@
 
 /* 메뉴 버튼 호버 */
 .side-menu-button:hover, .side-submenu-button:hover {
-    background-color: #E4E6E8; /* 부드러운 호버 효과 */
+    background-color: var(--bg-light); /* Use consistent light background */
     color: var(--text-primary);
+    box-shadow: var(--shadow-clay-light);
 }
 
 /* 활성 메뉴 버튼 */
 .side-menu-button.active {
-    background-color: var(--primary-light-color);
-    color: var(--primary-color);
+    background-color: var(--primary-blue-light);
+    color: var(--primary-blue);
     font-weight: 700;
+    box-shadow: var(--shadow-clay-inset-light);
 }
 
 /* 서브메뉴 리스트 */
@@ -97,14 +144,14 @@
 /* 활성 서브메뉴 버튼 */
 .side-submenu-button.active {
     background-color: transparent; /* 배경 없음 */
-    color: var(--primary-color);
+    color: var(--primary-blue);
     font-weight: 700;
 }
 
 /* 하단 네비게이션 영역 */
 .nav-bottom {
     padding-top: 20px;
-    border-top: 1px solid #DBE0E4; /* 구분선 추가 */
+    border-top: 1px solid var(--border-light);
 }
 
 /* 사용자 프로필 */
@@ -118,7 +165,8 @@
 }
 
 .side-user-profile:hover {
-    background-color: #E4E6E8;
+    background-color: var(--bg-light);
+    box-shadow: var(--shadow-clay-light);
 }
 
 .side-user-image {

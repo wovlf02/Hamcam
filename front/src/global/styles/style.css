@@ -34,7 +34,7 @@ body {
     flex-shrink: 0;
     width: 9%; /* Default for QHD and above */
     height: 100vh; /* Ensure it fills its height */
-    background: #f8f9fa;
+    background: #F5F5F5;
     border-right: 1px solid #e0e4ea;
     display: flex;
     flex-direction: column;
@@ -61,7 +61,7 @@ body {
 .side-menu-logo {
     width: 100%;
     height: 60px;
-    background: #ffffff;
+    background: #F5F5F5;
     color: #fff;
     font-size: 22px;
     font-weight: bold;

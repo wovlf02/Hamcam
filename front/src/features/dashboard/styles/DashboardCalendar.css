@@ -1,5 +1,5 @@
 .dashboard-calendar {
-  background: linear-gradient(135deg, var(--bg-white), var(--bg-light));
+  background: linear-gradient(135deg, var(--secondary-yellow-light), var(--bg-light));
   border-radius: 16px;
   box-shadow: var(--shadow-clay-medium);
   padding: 28px;

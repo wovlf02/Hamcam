@@ -1,5 +1,5 @@
 .dashboard-todo {
-    background: var(--bg-white);
+    background: linear-gradient(135deg, var(--primary-blue-light), var(--bg-white));
     border-radius: 16px; /* Consistent with dashboard-card */
     padding: 28px; /* Consistent with dashboard-card */
     box-shadow: var(--shadow-clay-medium); /* Consistent with dashboard-card */
