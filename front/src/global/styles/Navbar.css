@@ -28,9 +28,8 @@
 
 /* 로고 */
 .side-menu-logo {
-    font-size: 28px; /* 크기 증가 */
-    font-weight: 700; /* 더 굵게 */
-    color: var(--primary-color); /* 기본 색상 적용 */
+    display: flex;
+    justify-content: center;
     margin-bottom: 32px;
     padding-left: 12px;
 }

@@ -44,15 +44,9 @@ import FocusRoom from './features/study/pages/FocusRoom';
 const initialStudyList = [];
 
 const LayoutWithSidebar = () => (
-    <div style={{ display: 'flex' }}>
+    <div className="main-layout-container">
         <NavBar />
-        <div style={{ 
-            flex: 1, 
-            marginLeft: 'max(15vw, 180px)', /* 사이드메뉴 너비만큼 여백 */
-            marginTop: '0px',
-            minHeight: '100vh',
-            boxSizing: 'border-box'
-        }}>
+        <div className="content-area">
             <Outlet />
         </div>
     </div>
