@@ -20,7 +20,7 @@
 
 .study-start-container {
     padding: 40px 40px; /* Adjusted padding: reduced top padding */
-    background: var(--gray-100); /* Soft background */
+    background: var(--primary-blue-100); /* Light blue palette background */
     min-height: 100%;
     width: 100%;
     display: flex;
@@ -32,7 +32,7 @@
 .study-start-title {
     font-size: 2.5rem; /* H1 size */
     font-weight: 700; /* Bold */
-    color: var(--gray-900); /* Primary text color */
+    color: var(--primary-blue-700); /* Darker blue for title */
     margin-bottom: 50px; /* Increased margin */
     text-align: center;
     letter-spacing: -0.5px;
@@ -48,7 +48,7 @@
 }
 
 .study-start-card {
-    background: var(--card-background); /* White background */
+    /* background: var(--card-background); */ /* Removed undefined background */
     border-radius: 20px; /* Softer corners */
     box-shadow: var(--clay-shadow-outer); /* Claymorphism shadow */
     padding: 40px 30px; /* Generous padding */
@@ -58,8 +58,16 @@
     align-items: center;
     text-align: center;
     cursor: pointer;
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border 0.3s ease;
     border: 1px solid var(--gray-300); /* Subtle border */
+}
+
+.study-start-card-personal {
+    background: #FFF7E6; /* Light Yellow Palette */
+}
+
+.study-start-card-team {
+    background: #E6F4EA; /* Light Green Palette */
 }
 
 .study-start-card:hover {
@@ -114,7 +122,7 @@
 }
 
 .study-start-card-btn {
-    background: var(--primary-blue-500); /* Primary blue background */
+    background: var(--primary-blue-700); /* Lighter dark blue background */
     color: var(--white); /* White text */
     border: none;
     border-radius: 12px; /* Rounded button */
@@ -129,7 +137,7 @@
 }
 
 .study-start-card-btn:hover {
-    background: var(--primary-blue-700); /* Darker blue on hover */
+    background: var(--primary-blue-500); /* Medium blue on hover */
     transform: translateY(-2px); /* Slight lift */
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
