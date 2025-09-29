@@ -211,7 +211,6 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick, selectedDate }) => {
                             <span className={`priority-badge ${todo.priority.toLowerCase()}`}>
                                 {todo.priority}
                             </span>
-                            <span className="todo-date">{moment(todo.date).format('YYYY-MM-DD')}</span>
                             <div className="todo-actions">
                                 <button onClick={(e) => handleEditTodo(e, todo)} className="edit-button">수정</button>
                                 <button onClick={(e) => handleDeleteTodo(e, todo.id)} className="delete-button">삭제</button>
