@@ -1,7 +1,7 @@
 .dashboard-study-time-card-component {
     background: var(--bg-white);
     border-radius: 16px;
-    box-shadow: var(--shadow-clay-1);
+    box-shadow: var(--shadow-clay-medium);
     padding: 28px;
     border: 1px solid var(--border-light);
     display: flex;
@@ -44,7 +44,13 @@
     border-radius: 6px;
     font-size: 15px;
     text-align: center;
-    -moz-appearance: textfield; /* Firefox */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-study-time-card-component .dashboard-time-detail-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
 }
 
 .dashboard-study-time-card-component .time-unit {

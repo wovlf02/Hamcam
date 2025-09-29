@@ -2,6 +2,11 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    background: var(--bg-white);
+    border-radius: 16px;
+    box-shadow: var(--shadow-clay-medium);
+    padding: 28px;
+    border: 1px solid var(--border-light);
 }
 
 .dashboard-growth-header {
@@ -31,6 +36,12 @@
 
 .growth-item {
     margin-bottom: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.growth-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
 }
 
 .growth-item-header {

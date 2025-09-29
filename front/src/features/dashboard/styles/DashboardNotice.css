@@ -2,6 +2,11 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    background: var(--bg-white);
+    border-radius: 16px;
+    box-shadow: var(--shadow-clay-medium);
+    padding: 28px;
+    border: 1px solid var(--border-light);
 }
 
 .dashboard-notice-header {
@@ -33,6 +38,14 @@
     display: flex;
     align-items: flex-start;
     gap: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.dashboard-notice-list li:hover {
+    background-color: var(--bg-light);
 }
 
 .dashboard-notice-list li:last-child {

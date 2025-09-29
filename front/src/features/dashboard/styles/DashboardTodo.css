@@ -2,7 +2,7 @@
     background: var(--bg-white);
     border-radius: 16px; /* Consistent with dashboard-card */
     padding: 28px; /* Consistent with dashboard-card */
-    box-shadow: var(--shadow-clay-1); /* Consistent with dashboard-card */
+    box-shadow: var(--shadow-clay-medium); /* Consistent with dashboard-card */
     border: 1px solid var(--border-light);
     display: flex;
     flex-direction: column;
@@ -25,25 +25,26 @@
 }
 
 .priority-sort-toggle {
-    background: var(--bg-medium);
+    background: var(--bg-light);
     color: var(--text-secondary);
-    border: none;
+    border: 1px solid var(--border-light);
     padding: 8px 16px;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-clay-light);
 }
 
 .priority-sort-toggle:hover {
-    background: var(--bg-dark);
+    background: var(--bg-medium);
     color: var(--text-primary);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-clay-light);
 }
 
 .priority-sort-toggle.active {
     background: var(--primary-blue);
     color: var(--text-white);
+    box-shadow: var(--shadow-clay-light);
 }
 
 .priority-sort-toggle.active:hover {
@@ -96,7 +97,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -109,8 +111,7 @@
     border-radius: 16px;
     width: 90%;
     max-width: 500px;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--border-medium);
 }
 
 .dashboard-modal h3 {
@@ -272,7 +273,7 @@
 
 .todo-item:hover {
     background: var(--bg-medium);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-clay-inset-light);
 }
 
 .todo-item input[type="checkbox"] {
