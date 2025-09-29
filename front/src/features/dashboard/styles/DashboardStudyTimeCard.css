@@ -1,7 +1,7 @@
 .dashboard-study-time-card-component {
-    background: linear-gradient(135deg, var(--secondary-yellow), var(--secondary-yellow-light));
+    background: #FFF7E6 !important; /* Light Yellow Palette */
     border-radius: 16px;
-    box-shadow: var(--shadow-clay-medium);
+    box-shadow: var(--shadow-clay-dark);
     padding: 28px;
     border: 1px solid var(--border-light);
     display: flex;
@@ -66,12 +66,12 @@
 }
 
 .dashboard-study-time-card-component .time-remain-label {
-    color: var(--primary-blue) !important;
+    color: var(--text-primary) !important;
     font-weight: 600 !important;
 }
 
 .dashboard-study-time-card-component .time-remain-value {
-    color: var(--primary-blue);
+    color: var(--text-primary);
     font-weight: 700;
     font-size: 1.1rem;
 }

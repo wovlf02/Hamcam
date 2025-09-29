@@ -2,9 +2,9 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: linear-gradient(135deg, var(--secondary-green), var(--secondary-green-light));
+    background: #FADFE1 !important; /* Light Red Palette */
     border-radius: 16px;
-    box-shadow: var(--shadow-clay-medium);
+    box-shadow: var(--shadow-clay-dark);
     padding: 28px;
     border: 1px solid var(--border-light);
 }

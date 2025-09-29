@@ -8,9 +8,22 @@ html, body {
 :root {
     --brand-color: #006a79;
     --bg-light: #f6f8fa;
-    --card-bg: #fff;
+    --card-bg: #fff; /* Reverted to white */
     --card-radius: 16px;
     --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Specific palette colors for dashboard cards */
+.dashboard-notice-card {
+    background: #E8F0FE; /* Light Blue */
+}
+
+.dashboard-growth-card {
+    background: #E6F4EA; /* Light Green */
+}
+
+.dashboard-study-time-card-component {
+    background: #FFF7E6; /* Light Yellow */
 }
 
 * {
