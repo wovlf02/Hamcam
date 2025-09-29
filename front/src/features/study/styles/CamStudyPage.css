@@ -9,148 +9,256 @@ html, body {
 .camstudy-root {
     margin-left: 160px; /* 사이드바 만큼 띄우기 */
     width: calc(100vw - 160px); /* 사이드바 제외한 나머지 전체 */
-    min-height: calc(100vh - 60px);
-    height: calc(100vh - 60px);
-    background: #fafbfc;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
-    justify-content: center; /* 가로 중앙 정렬! */
+    align-items: center;
+    justify-content: center;
     box-sizing: border-box;
-    padding: 0;
+    padding: 20px;
 }
 
 @media (max-width: 900px) {
     .camstudy-root {
         margin-left: 0;
         width: 100vw;
-        justify-content: flex-start;
+        padding: 16px;
     }
 }
 
 .camstudy-container {
-    margin: 0;
-    width: 900px;
-    max-width: 100%;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px #0001;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    width: 100%;
+    max-width: 1000px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 40px;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .camstudy-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 30px;
+        text-align: center;
+    }
+}
+
+.camstudy-video-container {
+    position: relative;
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
 }
 
 .camstudy-video {
-    width: 640px;
-    max-width: 100%;
-    height: 480px;
+    width: 100%;
+    height: auto;
     aspect-ratio: 4/3;
-    background: #cfcfcf;
-    border-radius: 12px;
-    object-fit: contain;
+    background: #f5f5f5;
+    object-fit: cover;
+    display: block;
+}
+
+.camstudy-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 .camstudy-unitname {
-    margin: 18px 0 0 0;
-    font-weight: 600;
-    font-size: 22px;
+    font-weight: 700;
+    font-size: 32px;
+    color: #2d3748;
+    margin-bottom: 20px;
     text-align: left;
-    width: 100%;
 }
 
-.camstudy-timer-row {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    margin: 24px 0 0 0;
+@media (max-width: 1024px) {
+    .camstudy-unitname {
+        text-align: center;
+        font-size: 28px;
+    }
+}
+
+.camstudy-timer-section {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    border-radius: 20px;
+    padding: 30px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
 }
 
 .camstudy-timer {
-    font-weight: 700;
-    font-size: 28px;
-    color: #111;
+    font-weight: 800;
+    font-size: 48px;
+    color: white;
     display: flex;
     align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-family: 'Courier New', monospace;
 }
 
 .camstudy-timer-dot {
     display: inline-block;
-    width: 22px;
-    height: 22px;
-    background: #111;
+    width: 12px;
+    height: 12px;
+    background: #10b981;
     border-radius: 50%;
-    margin-right: 10px;
+    margin-right: 15px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.camstudy-timer-row {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
 }
 
 .camstudy-btn-play {
-    background: #111;
+    background: linear-gradient(135deg, #10b981, #059669);
     color: white;
     border: none;
-    border-radius: 8px;
-    padding: 10px 32px;
-    font-size: 20px;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.camstudy-btn-play:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
 }
 
 .camstudy-btn-play:disabled {
-    background: #aaa;
+    background: linear-gradient(135deg, #9ca3af, #6b7280);
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 .camstudy-btn-pause {
-    background: #e0e0e0;
-    color: #222;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
     border: none;
-    border-radius: 8px;
-    padding: 10px 32px;
-    font-size: 20px;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+.camstudy-btn-pause:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
 }
 
 .camstudy-btn-pause:disabled {
-    background: #eee;
-    color: #999;
+    background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+    color: #9ca3af;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 .camstudy-alert {
-    background: #fff8e1;
-    border: 1px solid #ffecb3;
-    border-radius: 8px;
-    padding: 18px 20px;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 2px solid #f59e0b;
+    border-radius: 16px;
+    padding: 25px;
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    margin-top: 36px;
-    width: 100%;
-    max-width: 700px;
+    gap: 15px;
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.2);
 }
 
 .camstudy-alert-icon {
-    color: #ffb300;
-    font-size: 22px;
+    color: #d97706;
+    font-size: 28px;
     margin-top: 2px;
 }
 
 .camstudy-alert-title {
-    font-weight: 600;
-    color: #b48a00;
-    margin-bottom: 4px;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 8px;
+    font-size: 18px;
 }
 
 .camstudy-alert-desc {
-    color: #b48a00;
+    color: #a16207;
     font-size: 15px;
+    line-height: 1.6;
+}
+
+.camstudy-status {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .camstudy-warning {
-    margin-top: 18px;
-    color: #f44336;
-    font-weight: bold;
-    font-size: 18px;
+    color: #dc2626;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #fee2e2;
+    padding: 15px;
+    border-radius: 12px;
+    border: 2px solid #fca5a5;
+}
+
+.camstudy-warning::before {
+    content: "⚠️";
+    font-size: 20px;
+}
+
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #6b7280;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 video {
