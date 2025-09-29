@@ -24,6 +24,33 @@
     align-items: center;
 }
 
+.priority-sort-toggle {
+    background: var(--bg-medium);
+    color: var(--text-secondary);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.priority-sort-toggle:hover {
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.priority-sort-toggle.active {
+    background: var(--primary-blue);
+    color: var(--text-white);
+}
+
+.priority-sort-toggle.active:hover {
+    background: var(--primary-blue-dark);
+    box-shadow: var(--shadow-md);
+}
+
 .todo-sort-select {
     padding: 8px 12px;
     border: 1px solid var(--border-medium);

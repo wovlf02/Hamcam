@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import moment from 'moment';
 import api from '../../../api/api';
 import '../styles/DashboardTodo.css';
@@ -9,7 +9,9 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
     const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
     const [priority, setPriority] = useState('NORMAL');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [sortOrder, setSortOrder] = useState('NEWEST'); // NEW: State for sorting order
+    const [sortPriorityOrder, setSortPriorityOrder] = useState('DESC'); // 'DESC', 'ASC'
+
+
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingTodo, setEditingTodo] = useState(null); // State to hold the todo being edited
@@ -115,29 +117,36 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
     // NEW: Memoized sorted todos
     const sortedTodos = useMemo(() => {
         const sorted = [...todos];
-        switch (sortOrder) {
-            case 'NEWEST':
-                return sorted.sort((a, b) => moment(b.date).valueOf() - moment(a.date).valueOf());
-            case 'OLDEST':
-                return sorted.sort((a, b) => moment(a.date).valueOf() - moment(b.date).valueOf());
-            case 'PRIORITY':
-                const priorityOrder = { 'HIGH': 3, 'NORMAL': 2, 'LOW': 1 };
-                return sorted.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
-            default:
-                return sorted;
+        const priorityOrder = { 'HIGH': 3, 'NORMAL': 2, 'LOW': 1 };
+
+        if (sortPriorityOrder === 'DESC') {
+            return sorted.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
+        } else if (sortPriorityOrder === 'ASC') {
+            return sorted.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+        } else {
+            return sorted; // 'NONE' or any other value, return original order
         }
-    }, [todos, sortOrder]);
+    }, [todos, sortPriorityOrder]);
 
     return (
         <div className="dashboard-todo">
             <div className="dashboard-todo-header">
-                <h3>할일 목록</h3>
+                <h3>{moment(selectedDate).format('MM월 DD일')} 할일</h3>
+
                 <div className="todo-header-controls">
-                    <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className="todo-sort-select">
-                        <option value="NEWEST">최신순</option>
-                        <option value="OLDEST">오래된순</option>
-                        <option value="PRIORITY">중요도순</option>
-                    </select>
+                    <button
+                        className={`priority-sort-toggle ${sortPriorityOrder !== 'NONE' ? 'active' : ''}`}
+                        onClick={() => {
+                            if (sortPriorityOrder === 'DESC') {
+                                setSortPriorityOrder('ASC');
+                            } else {
+                                setSortPriorityOrder('DESC');
+                            }
+                        }}
+                    >
+                        {sortPriorityOrder === 'DESC' && '중요도순 ▼'}
+                        {sortPriorityOrder === 'ASC' && '중요도순 ▲'}
+                    </button>
                     <button onClick={() => setIsModalOpen(true)}>+ 새 할일</button>
                 </div>
             </div>
