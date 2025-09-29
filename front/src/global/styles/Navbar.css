@@ -92,6 +92,7 @@
 
 .side-menu-list-item {
     margin-bottom: 8px; /* 간격 조정 */
+    list-style: none; /* Remove bullet point */
 }
 
 /* 메뉴 버튼 (공통 스타일) */
@@ -110,7 +111,7 @@
 
 /* 메뉴 버튼 호버 */
 .side-menu-button:hover, .side-submenu-button:hover {
-    background-color: var(--bg-light); /* Use consistent light background */
+    background-color: var(--bg-medium); /* Use consistent light background */
     color: var(--text-primary);
     box-shadow: var(--shadow-clay-light);
 }
@@ -123,18 +124,6 @@
     box-shadow: var(--shadow-clay-inset-light);
 }
 
-/* 서브메뉴 리스트 */
-.side-submenu-list {
-    list-style: none;
-    padding-left: 24px; /* 들여쓰기 조정 */
-    margin-top: 8px;
-    margin-bottom: 8px;
-}
-
-.side-submenu-item {
-    margin-bottom: 4px;
-}
-
 /* 서브메뉴 버튼 */
 .side-submenu-button {
     font-size: 15px;
@@ -143,7 +132,7 @@
 
 /* 활성 서브메뉴 버튼 */
 .side-submenu-button.active {
-    background-color: transparent; /* 배경 없음 */
+    background-color: var(--primary-blue-light); /* Set background to match main active button */
     color: var(--primary-blue);
     font-weight: 700;
 }

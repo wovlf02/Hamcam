@@ -99,17 +99,22 @@ body {
     color: #222;
     border-radius: 6px;
     font-weight: 600;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s, color 0.15s, border-left 0.15s, padding-left 0.15s;
     text-align: left;
     padding-left: 12px;
 }
 
-.side-menu-button:hover,
-.side-menu-button.active {
-    background-color: #e2e6ea;
+.side-menu-button:hover {
+    background-color: #E8F0FE; /* Use primary-blue-light for hover */
     color: var(--brand-color);
 }
 
+.side-menu-button.active {
+    background-color: #E8F0FE; /* Use primary-blue-light for active */
+    color: var(--brand-color);
+    border-left: 4px solid var(--brand-color);
+    padding-left: 8px; /* Adjust padding for border */
+}
 .side-menu-list-item.active {
     background-color: #e2e6ea;
 }
