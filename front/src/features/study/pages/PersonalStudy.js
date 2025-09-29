@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import '../styles/PersonalStudy.css'; // Import the new CSS file
 
 const PersonalStudy = () => {
     const [unitName, setUnitName] = useState('');
@@ -32,99 +33,64 @@ const PersonalStudy = () => {
     };
 
     return (
-        <div style={{padding: '2rem', textAlign: 'center', maxWidth: 400, margin: '0 auto'}}>
-            <h1>개인 공부 설정</h1>
-            <div style={{marginBottom: '1.5rem', color: '#d32f2f', fontWeight: 'bold', fontSize: '1.1rem'}}>
+        <div className="personal-study-container">
+            <h1 className="personal-study-title">개인 공부 설정</h1>
+            <div className="personal-study-warning">
                 {warningMsg}
             </div>
-            <div style={{marginBottom: '1rem'}}>
+            <div className="personal-study-form-group">
                 <label>
-                    <span style={{display: 'block', marginBottom: '0.5rem'}}>단원명:</span>
+                    <span className="personal-study-label">단원명:</span>
                     <input
                         type="text"
                         value={unitName}
                         onChange={e => setUnitName(e.target.value)}
                         placeholder="예: 3단원 함수"
-                        style={{
-                            width: '90%',
-                            padding: '8px',
-                            fontSize: '1rem',
-                            borderRadius: '5px',
-                            border: '1px solid #ccc'
-                        }}
+                        className="personal-study-input"
                     />
                 </label>
             </div>
-            <div style={{marginBottom: '1.5rem'}}>
+            <div className="personal-study-form-group">
                 <label>
-                    <span style={{display: 'block', marginBottom: '0.5rem'}}>학습 시간:</span>
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8}}>
+                    <span className="personal-study-label">학습 시간:</span>
+                    <div className="personal-study-time-inputs">
                         <input
                             type="number"
                             min="0"
                             value={minutes}
                             onChange={e => setMinutes(Number(e.target.value))}
-                            style={{
-                                width: '60px',
-                                padding: '8px',
-                                fontSize: '1rem',
-                                borderRadius: '5px',
-                                border: '1px solid #ccc'
-                            }}
+                            className="personal-study-time-input"
                         />
-                        <span>분</span>
+                        <span className="personal-study-time-unit">분</span>
                         <input
                             type="number"
                             min="0"
                             max="59"
                             value={seconds}
                             onChange={handleSecondsChange}
-                            style={{
-                                width: '60px',
-                                padding: '8px',
-                                fontSize: '1rem',
-                                borderRadius: '5px',
-                                border: '1px solid #ccc'
-                            }}
+                            className="personal-study-time-input"
                         />
-                        <span>초</span>
+                        <span className="personal-study-time-unit">초</span>
                     </div>
                 </label>
             </div>
             <button
                 onClick={handleStart}
                 disabled={!isStartEnabled}
-                style={{
-                    padding: '12px 28px',
-                    background: isStartEnabled ? '#4CAF50' : '#aaa',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    fontSize: '1.1rem',
-                    cursor: isStartEnabled ? 'pointer' : 'not-allowed',
-                    marginBottom: '1.5rem'
-                }}
+                className="personal-study-start-btn"
             >
                 공부 시작
             </button>
             <div>
                 <button
                     onClick={handleFocusMsg}
-                    style={{
-                        background: '#1976d2',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        padding: '8px 16px',
-                        fontSize: '0.95rem',
-                        cursor: 'pointer'
-                    }}
+                    className="personal-study-focus-btn"
                 >
                     {showFocusMsg ? '메시지 숨기기' : '집중 메시지 보기'}
                 </button>
             </div>
             {showFocusMsg && (
-                <div style={{marginTop: '1rem', color: '#388e3c', fontWeight: 'bold'}}>
+                <div className="personal-study-focus-msg">
                     {focusMsg}
                 </div>
             )}
