@@ -37,21 +37,25 @@
     color: var(--text-primary);
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0px; /* Eliminated flex gap */
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-    border-radius: 8px;
-    padding: 8px;
-    border: 1px solid var(--border-light);
-    background-color: var(--bg-white);
-    position: relative; /* For absolute positioning of elements */
-    padding-right: 100px; /* Make space for meta info */
+    transition: all 0.3s ease; /* Smoother transitions for all properties */
+    border-radius: 16px; /* Softer corners */
+    padding: 12px;
+    border: none; /* Remove hard border */
+    background-color: var(--bg-light); /* Changed to light gray palette color */
+    box-shadow: var(--shadow-clay-light); /* Soft outer shadow */
+    position: relative;
+    padding-right: 100px;
+    backdrop-filter: blur(3px); /* Subtle glassmorphism blur */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle glassmorphism border */
 }
 
 .dashboard-notice-list li:hover {
-    background-color: var(--bg-light);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
+    background-color: var(--bg-light); /* Lighter background on hover */
+    transform: translateY(-3px); /* More pronounced lift */
+    box-shadow: var(--shadow-clay-medium); /* Stronger shadow on hover */
+    border-color: var(--primary-blue-light); /* Highlight border on hover */
 }
 
 .dashboard-notice-list li:last-child {
@@ -60,8 +64,8 @@
 
 .notice-meta {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 12px; /* Adjust top for new padding */
+    right: 12px; /* Adjust right for new padding */
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -72,15 +76,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px; /* Keep a small margin for title below meta */
+    margin-bottom: 0px;
+    padding-left: 8px; /* Indent title */
 }
 
 .notice-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--primary-blue-dark); /* More prominent title color */
     flex-grow: 1;
-    margin-right: 10px; /* Ensure title doesn't overlap meta */
+    margin-right: 10px;
 }
 
 .notice-views {
@@ -94,17 +99,17 @@
 
 .notice-content {
     font-size: 0.95rem;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     line-height: 1.5;
-    margin-bottom: 8px;
+    margin-bottom: 0px; /* Removed margin-bottom */
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    background-color: var(--bg-light); /* Subtle background for content */
+    background-color: rgba(255, 255, 255, 0.6); /* More translucent content background */
     padding: 8px;
-    border-radius: 6px;
+    border-radius: 8px; /* Consistent border-radius */
 }
 
 .notice-date {

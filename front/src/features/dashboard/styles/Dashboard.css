@@ -359,7 +359,7 @@
     display: inline-block;
     min-width: 38px;
     font-weight: 600;
-    color: #2563eb;
+    /* color: #2563eb; */ /* Removed conflicting color */
     margin-right: 8px;
 }
 
