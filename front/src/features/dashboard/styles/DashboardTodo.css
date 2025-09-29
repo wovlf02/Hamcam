@@ -294,9 +294,9 @@
 }
 
 .priority-badge {
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.75rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 0.5rem;
     font-weight: 600;
     text-transform: uppercase;
 }
