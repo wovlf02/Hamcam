@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 
-@RestController
-@RequestMapping("/api/livekit")
+// @RestController  // LiveKit 비활성화
+// @RequestMapping("/api/livekit")
 public class LivekitController {
 
     private static final String ATTR_USER_ID = "userId";

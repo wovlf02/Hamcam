@@ -138,4 +138,55 @@ public class MathProblemController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    /**
+     * 학년별 맞춤 문제 조회 (랜덤)
+     * 1학년 → 어려운 문제, 5학년 → 쉬운 문제
+     */
+    @GetMapping("/problems/grade/{studentGrade}")
+    public ResponseEntity<List<MathProblem>> getProblemsByStudentGrade(
+            @PathVariable Integer studentGrade,
+            @RequestParam(defaultValue = "10") int count) {
+        try {
+            log.info("학년별 문제 조회 요청 - 학년: {}, 문제 수: {}", studentGrade, count);
+            
+            // 학년 유효성 검사
+            if (studentGrade < 1 || studentGrade > 5) {
+                log.warn("유효하지 않은 학년: {}", studentGrade);
+                return ResponseEntity.badRequest().build();
+            }
+            
+            List<MathProblem> problems = mathProblemService.getProblemsByStudentGrade(studentGrade, count);
+            log.info("학년 {}에 대해 {} 개의 문제 조회 완료", studentGrade, problems.size());
+            
+            return ResponseEntity.ok(problems);
+        } catch (Exception e) {
+            log.error("학년별 문제 조회 실패 - 학년: {}, 문제 수: {}", studentGrade, count, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * 학년별 전체 문제 조회 (난이도 필터링)
+     */
+    @GetMapping("/problems/grade/{studentGrade}/all")
+    public ResponseEntity<List<MathProblem>> getAllProblemsByStudentGrade(@PathVariable Integer studentGrade) {
+        try {
+            log.info("학년별 전체 문제 조회 요청 - 학년: {}", studentGrade);
+            
+            // 학년 유효성 검사
+            if (studentGrade < 1 || studentGrade > 5) {
+                log.warn("유효하지 않은 학년: {}", studentGrade);
+                return ResponseEntity.badRequest().build();
+            }
+            
+            List<MathProblem> problems = mathProblemService.getAllProblemsByStudentGrade(studentGrade);
+            log.info("학년 {}에 대해 {} 개의 전체 문제 조회 완료", studentGrade, problems.size());
+            
+            return ResponseEntity.ok(problems);
+        } catch (Exception e) {
+            log.error("학년별 전체 문제 조회 실패 - 학년: {}", studentGrade, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

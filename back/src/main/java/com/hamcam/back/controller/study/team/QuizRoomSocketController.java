@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
-@Controller
+// @Controller  // LiveKit 비활성화
 @RequiredArgsConstructor
 public class QuizRoomSocketController {
 

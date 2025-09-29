@@ -10,11 +10,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '지수법칙을 이용한 계산',
         difficultyGrade: 5,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_1번_공통.png',
         difficulty: 'easy',
-        correctAnswer: '3'
+        correctAnswer: '2'
     },
     {
         id: 2,
@@ -23,11 +22,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '미분계수 정의를 이용한 값 계산',
         difficultyGrade: 5,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_2번_공통.png',
         difficulty: 'easy',
-        correctAnswer: '2'
+        correctAnswer: '1'
     },
     {
         id: 3,
@@ -36,11 +34,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '삼각함수의 간단한 성질',
         difficultyGrade: 5,
-        answer: '4',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_3번_공통.png',
         difficulty: 'easy',
-        correctAnswer: '4'
+        correctAnswer: '3'
     },
     {
         id: 4,
@@ -49,7 +46,6 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '수열의 극한',
         difficultyGrade: 4,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_4번_공통.png',
         difficulty: 'easy',
@@ -62,7 +58,6 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '함수의 연속성',
         difficultyGrade: 4,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_5번_공통.png',
         difficulty: 'easy',
@@ -75,11 +70,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '등비수열의 합',
         difficultyGrade: 4,
-        answer: '5',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_6번_공통.png',
         difficulty: 'easy',
-        correctAnswer: '5'
+        correctAnswer: '4'
     },
     {
         id: 7,
@@ -88,11 +82,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '삼각함수의 그래프 및 주기',
         difficultyGrade: 4,
-        answer: '1',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_7번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '1'
+        correctAnswer: '5'
     },
     {
         id: 8,
@@ -101,11 +94,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '정적분 계산',
         difficultyGrade: 4,
-        answer: '1',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_8번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '1'
+        correctAnswer: '5'
     },
     {
         id: 9,
@@ -114,11 +106,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '등차수열의 합과 일반항',
         difficultyGrade: 3,
-        answer: '5',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_9번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '5'
+        correctAnswer: '2'
     },
     {
         id: 10,
@@ -127,11 +118,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '삼차함수의 극대/극소와 그래프 개형 추론',
         difficultyGrade: 2,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_10번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '3'
+        correctAnswer: '1'
     },
     {
         id: 11,
@@ -140,11 +130,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '함수의 최댓값과 최솟값',
         difficultyGrade: 3,
-        answer: '4',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_11번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '4'
+        correctAnswer: '5'
     },
     {
         id: 12,
@@ -153,7 +142,6 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '로그함수의 성질',
         difficultyGrade: 3,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_12번_공통.png',
         difficulty: 'medium',
@@ -166,11 +154,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '수열의 합의 성질',
         difficultyGrade: 2,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_13번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '3'
+        correctAnswer: '4'
     },
     {
         id: 14,
@@ -179,11 +166,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '미분 가능성 및 함수의 추론',
         difficultyGrade: 1,
-        answer: '1',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_14번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '1'
+        correctAnswer: '2'
     },
     {
         id: 15,
@@ -192,11 +178,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '정적분과 급수의 관계',
         difficultyGrade: 1,
-        answer: '5',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_15번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '5'
+        correctAnswer: '1'
     },
 
     // ===========================================
@@ -209,11 +194,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '지수방정식의 해',
         difficultyGrade: 4,
-        answer: '8',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_06_수학_16번_공통.png',
         difficulty: 'easy',
-        correctAnswer: '8'
+        correctAnswer: '2'
     },
     {
         id: 17,
@@ -222,11 +206,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '삼각함수의 값',
         difficultyGrade: 4,
-        answer: '12',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_06_수학_17번_공통.png',
         difficulty: 'easy',
-        correctAnswer: '12'
+        correctAnswer: '6'
     },
     {
         id: 18,
@@ -235,11 +218,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '수열의 일반항',
         difficultyGrade: 3,
-        answer: '21',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_06_수학_18번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '21'
+        correctAnswer: '133'
     },
     {
         id: 19,
@@ -248,11 +230,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '함수의 극한값',
         difficultyGrade: 3,
-        answer: '15',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_06_수학_19번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '15'
+        correctAnswer: '8'
     },
     {
         id: 20,
@@ -261,11 +242,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '정적분의 계산',
         difficultyGrade: 2,
-        answer: '36',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_06_수학_20번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '36'
+        correctAnswer: '85'
     },
     {
         id: 21,
@@ -274,11 +254,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '함수의 최댓값 구하기',
         difficultyGrade: 2,
-        answer: '9',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_06_수학_21번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '9'
+        correctAnswer: '42'
     },
     {
         id: 22,
@@ -287,11 +266,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '수열의 합과 극한',
         difficultyGrade: 1,
-        answer: '168',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_06_수학_22번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '168'
+        correctAnswer: '38'
     },
 
     // ===========================================
@@ -305,11 +283,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '극한의 계산',
         difficultyGrade: 4,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_23번_미적분.png',
         difficulty: 'medium',
-        correctAnswer: '2'
+        correctAnswer: '1'
     },
     {
         id: 24,
@@ -318,11 +295,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '합성함수의 미분',
         difficultyGrade: 3,
-        answer: '4',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_24번_미적분.png',
         difficulty: 'medium',
-        correctAnswer: '4'
+        correctAnswer: '2'
     },
     {
         id: 25,
@@ -331,11 +307,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '정적분과 넓이',
         difficultyGrade: 3,
-        answer: '1',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_25번_미적분.png',
         difficulty: 'medium',
-        correctAnswer: '1'
+        correctAnswer: '4'
     },
     {
         id: 26,
@@ -344,11 +319,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '매개변수 방정식의 미분',
         difficultyGrade: 2,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_26번_미적분.png',
         difficulty: 'hard',
-        correctAnswer: '3'
+        correctAnswer: '2'
     },
     {
         id: 27,
@@ -357,11 +331,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '이계도함수와 극값',
         difficultyGrade: 2,
-        answer: '5',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_27번_미적분.png',
         difficulty: 'hard',
-        correctAnswer: '5'
+        correctAnswer: '3'
     },
     {
         id: 28,
@@ -370,11 +343,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '속도와 가속도',
         difficultyGrade: 1,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_06_수학_28번_미적분.png',
         difficulty: 'hard',
-        correctAnswer: '2'
+        correctAnswer: '1'
     },
     {
         id: 29,
@@ -383,11 +355,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '정적분의 활용',
         difficultyGrade: 2,
-        answer: '24',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_06_수학_29번_미적분.png',
         difficulty: 'hard',
-        correctAnswer: '24'
+        correctAnswer: '109'
     },
     {
         id: 30,
@@ -396,11 +367,210 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '미분방정식과 실생활 문제',
         difficultyGrade: 1,
-        answer: '45',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_06_수학_30번_미적분.png',
         difficulty: 'hard',
-        correctAnswer: '45'
+        correctAnswer: '25'
+    },
+
+    // ===========================================
+    // 2025년 6월 모의평가 - 확률과통계 (23-30번)
+    // ===========================================  
+    {
+        id: 77,
+        examMonthYear: '2025_06',
+        problemNumber: 23,
+        subject: '확률과통계',
+        subjectDetail: '경우의 수',
+        difficultyGrade: 4,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_23번_확률과통계.png',
+        difficulty: 'medium',
+        correctAnswer: '3'
+    },
+    {
+        id: 78,
+        examMonthYear: '2025_06',
+        problemNumber: 24,
+        subject: '확률과통계',
+        subjectDetail: '순열',
+        difficultyGrade: 3,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_24번_확률과통계.png',
+        difficulty: 'medium',
+        correctAnswer: '4'
+    },
+    {
+        id: 79,
+        examMonthYear: '2025_06',
+        problemNumber: 25,
+        subject: '확률과통계',
+        subjectDetail: '조합',
+        difficultyGrade: 3,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_25번_확률과통계.png',
+        difficulty: 'medium',
+        correctAnswer: '3'
+    },
+    {
+        id: 80,
+        examMonthYear: '2025_06',
+        problemNumber: 26,
+        subject: '확률과통계',
+        subjectDetail: '확률의 기본성질',
+        difficultyGrade: 2,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_26번_확률과통계.png',
+        difficulty: 'hard',
+        correctAnswer: '5'
+    },
+    {
+        id: 81,
+        examMonthYear: '2025_06',
+        problemNumber: 27,
+        subject: '확률과통계',
+        subjectDetail: '조건부확률',
+        difficultyGrade: 2,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_27번_확률과통계.png',
+        difficulty: 'hard',
+        correctAnswer: '1'
+    },
+    {
+        id: 82,
+        examMonthYear: '2025_06',
+        problemNumber: 28,
+        subject: '확률과통계',
+        subjectDetail: '확률분포',
+        difficultyGrade: 1,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_28번_확률과통계.png',
+        difficulty: 'hard',
+        correctAnswer: '5'
+    },
+    {
+        id: 83,
+        examMonthYear: '2025_06',
+        problemNumber: 29,
+        subject: '확률과통계',
+        subjectDetail: '이항분포',
+        difficultyGrade: 2,
+        type: 'SHORT_ANSWER',
+        imagePath: '/math_image/단답형/2025_06_수학_29번_확률과통계.png',
+        difficulty: 'hard',
+        correctAnswer: '44'
+    },
+    {
+        id: 84,
+        examMonthYear: '2025_06',
+        problemNumber: 30,
+        subject: '확률과통계',
+        subjectDetail: '모평균의 추정',
+        difficultyGrade: 1,
+        type: 'SHORT_ANSWER',
+        imagePath: '/math_image/단답형/2025_06_수학_30번_확률과통계.png',
+        difficulty: 'hard',
+        correctAnswer: '115'
+    },
+
+    // ===========================================
+    // 2025년 6월 모의평가 - 기하 (23-30번)
+    // ===========================================
+    {
+        id: 85,
+        examMonthYear: '2025_06',
+        problemNumber: 23,
+        subject: '기하',
+        subjectDetail: '벡터의 연산',
+        difficultyGrade: 4,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_23번_기하.png',
+        difficulty: 'medium',
+        correctAnswer: '2'
+    },
+    {
+        id: 86,
+        examMonthYear: '2025_06',
+        problemNumber: 24,
+        subject: '기하',
+        subjectDetail: '벡터의 내적',
+        difficultyGrade: 3,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_24번_기하.png',
+        difficulty: 'medium',
+        correctAnswer: '4'
+    },
+    {
+        id: 87,
+        examMonthYear: '2025_06',
+        problemNumber: 25,
+        subject: '기하',
+        subjectDetail: '직선의 방정식',
+        difficultyGrade: 3,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_25번_기하.png',
+        difficulty: 'medium',
+        correctAnswer: '2'
+    },
+    {
+        id: 88,
+        examMonthYear: '2025_06',
+        problemNumber: 26,
+        subject: '기하',
+        subjectDetail: '원의 방정식',
+        difficultyGrade: 2,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_26번_기하.png',
+        difficulty: 'hard',
+        correctAnswer: '1'
+    },
+    {
+        id: 89,
+        examMonthYear: '2025_06',
+        problemNumber: 27,
+        subject: '기하',
+        subjectDetail: '포물선',
+        difficultyGrade: 2,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_27번_기하.png',
+        difficulty: 'hard',
+        correctAnswer: '3'
+    },
+    {
+        id: 90,
+        examMonthYear: '2025_06',
+        problemNumber: 28,
+        subject: '기하',
+        subjectDetail: '공간벡터',
+        difficultyGrade: 1,
+        type: 'MULTIPLE_CHOICE',
+        imagePath: '/math_image/객관식/2025_06_수학_28번_기하.png',
+        difficulty: 'hard',
+        correctAnswer: '4'
+    },
+    {
+        id: 91,
+        examMonthYear: '2025_06',
+        problemNumber: 29,
+        subject: '기하',
+        subjectDetail: '타원',
+        difficultyGrade: 2,
+        type: 'SHORT_ANSWER',
+        imagePath: '/math_image/단답형/2025_06_수학_29번_기하.png',
+        difficulty: 'hard',
+        correctAnswer: '20'
+    },
+    {
+        id: 92,
+        examMonthYear: '2025_06',
+        problemNumber: 30,
+        subject: '기하',
+        subjectDetail: '쌍곡선',
+        difficultyGrade: 1,
+        type: 'SHORT_ANSWER',
+        imagePath: '/math_image/단답형/2025_06_수학_30번_기하.png',
+        difficulty: 'hard',
+        correctAnswer: '36'
     },
 
     // ===========================================
@@ -413,11 +583,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '지수법칙을 이용한 계산',
         difficultyGrade: 5,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_1번_공통.png',
         difficulty: 'easy',
-        correctAnswer: '2'
+        correctAnswer: '4'
     },
     {
         id: 32,
@@ -426,11 +595,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '함수의 극한',
         difficultyGrade: 5,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_2번_공통.png',
         difficulty: 'easy',
-        correctAnswer: '3'
+        correctAnswer: '4'
     },
     {
         id: 33,
@@ -439,11 +607,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '등차수열',
         difficultyGrade: 5,
-        answer: '4',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_3번_공통.png',
         difficulty: 'easy',
-        correctAnswer: '4'
+        correctAnswer: '5'
     },
     {
         id: 34,
@@ -452,7 +619,6 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '합성함수',
         difficultyGrade: 5,
-        answer: '1',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_4번_공통.png',
         difficulty: 'easy',
@@ -465,7 +631,6 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '로그함수',
         difficultyGrade: 4,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_5번_공통.png',
         difficulty: 'medium',
@@ -478,7 +643,6 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '연속함수',
         difficultyGrade: 4,
-        answer: '5',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_6번_공통.png',
         difficulty: 'medium',
@@ -491,11 +655,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '도함수',
         difficultyGrade: 4,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_7번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '3'
+        correctAnswer: '1'
     },
     {
         id: 38,
@@ -504,11 +667,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '등비수열',
         difficultyGrade: 4,
-        answer: '4',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_8번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '4'
+        correctAnswer: '3'
     },
     {
         id: 39,
@@ -517,11 +679,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '삼각함수',
         difficultyGrade: 3,
-        answer: '1',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_9번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '1'
+        correctAnswer: '2'
     },
     {
         id: 40,
@@ -530,11 +691,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '함수의 극한',
         difficultyGrade: 3,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_10번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '2'
+        correctAnswer: '3'
     },
     {
         id: 41,
@@ -543,11 +703,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '도함수의 활용',
         difficultyGrade: 3,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_11번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '3'
+        correctAnswer: '5'
     },
     {
         id: 42,
@@ -556,11 +715,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '정적분',
         difficultyGrade: 3,
-        answer: '4',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_12번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '4'
+        correctAnswer: '1'
     },
     {
         id: 43,
@@ -569,11 +727,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '지수함수',
         difficultyGrade: 2,
-        answer: '5',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_13번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '5'
+        correctAnswer: '4'
     },
     {
         id: 44,
@@ -582,11 +739,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '삼각함수의 덧셈정리',
         difficultyGrade: 2,
-        answer: '1',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_14번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '1'
+        correctAnswer: '3'
     },
     {
         id: 45,
@@ -595,11 +751,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '함수의 극값',
         difficultyGrade: 2,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_15번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '2'
+        correctAnswer: '5'
     },
 
     // ===========================================
@@ -612,11 +767,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '수열의 합',
         difficultyGrade: 3,
-        answer: '12',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_16번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '12'
+        correctAnswer: '8'
     },
     {
         id: 47,
@@ -625,11 +779,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '우극한과 좌극한',
         difficultyGrade: 3,
-        answer: '8',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_17번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '8'
+        correctAnswer: '17'
     },
     {
         id: 48,
@@ -638,11 +791,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '접선의 기울기',
         difficultyGrade: 3,
-        answer: '15',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_18번_공통.png',
         difficulty: 'medium',
-        correctAnswer: '15'
+        correctAnswer: '30'
     },
     {
         id: 49,
@@ -651,11 +803,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '정적분의 활용',
         difficultyGrade: 2,
-        answer: '24',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_19번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '24'
+        correctAnswer: '10'
     },
     {
         id: 50,
@@ -664,11 +815,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '로그의 성질',
         difficultyGrade: 2,
-        answer: '7',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_20번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '7'
+        correctAnswer: '12'
     },
     {
         id: 51,
@@ -677,11 +827,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '삼각함수의 그래프',
         difficultyGrade: 2,
-        answer: '18',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_21번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '18'
+        correctAnswer: '296'
     },
     {
         id: 52,
@@ -690,11 +839,10 @@ export const mathProblems = [
         subject: '공통',
         subjectDetail: '함수의 증감',
         difficultyGrade: 1,
-        answer: '36',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_22번_공통.png',
         difficulty: 'hard',
-        correctAnswer: '36'
+        correctAnswer: '73'
     },
 
     // ===========================================
@@ -707,11 +855,10 @@ export const mathProblems = [
         subject: '확률과통계',
         subjectDetail: '순열',
         difficultyGrade: 4,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_23번_확률과통계.png',
         difficulty: 'medium',
-        correctAnswer: '3'
+        correctAnswer: '4'
     },
     {
         id: 54,
@@ -720,11 +867,10 @@ export const mathProblems = [
         subject: '확률과통계',
         subjectDetail: '조건부확률',
         difficultyGrade: 3,
-        answer: '4',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_24번_확률과통계.png',
         difficulty: 'medium',
-        correctAnswer: '4'
+        correctAnswer: '3'
     },
     {
         id: 55,
@@ -733,11 +879,10 @@ export const mathProblems = [
         subject: '확률과통계',
         subjectDetail: '확률분포',
         difficultyGrade: 3,
-        answer: '1',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_25번_확률과통계.png',
         difficulty: 'medium',
-        correctAnswer: '1'
+        correctAnswer: '5'
     },
     {
         id: 56,
@@ -746,7 +891,6 @@ export const mathProblems = [
         subject: '확률과통계',
         subjectDetail: '중복조합',
         difficultyGrade: 2,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_26번_확률과통계.png',
         difficulty: 'hard',
@@ -759,11 +903,10 @@ export const mathProblems = [
         subject: '확률과통계',
         subjectDetail: '독립사건',
         difficultyGrade: 2,
-        answer: '5',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_27번_확률과통계.png',
         difficulty: 'hard',
-        correctAnswer: '5'
+        correctAnswer: '4'
     },
     {
         id: 58,
@@ -772,11 +915,10 @@ export const mathProblems = [
         subject: '확률과통계',
         subjectDetail: '모평균의 추정',
         difficultyGrade: 1,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_28번_확률과통계.png',
         difficulty: 'hard',
-        correctAnswer: '3'
+        correctAnswer: '2'
     },
     {
         id: 59,
@@ -785,11 +927,10 @@ export const mathProblems = [
         subject: '확률과통계',
         subjectDetail: '이항정리',
         difficultyGrade: 2,
-        answer: '32',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_29번_확률과통계.png',
         difficulty: 'hard',
-        correctAnswer: '32'
+        correctAnswer: '23'
     },
     {
         id: 60,
@@ -798,11 +939,10 @@ export const mathProblems = [
         subject: '확률과통계',
         subjectDetail: '확률의 곱셈정리',
         difficultyGrade: 1,
-        answer: '20',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_30번_확률과통계.png',
         difficulty: 'hard',
-        correctAnswer: '20'
+        correctAnswer: '80'
     },
 
     // ===========================================
@@ -815,11 +955,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '수열의 극한',
         difficultyGrade: 4,
-        answer: '4',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_23번_미적분.png',
         difficulty: 'medium',
-        correctAnswer: '4'
+        correctAnswer: '1'
     },
     {
         id: 62,
@@ -828,11 +967,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '여러가지 함수의 미분',
         difficultyGrade: 3,
-        answer: '1',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_24번_미적분.png',
         difficulty: 'medium',
-        correctAnswer: '1'
+        correctAnswer: '4'
     },
     {
         id: 63,
@@ -841,7 +979,6 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '여러가지 함수의 적분',
         difficultyGrade: 3,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_25번_미적분.png',
         difficulty: 'medium',
@@ -854,11 +991,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '도함수의 활용',
         difficultyGrade: 2,
-        answer: '5',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_26번_미적분.png',
         difficulty: 'hard',
-        correctAnswer: '5'
+        correctAnswer: '1'
     },
     {
         id: 65,
@@ -867,11 +1003,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '정적분의 활용',
         difficultyGrade: 2,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_27번_미적분.png',
         difficulty: 'hard',
-        correctAnswer: '3'
+        correctAnswer: '1'
     },
     {
         id: 66,
@@ -880,11 +1015,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '매개변수 함수',
         difficultyGrade: 1,
-        answer: '4',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_28번_미적분.png',
         difficulty: 'hard',
-        correctAnswer: '4'
+        correctAnswer: '2'
     },
     {
         id: 67,
@@ -893,11 +1027,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '무한급수',
         difficultyGrade: 2,
-        answer: '16',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_29번_미적분.png',
         difficulty: 'hard',
-        correctAnswer: '16'
+        correctAnswer: '91'
     },
     {
         id: 68,
@@ -906,11 +1039,10 @@ export const mathProblems = [
         subject: '미적분',
         subjectDetail: '속도와 가속도',
         difficultyGrade: 1,
-        answer: '9',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_30번_미적분.png',
         difficulty: 'hard',
-        correctAnswer: '9'
+        correctAnswer: '31'
     },
 
     // ===========================================
@@ -923,11 +1055,10 @@ export const mathProblems = [
         subject: '기하',
         subjectDetail: '포물선',
         difficultyGrade: 4,
-        answer: '5',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_23번_기하.png',
         difficulty: 'medium',
-        correctAnswer: '5'
+        correctAnswer: '2'
     },
     {
         id: 70,
@@ -936,11 +1067,10 @@ export const mathProblems = [
         subject: '기하',
         subjectDetail: '벡터의 연산',
         difficultyGrade: 3,
-        answer: '1',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_24번_기하.png',
         difficulty: 'medium',
-        correctAnswer: '1'
+        correctAnswer: '4'
     },
     {
         id: 71,
@@ -949,11 +1079,10 @@ export const mathProblems = [
         subject: '기하',
         subjectDetail: '정사영',
         difficultyGrade: 3,
-        answer: '2',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_25번_기하.png',
         difficulty: 'medium',
-        correctAnswer: '2'
+        correctAnswer: '1'
     },
     {
         id: 72,
@@ -962,11 +1091,10 @@ export const mathProblems = [
         subject: '기하',
         subjectDetail: '쌍곡선',
         difficultyGrade: 2,
-        answer: '3',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_26번_기하.png',
         difficulty: 'hard',
-        correctAnswer: '3'
+        correctAnswer: '1'
     },
     {
         id: 73,
@@ -975,11 +1103,10 @@ export const mathProblems = [
         subject: '기하',
         subjectDetail: '벡터의 내적',
         difficultyGrade: 2,
-        answer: '4',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_27번_기하.png',
         difficulty: 'hard',
-        correctAnswer: '4'
+        correctAnswer: '2'
     },
     {
         id: 74,
@@ -988,11 +1115,10 @@ export const mathProblems = [
         subject: '기하',
         subjectDetail: '공간벡터의 내적',
         difficultyGrade: 1,
-        answer: '5',
         type: 'MULTIPLE_CHOICE',
         imagePath: '/math_image/객관식/2025_09_수학_28번_기하.png',
         difficulty: 'hard',
-        correctAnswer: '5'
+        correctAnswer: '4'
     },
     {
         id: 75,
@@ -1001,11 +1127,10 @@ export const mathProblems = [
         subject: '기하',
         subjectDetail: '타원',
         difficultyGrade: 2,
-        answer: '28',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_29번_기하.png',
         difficulty: 'hard',
-        correctAnswer: '28'
+        correctAnswer: '396'
     },
     {
         id: 76,
@@ -1014,11 +1139,10 @@ export const mathProblems = [
         subject: '기하',
         subjectDetail: '직선과 평면',
         difficultyGrade: 1,
-        answer: '14',
         type: 'SHORT_ANSWER',
         imagePath: '/math_image/단답형/2025_09_수학_30번_기하.png',
         difficulty: 'hard',
-        correctAnswer: '14'
+        correctAnswer: '69'
     }
 ];
 
@@ -1145,6 +1269,71 @@ export const getStatistics = () => {
         byDifficulty,
         byExam
     };
+};
+
+// 학생 등급에 따른 문제 난이도 매핑
+export const getStudentGradeDifficultyMapping = (studentGrade) => {
+    switch (studentGrade) {
+        case 1:
+            // 1등급: 어려운 문제만 (difficultyGrade 1-2)
+            return [1, 2];
+        case 2:
+            // 2등급: 보통 어려운 문제 (difficultyGrade 2-3)
+            return [2, 3];
+        case 3:
+            // 3등급: 쉬움, 보통, 어려운 문제 (difficultyGrade 2-4)
+            return [2, 3, 4];
+        case 4:
+            // 4등급: 보통, 쉬운 문제 (difficultyGrade 3-5)
+            return [3, 4, 5];
+        case 5:
+        default:
+            // 5등급 이하: 쉬운 문제만 (difficultyGrade 4-5)
+            return [4, 5];
+    }
+};
+
+// 학생 등급에 맞는 문제 세트 생성
+export const generateEvaluationSetByGrade = (studentGrade, count = 10) => {
+    const allowedDifficulties = getStudentGradeDifficultyMapping(studentGrade);
+    
+    // 허용된 난이도의 문제들만 필터링
+    const filteredProblems = mathProblems.filter(problem => 
+        allowedDifficulties.includes(problem.difficultyGrade)
+    );
+    
+    if (filteredProblems.length === 0) {
+        console.warn(`학생 등급 ${studentGrade}에 맞는 문제가 없습니다.`);
+        return mathProblems.slice(0, count); // 모든 문제 중 일부 반환
+    }
+    
+    // 난이도별 문제 분배
+    const problemsByDifficulty = {};
+    allowedDifficulties.forEach(diff => {
+        problemsByDifficulty[diff] = filteredProblems.filter(p => p.difficultyGrade === diff);
+    });
+    
+    // 각 난이도에서 균형있게 선택
+    const selectedProblems = [];
+    const difficultiesCount = allowedDifficulties.length;
+    const problemsPerDifficulty = Math.floor(count / difficultiesCount);
+    const remainder = count % difficultiesCount;
+    
+    allowedDifficulties.forEach((difficulty, index) => {
+        const difficultyProblems = problemsByDifficulty[difficulty];
+        let problemCount = problemsPerDifficulty;
+        
+        // 나머지를 첫 번째 난이도들에 분배
+        if (index < remainder) {
+            problemCount += 1;
+        }
+        
+        const shuffled = difficultyProblems.sort(() => Math.random() - 0.5);
+        selectedProblems.push(...shuffled.slice(0, Math.min(problemCount, difficultyProblems.length)));
+    });
+    
+    // 전체 셔플
+    return selectedProblems.sort(() => Math.random() - 0.5);
 };
 
 // 랜덤 문제 생성 함수

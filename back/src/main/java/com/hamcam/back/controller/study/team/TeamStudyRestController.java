@@ -16,8 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Slf4j
-@RestController
-@RequestMapping("/api/study/team")
+// @RestController  // LiveKit 비활성화
+// @RequestMapping("/api/study/team")
 @RequiredArgsConstructor
 public class TeamStudyRestController {
 

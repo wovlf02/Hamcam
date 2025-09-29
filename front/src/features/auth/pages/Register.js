@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import '../styles/Register.css';
 import api from "../../../api/api";
+import hamcamLogo from '../../../assets/icons/logo.png';
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -76,6 +77,14 @@ const Register = () => {
 
     return (
         <div className="register-container">
+            <div className="register-logo-container">
+                <img 
+                    src={hamcamLogo} 
+                    alt="함캠 로고" 
+                    className="register-logo"
+                    onClick={() => navigate('/login')}
+                />
+            </div>
             <h1 className="register-title">회원가입</h1>
             <form className="register-form" onSubmit={handleRegister}>
                 <div className="register-row">

@@ -22,7 +22,7 @@ import java.util.Map;
  * - 권한: roomJoin, canPublish(역할에 따라), canSubscribe, canPublishData
  */
 @Slf4j
-@Service
+// @Service  // LiveKit 비활성화
 @RequiredArgsConstructor
 public class LivekitService {
 

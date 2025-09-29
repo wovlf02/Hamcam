@@ -21,6 +21,11 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
     Optional<Unit> findBySubjectAndUnit(String subject, String unit);
 
     /**
+     * 단원명으로 단원 조회
+     */
+    Optional<Unit> findByUnit(String unit);
+
+    /**
      * 카테고리별 단원 목록 조회
      */
     List<Unit> findByCategory(String category);

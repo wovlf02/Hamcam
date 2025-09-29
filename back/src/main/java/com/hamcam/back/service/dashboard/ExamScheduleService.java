@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,19 +28,23 @@ public class ExamScheduleService {
     private final UserRepository userRepository;
     private final SessionService sessionService;
 
+    @Transactional(readOnly = true)
     public List<ExamScheduleResponse> getAllExamSchedules(HttpServletRequest request) {
         User user = sessionService.getCurrentUser(request);
         List<ExamSchedule> schedules = examScheduleRepository.findAllByUserOrderByExamDateAsc(user);
-        return schedules.stream()
-                .map(schedule -> ExamScheduleResponse.builder()
-                        .id(schedule.getId())
-                        .title(schedule.getTitle())
-                        .subject(schedule.getSubject())
-                        .examDate(schedule.getExamDate())
-                        .description(schedule.getDescription())
-                        .location(schedule.getLocation())
-                        .build())
-                .collect(Collectors.toList());
+        
+        List<ExamScheduleResponse> responses = new ArrayList<>();
+        for (ExamSchedule schedule : schedules) {
+            long dDay = ChronoUnit.DAYS.between(LocalDate.now(), schedule.getExamDate());
+            ExamScheduleResponse response = new ExamScheduleResponse();
+            response.setId(schedule.getId());
+            response.setTitle(schedule.getTitle());
+            response.setExamDate(schedule.getExamDate());
+            response.setExam_date(schedule.getExamDate().toString());
+            response.setDDay(dDay);
+            responses.add(response);
+        }
+        return responses;
     }
 
     @Transactional
@@ -48,10 +53,7 @@ public class ExamScheduleService {
         ExamSchedule schedule = new ExamSchedule();
         schedule.setUser(user);
         schedule.setTitle(request.getTitle());
-        schedule.setSubject(request.getSubject());
         schedule.setExamDate(request.getExamDate());
-        schedule.setDescription(request.getDescription());
-        schedule.setLocation(request.getLocation());
         examScheduleRepository.save(schedule);
     }
 

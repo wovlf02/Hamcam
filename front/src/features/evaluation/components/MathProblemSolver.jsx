@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { mathProblems, generateEvaluationSet } from '../data/mathProblems';
+import { mathProblems, generateEvaluationSet, generateEvaluationSetByGrade } from '../data/mathProblems';
+import api from '../../../api/api';
 import './MathProblemSolver.css';
 
-const MathProblemSolver = () => {
+const MathProblemSolver = ({ studentGrade = 3, problemCount = 10, useBackend = true }) => {
     const [currentProblem, setCurrentProblem] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [problemSet, setProblemSet] = useState([]);
@@ -13,14 +14,54 @@ const MathProblemSolver = () => {
     const [showResult, setShowResult] = useState(false);
     const [timeSpent, setTimeSpent] = useState(0);
     const [startTime, setStartTime] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    // 백엔드에서 학년별 문제 불러오기
+    const fetchProblemsByGrade = async (grade, count) => {
+        try {
+            setLoading(true);
+            setError(null);
+            console.log(`학년 ${grade}에 대해 ${count}개 문제 요청`);
+            
+            const response = await api.get(`/api/math/problems/grade/${grade}?count=${count}`);
+            console.log('백엔드 응답:', response.data);
+            
+            if (response.data && response.data.length > 0) {
+                return response.data;
+            } else {
+                console.warn('백엔드에서 문제를 받아오지 못함, 로컬 데이터 사용');
+                return generateEvaluationSetByGrade(grade, count);
+            }
+        } catch (error) {
+            console.error('백엔드 문제 불러오기 실패:', error);
+            console.log('로컬 데이터로 대체');
+            return generateEvaluationSetByGrade(grade, count);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // 컴포넌트 마운트 시 문제 세트 생성
     useEffect(() => {
-        const newProblemSet = generateEvaluationSet();
-        setProblemSet(newProblemSet);
-        setCurrentProblem(newProblemSet[0]);
-        setStartTime(Date.now());
-    }, []);
+        const initializeProblems = async () => {
+            let newProblemSet;
+            
+            if (useBackend) {
+                newProblemSet = await fetchProblemsByGrade(studentGrade, problemCount);
+            } else {
+                newProblemSet = generateEvaluationSetByGrade(studentGrade, problemCount);
+            }
+            
+            setProblemSet(newProblemSet);
+            if (newProblemSet.length > 0) {
+                setCurrentProblem(newProblemSet[0]);
+                setStartTime(Date.now());
+            }
+        };
+        
+        initializeProblems();
+    }, [studentGrade, problemCount, useBackend]);
 
     // 시간 측정
     useEffect(() => {
@@ -50,8 +91,10 @@ const MathProblemSolver = () => {
 
         setIsAnswered(true);
 
-        // TODO: 백엔드로 답안 제출
-        // submitAnswerToServer(currentProblem.id, userAnswer, isCorrect);
+        // 백엔드로 답안 제출
+        if (useBackend) {
+            submitAnswerToServer(currentProblem.id, userAnswer, isCorrect);
+        }
     };
 
     // 다음 문제로 이동
@@ -69,11 +112,35 @@ const MathProblemSolver = () => {
         }
     };
 
+    // 백엔드로 답안 제출
+    const submitAnswerToServer = async (problemId, answer, isCorrect) => {
+        try {
+            const response = await api.post('/api/math/submit-answer', {
+                problemId: problemId,
+                submittedAnswer: answer,
+                isCorrect: isCorrect,
+                timeSpent: Math.floor((Date.now() - startTime) / 1000)
+            });
+            console.log('답안 제출 완료:', response.data);
+        } catch (error) {
+            console.error('답안 제출 실패:', error);
+        }
+    };
+
     // 문제 재시작
-    const handleRestart = () => {
-        const newProblemSet = generateEvaluationSet();
+    const handleRestart = async () => {
+        let newProblemSet;
+        
+        if (useBackend) {
+            newProblemSet = await fetchProblemsByGrade(studentGrade, problemCount);
+        } else {
+            newProblemSet = generateEvaluationSetByGrade(studentGrade, problemCount);
+        }
+        
         setProblemSet(newProblemSet);
-        setCurrentProblem(newProblemSet[0]);
+        if (newProblemSet.length > 0) {
+            setCurrentProblem(newProblemSet[0]);
+        }
         setCurrentIndex(0);
         setUserAnswer('');
         setFeedback('');
@@ -135,6 +202,34 @@ const MathProblemSolver = () => {
                             평가 메인으로
                         </button>
                     </div>
+                </div>
+            </div>
+        );
+    }
+
+    // 로딩 상태 처리
+    if (loading) {
+        return (
+            <div className="math-problem-solver">
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <h3>🧮 수학 문제를 준비하고 있습니다...</h3>
+                    <p>학년 {studentGrade}에 맞는 {problemCount}개의 문제를 불러오는 중입니다.</p>
+                </div>
+            </div>
+        );
+    }
+
+    // 에러 상태 처리
+    if (error) {
+        return (
+            <div className="math-problem-solver">
+                <div className="error-container">
+                    <h3>❌ 문제를 불러오는 중 오류가 발생했습니다</h3>
+                    <p>{error}</p>
+                    <button onClick={() => window.location.reload()} className="btn-primary">
+                        다시 시도
+                    </button>
                 </div>
             </div>
         );

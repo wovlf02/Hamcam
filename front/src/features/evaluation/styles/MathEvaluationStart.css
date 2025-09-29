@@ -1,9 +1,11 @@
 /* 수학 단원평가 메인 컨테이너 */
 .math-eval-container {
     display: flex;
-    min-height: 100vh;
+    min-height: calc(100vh - 0px); /* 사이드메뉴와 겹치지 않도록 */
     background: #f8fafc;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* 로딩 화면 */

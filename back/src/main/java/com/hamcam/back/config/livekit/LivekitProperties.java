@@ -17,7 +17,7 @@ import org.springframework.validation.annotation.Validated;
  */
 @Data
 @Validated
-@Component
+// @Component  // LiveKit 설정 비활성화
 @ConfigurationProperties(prefix = "livekit")
 public class LivekitProperties {
 

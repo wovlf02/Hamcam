@@ -1,5 +1,6 @@
 package com.hamcam.back.service.user;
 
+import com.hamcam.back.dto.user.request.GradeUpdateRequest;
 import com.hamcam.back.dto.user.response.UserProfileResponse;
 import com.hamcam.back.dto.user.request.UserProfileImageUpdateRequest;
 import com.hamcam.back.entity.auth.User;
@@ -9,6 +10,7 @@ import com.hamcam.back.repository.auth.UserRepository;
 import com.hamcam.back.util.SessionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ import java.nio.file.*;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -86,6 +89,25 @@ public class UserService {
         } catch (IOException e) {
             throw new CustomException(ErrorCode.FILE_UPLOAD_FAILED);
         }
+    }
+
+    /**
+     * ✅ 사용자 등급 수정
+     */
+    @Transactional
+    public void updateGrade(GradeUpdateRequest request, HttpServletRequest httpRequest) {
+        User user = getSessionUser(httpRequest);
+        
+        Integer oldGrade = user.getGrade();
+        Integer newGrade = request.getGrade();
+        
+        log.info("사용자 등급 수정: userId={}, 기존등급={}, 새등급={}", 
+                user.getId(), oldGrade, newGrade);
+        
+        user.setGrade(newGrade);
+        userRepository.save(user);
+        
+        log.info("등급 수정 완료: userId={}, 변경된등급={}", user.getId(), newGrade);
     }
 
     /**
