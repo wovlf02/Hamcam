@@ -12,6 +12,7 @@
     margin-bottom: 1.5rem; /* Space below title */
     color: var(--primary-blue-700); /* Darker blue for title */
     margin-top: 10vh; /* Push title further down from the top */
+    text-align: center; /* Ensure text is centered */
 }
 
 .personal-study-container {
