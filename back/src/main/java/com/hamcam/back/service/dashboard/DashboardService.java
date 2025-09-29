@@ -148,7 +148,6 @@ public class DashboardService {
                             .id(schedule.getId())
                             .title(schedule.getTitle())
                             .examDate(schedule.getExamDate())
-                            .exam_date(schedule.getExamDate().toString())
                             .dDay(dDay)
                             .build();
                 })
