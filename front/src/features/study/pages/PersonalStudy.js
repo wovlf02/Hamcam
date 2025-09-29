@@ -33,67 +33,69 @@ const PersonalStudy = () => {
     };
 
     return (
-        <div className="personal-study-container">
+        <div className="personal-study-wrapper">
             <h1 className="personal-study-title">개인 공부 설정</h1>
-            <div className="personal-study-warning">
-                {warningMsg}
-            </div>
-            <div className="personal-study-form-group">
-                <label>
-                    <span className="personal-study-label">단원명:</span>
-                    <input
-                        type="text"
-                        value={unitName}
-                        onChange={e => setUnitName(e.target.value)}
-                        placeholder="예: 3단원 함수"
-                        className="personal-study-input"
-                    />
-                </label>
-            </div>
-            <div className="personal-study-form-group">
-                <label>
-                    <span className="personal-study-label">학습 시간:</span>
-                    <div className="personal-study-time-inputs">
-                        <input
-                            type="number"
-                            min="0"
-                            value={minutes}
-                            onChange={e => setMinutes(Number(e.target.value))}
-                            className="personal-study-time-input"
-                        />
-                        <span className="personal-study-time-unit">분</span>
-                        <input
-                            type="number"
-                            min="0"
-                            max="59"
-                            value={seconds}
-                            onChange={handleSecondsChange}
-                            className="personal-study-time-input"
-                        />
-                        <span className="personal-study-time-unit">초</span>
-                    </div>
-                </label>
-            </div>
-            <button
-                onClick={handleStart}
-                disabled={!isStartEnabled}
-                className="personal-study-start-btn"
-            >
-                공부 시작
-            </button>
-            <div>
-                <button
-                    onClick={handleFocusMsg}
-                    className="personal-study-focus-btn"
-                >
-                    {showFocusMsg ? '메시지 숨기기' : '집중 메시지 보기'}
-                </button>
-            </div>
-            {showFocusMsg && (
-                <div className="personal-study-focus-msg">
-                    {focusMsg}
+            <div className="personal-study-container">
+                <div className="personal-study-warning">
+                    {warningMsg}
                 </div>
-            )}
+                <div className="personal-study-form-group">
+                    <label>
+                        <span className="personal-study-label">단원명:</span>
+                        <input
+                            type="text"
+                            value={unitName}
+                            onChange={e => setUnitName(e.target.value)}
+                            placeholder="예: 3단원 함수"
+                            className="personal-study-input"
+                        />
+                    </label>
+                </div>
+                <div className="personal-study-form-group">
+                    <label>
+                        <span className="personal-study-label">학습 시간:</span>
+                        <div className="personal-study-time-inputs">
+                            <input
+                                type="number"
+                                min="0"
+                                value={minutes}
+                                onChange={e => setMinutes(Number(e.target.value))}
+                                className="personal-study-time-input"
+                            />
+                            <span className="personal-study-time-unit">분</span>
+                            <input
+                                type="number"
+                                min="0"
+                                max="59"
+                                value={seconds}
+                                onChange={handleSecondsChange}
+                                className="personal-study-time-input"
+                            />
+                            <span className="personal-study-time-unit">초</span>
+                        </div>
+                    </label>
+                </div>
+                <button
+                    onClick={handleStart}
+                    disabled={!isStartEnabled}
+                    className="personal-study-start-btn"
+                >
+                    공부 시작
+                </button>
+                <div>
+                    <button
+                        onClick={handleFocusMsg}
+                        className="personal-study-focus-btn"
+                    >
+                        {showFocusMsg ? '메시지 숨기기' : '집중 메시지 보기'}
+                    </button>
+                </div>
+                {showFocusMsg && (
+                    <div className="personal-study-focus-msg">
+                        {focusMsg}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
