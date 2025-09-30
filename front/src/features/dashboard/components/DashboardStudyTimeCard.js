@@ -26,32 +26,32 @@ const DashboardStudyTimeCard = ({
                 weeklyGoalMinutes: weekly,
                 todayGoalMinutes: today,
             });
+            alert('목표 시간이 저장되었습니다.');
         } catch (err) {
             console.error('목표 시간 저장 실패:', err);
         }
     };
 
-    // ✅ 주간 목표 시간 변경 → 상태 + 서버 반영
+    // ✅ 주간 목표 시간 변경 → 상태만 변경
     const handleWeeklyChange = (type, value) => {
-        const hour = type === 'hour' ? Number(value) : Math.floor(weeklyGoalMinutes / 60);
-        const min = type === 'min' ? Number(value) : weeklyGoalMinutes % 60;
-        const total = hour * 60 + min;
         handleWeeklyGoalChange(type, value);
-        saveStudyGoal(total, todayGoalMinutes);
     };
 
-    // ✅ 오늘 목표 시간 변경 → 상태 + 서버 반영
+    // ✅ 오늘 목표 시간 변경 → 상태만 변경
     const handleTodayChange = (type, value) => {
-        const hour = type === 'hour' ? Number(value) : Math.floor(todayGoalMinutes / 60);
-        const min = type === 'min' ? Number(value) : todayGoalMinutes % 60;
-        const total = hour * 60 + min;
         handleTodayGoalChange(type, value);
-        saveStudyGoal(weeklyGoalMinutes, total);
+    };
+
+    const handleSave = () => {
+        saveStudyGoal(weeklyGoalMinutes, todayGoalMinutes);
     };
 
     return (
-        <div className="dashboard-card dashboard-study-time-card-component"> {/* Renamed class to avoid conflict */}
-            <div className="dashboard-study-time-header"><h3>공부 시간 관리</h3></div>
+        <div className="dashboard-card dashboard-study-time-card-component">
+            <div className="dashboard-study-time-header">
+                <h3>공부 시간 관리</h3>
+                <button onClick={handleSave} className="dashboard-study-time-save-btn">저장</button>
+            </div>
 
             {/* 주간 목표 시간 */}
             <div className="dashboard-time-detail-row">
