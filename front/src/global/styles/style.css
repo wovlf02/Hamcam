@@ -45,7 +45,7 @@ body {
 
 .side-menu {
     flex-shrink: 0;
-    width: 9%; /* Default for QHD and above */
+    width: 11%; /* Default for QHD and above */
     height: 100vh; /* Ensure it fills its height */
     background: #F5F5F5;
     border-right: 1px solid #e0e4ea;
@@ -57,7 +57,7 @@ body {
 
 .content-area {
     flex-grow: 1;
-    width: 91%; /* Default for QHD and above */
+    width: 89%; /* Default for QHD and above */
     overflow-y: auto; /* Enable scrolling for content if it overflows */
     height: 100vh; /* Ensure it fills its height */
 }

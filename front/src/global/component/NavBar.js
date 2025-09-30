@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/Navbar.css';
 import api from '../../api/api';
 import base_profile from '../../assets/icons/base_profile.png'; // ✅ 이미지 import로 수정
+import { API_BASE_URL_8080 } from '../../api/apiUrl';
 import hamcamLogo from '../../assets/icons/logo.png';
 
 const SideMenu = ({ menuItems, handleNavigation, selectedTab, selectedSubTab, user }) => {
@@ -51,7 +52,7 @@ const SideMenu = ({ menuItems, handleNavigation, selectedTab, selectedSubTab, us
                 {user && (
                     <div className="side-user-profile">
                         <img
-                            src={user.profile_image_url ? user.profile_image_url : base_profile}
+                            src={user.profile_image_url ? `${API_BASE_URL_8080}${user.profile_image_url}` : base_profile}
                             alt="프로필"
                             className="side-user-image"
                         />
