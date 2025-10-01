@@ -28,7 +28,7 @@ const ControlHeader = ({
                     <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
                         <option value="ALL">전체</option>
                         <option value="QUIZ">문제풀이방</option>
-                        <option value="FOCUS">집중학습방</option>
+                        <option value="FOCUS">시간경쟁방</option>
                     </select>
                 )}
                 <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>

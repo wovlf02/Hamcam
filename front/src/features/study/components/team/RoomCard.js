@@ -14,7 +14,7 @@ const RoomCard = ({ room, onJoin }) => {
             <div className="card-header">
                 <h3>{title}</h3>
                 <span className={`card-badge ${room_type.toLowerCase()}`}>
-                    {room_type === 'QUIZ' ? '문제풀이' : '집중학습'}
+                    {room_type === 'QUIZ' ? '문제풀이' : '시간경쟁'}
                 </span>
             </div>
             <div className="card-body">

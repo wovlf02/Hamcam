@@ -47,7 +47,7 @@ const CreateRoomModal = ({ show, onClose, onCreate, preselectedRoomType }) => {
                     <label>학습방 종류</label>
                     <select value={roomType} onChange={(e) => setRoomType(e.target.value)} disabled={!!preselectedRoomType}> // Disable if preselected
                         <option value="QUIZ">문제풀이방</option>
-                        <option value="FOCUS">집중학습방</option>
+                        <option value="FOCUS">시간경쟁방</option>
                     </select>
                 </div>
                 <div className="form-group">

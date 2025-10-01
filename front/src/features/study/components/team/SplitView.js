@@ -64,7 +64,7 @@ const SplitView = ({
         <div className="split-view-container">
                         <div className="room-section-wrapper">
                             <RoomColumn
-                                title="집중 학습방 (Focus Rooms)"
+                                title="시간 경쟁방 (Focus Rooms)"
                                 rooms={focusRooms}
                                 onJoinRoom={onJoinRoom}
                                 searchTerm={focusSearch}
