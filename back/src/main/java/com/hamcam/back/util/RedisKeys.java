@@ -21,8 +21,8 @@ public final class RedisKeys {
     private static final String ALERTS  = "alerts:";
 
     // roomType 값: "focus" | "quiz"
-    private static final String FOCUS = LivekitRoomNamer.FOCUS;
-    private static final String QUIZ  = LivekitRoomNamer.QUIZ;
+    private static final String FOCUS = "focus";
+    private static final String QUIZ  = "quiz";
 
     private RedisKeys() {}
 

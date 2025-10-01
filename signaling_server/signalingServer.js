@@ -1,13 +1,36 @@
 const http = require("http");
 const { Server } = require("socket.io");
+const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
 
 const server = http.createServer();
 
-// ✅ ngrok 주소 허용 + 세션 인증 CORS 설정
+// 동적으로 Spring API URL 설정
+let SPRING_API_URL = "";
+try {
+    const apiUrlPath = path.join(__dirname, '..', 'front', 'src', 'api', 'apiUrl.js');
+    const apiUrlFileContent = fs.readFileSync(apiUrlPath, 'utf8');
+    const match = apiUrlFileContent.match(/export const API_BASE_URL_8080 = ["'`](.*)["'`];/);
+    if (match && match[1]) {
+        SPRING_API_URL = `${match[1]}/api`;
+        console.log(`✅ Spring API URL을 동적으로 설정했습니다: ${SPRING_API_URL}`);
+    } else {
+        throw new Error("API_BASE_URL_8080 값을 찾을 수 없습니다.");
+    }
+} catch (error) {
+    console.error("❌ apiUrl.js 파일 읽기 또는 파싱 실패. 기본 URL을 사용합니다.", error);
+    SPRING_API_URL = "http://localhost:8080/api"; // Fallback URL
+}
+
+// 인메모리 방 상태 관리
+const rooms = new Map();
+
 const io = new Server(server, {
     cors: {
         origin: (origin, callback) => {
-            if (!origin || /^https:\/\/.*\.ngrok-free\.app$/.test(origin)) {
+            // 로컬 개발 환경(localhost, 127.0.0.1, IP 주소) 및 ngrok 허용
+            if (!origin || origin.startsWith("http://localhost") || origin.startsWith("http://127.0.0.1") || origin.startsWith("http://192.168.") || /\.ngrok-free\.app$/.test(origin)) {
                 callback(null, true);
             } else {
                 callback(new Error("Not allowed by CORS"));
@@ -18,64 +41,124 @@ const io = new Server(server, {
     }
 });
 
-// ✅ 소켓 연결
 io.on("connection", (socket) => {
-    console.log("✅ 사용자 연결됨:", socket.id);
+    console.log(`✅ 사용자 연결됨: ${socket.id}`);
 
-    // ✅ 방 입장 처리
-    socket.on("join-room", (roomId) => {
-        socket.join(roomId);
-        console.log(`${socket.id} 님이 방 ${roomId} 에 입장했습니다.`);
+    // 방 입장 및 사용자 정보 초기화
+    socket.on("join-room", async ({ roomId, token }) => {
+        try {
+            // Spring API로 사용자 정보 조회
+            const response = await axios.get(`${SPRING_API_URL}/users/me`, {
+                headers: { 'Cookie': socket.request.headers.cookie }
+            });
+            const user = response.data.data;
 
-        const clientsInRoom = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
-        const otherClients = clientsInRoom.filter(id => id !== socket.id);
+            if (!user) {
+                throw new Error("사용자 정보를 가져올 수 없습니다.");
+            }
 
-        // ✅ 새 유저에게 기존 유저 목록 전송
-        socket.emit("all-users", otherClients);
+            socket.join(roomId);
 
-        // ✅ 기존 유저에게 새 유저 알림
-        socket.to(roomId).emit("user-connected", socket.id);
+            // 인메모리 상태 관리
+            if (!rooms.has(roomId)) {
+                rooms.set(roomId, {
+                    participants: new Map(),
+                    // 퀴즈방, 경쟁방 등 추가 상태 초기화
+                });
+            }
+            const room = rooms.get(roomId);
+            room.participants.set(socket.id, {
+                userId: user.user_id,
+                nickname: user.nickname,
+                profileImageUrl: user.profile_image_url,
+                focusedSeconds: 0,
+                score: 0
+            });
 
-        // ✅ 인원 수 갱신 브로드캐스트
-        const numClients = clientsInRoom.length;
-        io.to(roomId).emit("user-count", numClients);
-    });
+            const otherParticipants = Array.from(room.participants.entries())
+                .filter(([id, _]) => id !== socket.id)
+                .map(([id, p]) => ({ socketId: id, ...p }));
 
-    // ✅ WebRTC 시그널 중계
-    socket.on("signal", ({ roomId, data }) => {
-        data.senderId = socket.id;
+            // 새 유저에게 기존 참여자 목록 전송
+            socket.emit("all-users", otherParticipants);
 
-        if (data.target_id) {
-            // ✅ 특정 사용자에게만 전송
-            io.to(data.target_id).emit("signal", data);
-        } else {
-            // ✅ 예외: 타겟 지정 안 된 경우 전체 브로드캐스트
-            socket.to(roomId).emit("signal", data);
+            // 기존 유저에게 새 유저 합류 알림
+            socket.to(roomId).emit("user-joined", { socketId: socket.id, ...room.participants.get(socket.id) });
+
+            console.log(`[${roomId}] ${user.nickname}(${socket.id}) 님이 입장했습니다. (총 ${room.participants.size}명)`);
+
+        } catch (error) {
+            console.error(`[ERROR] join-room 실패 (socketId: ${socket.id}):`, error.message);
+            socket.emit("error", "방 입장에 실패했습니다.");
         }
     });
 
-    // ✅ 채팅 메시지 중계
-    socket.on("chat", ({ roomId, message, senderId }) => {
-        io.to(roomId).emit("chat", { message, senderId });
+    // WebRTC 시그널링 중계
+    socket.on("signal", ({ targetSocketId, sdp, candidate }) => {
+        socket.to(targetSocketId).emit("signal", {
+            fromSocketId: socket.id,
+            sdp,
+            candidate,
+        });
     });
 
-    // ✅ 연결 해제 처리
+    // 채팅 메시지 중계
+    socket.on("send-message", ({ roomId, message }) => {
+        const room = rooms.get(roomId);
+        const sender = room?.participants.get(socket.id);
+        if (!sender) return;
+
+        const chatMessage = {
+            ...sender,
+            message,
+            timestamp: new Date()
+        };
+        io.to(roomId).emit("new-message", chatMessage);
+    });
+
+    // --- 이전 STOMP 로직 대체 ---
+    socket.on("start-problem", ({ roomId, subject, unit, level }) => {
+        // TODO: 문제 선택 로직 구현 (Spring API 호출 또는 자체 DB)
+        console.log(`[${roomId}] 문제 시작 요청: ${subject}, ${unit}, ${level}`);
+        // const problem = ...
+        // io.to(roomId).emit("new-problem", problem);
+    });
+
+    socket.on("submit-answer", ({ roomId, answer }) => {
+        // TODO: 정답 확인 및 랭킹 업데이트 로직 구현
+        console.log(`[${roomId}] 정답 제출: ${answer}`);
+        // io.to(roomId).emit("ranking-update", newRanking);
+    });
+
+    socket.on("update-time", ({ roomId }) => {
+        const room = rooms.get(roomId);
+        const participant = room?.participants.get(socket.id);
+        if (participant) {
+            participant.focusedSeconds++;
+            // TODO: 랭킹 업데이트 및 브로드캐스트 로직 구현
+        }
+    });
+    // --- 로직 대체 끝 ---
+
+    // 연결 해제 처리
     socket.on("disconnecting", () => {
-        const rooms = Array.from(socket.rooms).filter(room => room !== socket.id);
+        const roomIds = Array.from(socket.rooms).filter(r => r !== socket.id);
 
-        rooms.forEach((roomId) => {
-            setTimeout(() => {
-                const numClients = io.sockets.adapter.rooms.get(roomId)?.size || 0;
+        roomIds.forEach(roomId => {
+            const room = rooms.get(roomId);
+            if (room) {
+                room.participants.delete(socket.id);
+                io.to(roomId).emit("user-left", socket.id);
+                console.log(`[${roomId}] 사용자 퇴장: ${socket.id}. (남은 인원 ${room.participants.size}명)`);
 
-                // ✅ 사용자 수 갱신
-                io.to(roomId).emit("user-count", numClients);
-
-                // ✅ 사용자 퇴장 알림
-                socket.to(roomId).emit("user-disconnected", socket.id);
-            }, 100);
+                if (room.participants.size === 0) {
+                    // TODO: 방 종료 시 Spring API로 최종 데이터 전송 로직
+                    console.log(`[${roomId}] 방이 비어있어 정리합니다.`);
+                    rooms.delete(roomId);
+                }
+            }
         });
-
-        console.log("❌ 사용자 연결 해제:", socket.id);
+        console.log(`❌ 사용자 연결 해제: ${socket.id}`);
     });
 });
 

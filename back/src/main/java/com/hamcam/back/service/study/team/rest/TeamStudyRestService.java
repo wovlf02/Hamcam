@@ -276,4 +276,19 @@ public class TeamStudyRestService {
         // 파일 저장 경로 기준으로 roomId 폴더가 존재한다는 가정
         return fileService.getStudyFileList(roomId);
     }
+
+    /**
+     * ✅ 최종 학습 결과 기록 (Node.js 서버가 호출)
+     */
+    public void recordStudyResult(StudyRecordRequest request) {
+        StudyRoom room = studyRoomRepository.findById(request.getRoomId())
+                .orElseThrow(() -> new CustomException(ErrorCode.ROOM_NOT_FOUND));
+
+        for (StudyRecordRequest.ParticipantRecord record : request.getRecords()) {
+            User user = getUser(record.getUserId());
+            // TODO: StudyLog 또는 관련 엔터티에 focusedSeconds, score 등 결과 저장 로직 구현
+            System.out.printf("Recording result for user %d in room %d: %d seconds, score %d%n",
+                    user.getId(), room.getId(), record.getFocusedSeconds(), record.getScore());
+        }
+    }
 }

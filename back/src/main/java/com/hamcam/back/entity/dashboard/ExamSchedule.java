@@ -18,6 +18,9 @@ public class ExamSchedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version; // 낙관적 락을 위한 버전 필드
+
     /**
      * 시험명 (예: 중간고사, 모의고사 등)
      */

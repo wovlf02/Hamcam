@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SockJS from 'sockjs-client';
-import { Client } from '@stomp/stompjs';
 import api from '../../../api/api';
-import { API_BASE_URL_3000 } from '../../../api/apiUrl';
+import { connectSocket } from '../../../socket'; // STOMP 대신 Socket.IO 연결
 import hamcamLogo from '../../../assets/icons/logo.png';
 import '../styles/Login.css';
-
-let stompClientGlobal = null;
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -17,29 +13,22 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            // ✅ 세션 기반 로그인
             const res = await api.post('/auth/login', { username, password });
 
             if (res.status === 200) {
-                // ✅ 로그인 후 사용자 정보 조회
                 const userRes = await api.get('/users/me');
                 const user = userRes.data?.data;
-                console.log(user);
 
                 if (!user || !user.user_id) {
                     alert('사용자 정보를 불러올 수 없습니다.');
                     return;
                 }
 
-                const nickname = user.nickname || '사용자';
-                const userId = user.user_id;
+                alert(`${user.nickname || '사용자'}님, 환영합니다!`);
 
-                alert(`${nickname}님, 환영합니다!`);
+                // ✅ Socket.IO 전역 연결 시작
+                connectSocket();
 
-                // ✅ WebSocket 연결
-                connectWebSocket(userId);
-
-                // ✅ 대시보드 이동
                 navigate('/dashboard');
             } else {
                 alert('로그인 실패: 서버 응답 오류');
@@ -48,33 +37,6 @@ const Login = () => {
             alert('아이디 또는 비밀번호를 확인하세요.');
             console.error('로그인 에러:', err);
         }
-    };
-
-    const connectWebSocket = (userId) => {
-        if (stompClientGlobal && stompClientGlobal.connected) {
-            console.log('🔄 이미 WebSocket에 연결됨');
-            return;
-        }
-
-        const socket = new SockJS(`${API_BASE_URL_3000}/ws`);
-        const client = new Client({
-            webSocketFactory: () => socket,
-            connectHeaders: { userId: String(userId) },
-            debug: (str) => console.log('[STOMP]', str),
-            reconnectDelay: 5000,
-            onConnect: () => {
-                console.log('✅ WebSocket 연결 성공 (userId:', userId, ')');
-            },
-            onStompError: (frame) => {
-                console.error('❌ STOMP 프로토콜 에러:', frame);
-            },
-            onWebSocketError: (error) => {
-                console.error('❌ WebSocket 연결 실패:', error);
-            }
-        });
-
-        client.activate();
-        stompClientGlobal = client;
     };
 
     return (
