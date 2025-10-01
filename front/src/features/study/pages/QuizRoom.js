@@ -43,10 +43,13 @@ const useP2PRoom = (roomId) => {
             if (sdp) {
                 try {
                     const remoteDesc = new RTCSessionDescription(sdp);
-                    // Avoid setting remote description if in an invalid state for an answer
-                    if (remoteDesc.type === 'answer' && peer.signalingState !== 'have-remote-offer' && peer.signalingState !== 'stable') {
-                        console.warn("Received answer in unexpected signaling state:", peer.signalingState);
-                        return;
+                    if (remoteDesc.type === 'answer') {
+                        // If we receive an answer, we must be in 'have-local-offer' state.
+                        // If not, it's an unexpected answer.
+                        if (peer.signalingState !== 'have-local-offer') {
+                            console.warn("Received answer in unexpected signaling state:", peer.signalingState);
+                            return;
+                        }
                     }
                     await peer.setRemoteDescription(remoteDesc);
                     if (sdp.type === 'offer') {
@@ -108,11 +111,21 @@ const useP2PRoom = (roomId) => {
             ));
         };
 
-        if (initiatorSocketId === socketRef.current.id) {
-            peer.createOffer()
-                .then(offer => peer.setLocalDescription(offer))
-                .then(() => socketRef.current.emit('signal', { targetSocketId, sdp: peer.localDescription }));
-        }
+        peer.onnegotiationneeded = async () => {
+            try {
+                // Only create offer if we are the initiator or if the signaling state is stable
+                // This prevents creating offers when one is already in progress
+                if (initiatorSocketId === socketRef.current.id || peer.signalingState === 'stable') {
+                    const offer = await peer.createOffer();
+                    await peer.setLocalDescription(offer);
+                    socketRef.current.emit('signal', { targetSocketId, sdp: peer.localDescription });
+                } else {
+                    console.warn("Negotiation needed, but not initiating offer. Signaling state:", peer.signalingState);
+                }
+            } catch (error) {
+                console.error("Error during negotiationneeded:", error);
+            }
+        };
 
         peersRef.current.set(targetSocketId, peer);
     };
