@@ -331,7 +331,7 @@ const QuizRoom = () => {
                             ))}
                         </div>
                         <form onSubmit={handleSendMessage} className="chat-input">
-                            <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} />
+                            <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="메시지를 입력하세요." />
                             <button type="submit">전송</button>
                         </form>
                     </div>
