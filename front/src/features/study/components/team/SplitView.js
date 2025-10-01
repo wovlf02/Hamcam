@@ -62,34 +62,37 @@ const SplitView = ({
 }) => {
     return (
         <div className="split-view-container">
-            <RoomColumn 
-                title="집중 학습방 (Focus Rooms)"
-                rooms={focusRooms}
-                onJoinRoom={onJoinRoom}
-                searchTerm={focusSearch}
-                setSearchTerm={setFocusSearch}
-                sortOrder={focusSort}
-                setSortOrder={setFocusSort}
-                onShowCreateModal={() => onShowCreateModal('FOCUS')}
-                currentPage={focusCurrentPage}
-                totalPages={focusTotalPages}
-                onPageChange={onFocusPageChange}
-            />
-            <div className="split-view-separator"></div>
-            <RoomColumn 
-                title="문제 풀이방 (Quiz Rooms)"
-                rooms={quizRooms}
-                onJoinRoom={onJoinRoom}
-                searchTerm={quizSearch}
-                setSearchTerm={setQuizSearch}
-                sortOrder={quizSort}
-                setSortOrder={setQuizSort}
-                onShowCreateModal={() => onShowCreateModal('QUIZ')}
-                currentPage={quizCurrentPage}
-                totalPages={quizTotalPages}
-                onPageChange={onQuizPageChange}
-            />
-        </div>
+                        <div className="room-section-wrapper">
+                            <RoomColumn
+                                title="집중 학습방 (Focus Rooms)"
+                                rooms={focusRooms}
+                                onJoinRoom={onJoinRoom}
+                                searchTerm={focusSearch}
+                                setSearchTerm={setFocusSearch}
+                                sortOrder={focusSort}
+                                setSortOrder={setFocusSort}
+                                onShowCreateModal={() => onShowCreateModal('FOCUS')}
+                                currentPage={focusCurrentPage}
+                                totalPages={focusTotalPages}
+                                onPageChange={onFocusPageChange}
+                            />
+                        </div>
+                        <div className="split-view-separator"></div>
+                        <div className="room-section-wrapper">
+                            <RoomColumn
+                                title="문제 풀이방 (Quiz Rooms)"
+                                rooms={quizRooms}
+                                onJoinRoom={onJoinRoom}
+                                searchTerm={quizSearch}
+                                setSearchTerm={setQuizSearch}
+                                sortOrder={quizSort}
+                                setSortOrder={setQuizSort}
+                                onShowCreateModal={() => onShowCreateModal('QUIZ')}
+                                currentPage={quizCurrentPage}
+                                totalPages={quizTotalPages}
+                                onPageChange={onQuizPageChange}
+                            />
+                        </div>        </div>
     );
 };
 
