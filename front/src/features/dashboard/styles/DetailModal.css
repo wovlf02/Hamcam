@@ -4,7 +4,9 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,7 +20,7 @@
     border-radius: 16px;
     width: 90%;
     max-width: 550px;
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-clay-medium);
     border: 1px solid var(--border-light);
     animation: modal-fade-in 0.3s ease-out;
 }

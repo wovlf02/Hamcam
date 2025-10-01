@@ -3,15 +3,13 @@ import moment from 'moment';
 import api from '../../../api/api';
 import '../styles/DashboardTodo.css';
 
-const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
+const DashboardTodo = ({ todos, onDataChange, onItemClick, selectedDate }) => {
     const [newTodo, setNewTodo] = useState('');
     const [description, setDescription] = useState('');
-    const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
+    const [newTodoDate, setNewTodoDate] = useState('');
     const [priority, setPriority] = useState('NORMAL');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sortPriorityOrder, setSortPriorityOrder] = useState('DESC'); // 'DESC', 'ASC'
-
-
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingTodo, setEditingTodo] = useState(null); // State to hold the todo being edited
@@ -23,12 +21,10 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
         }
 
         try {
-            const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
-
             const todoData = {
                 title: newTodo,
                 description: description,
-                date: formattedDate,
+                date: newTodoDate,
                 priority: priority
             };
 
@@ -57,9 +53,8 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
             const requestData = { todoId: Number(todoId) };
             await api.put('/dashboard/todos/complete', requestData);
             
-            // Optimistically update the UI
             if (onDataChange) {
-                onDataChange(); // Re-fetch all todos to get the updated state from backend
+                onDataChange();
             }
         } catch (error) {
             console.error('Error toggling todo:', error);
@@ -100,7 +95,7 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
                 todoId: updatedTodo.id,
                 title: updatedTodo.title,
                 description: updatedTodo.description,
-                todoDate: updatedTodo.date, // Assuming 'date' in frontend maps to 'todoDate' in backend
+                todoDate: updatedTodo.date,
                 priority: updatedTodo.priority
             };
             await api.put('/dashboard/todos', requestData);
@@ -114,19 +109,18 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
         }
     };
 
-    // NEW: Memoized sorted todos
     const sortedTodos = useMemo(() => {
-        const sorted = [...todos];
+        const filtered = todos.filter(todo => moment(todo.date).isSame(selectedDate, 'day'));
         const priorityOrder = { 'HIGH': 3, 'NORMAL': 2, 'LOW': 1 };
 
         if (sortPriorityOrder === 'DESC') {
-            return sorted.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
+            return filtered.sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
         } else if (sortPriorityOrder === 'ASC') {
-            return sorted.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+            return filtered.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
         } else {
-            return sorted; // 'NONE' or any other value, return original order
+            return filtered;
         }
-    }, [todos, sortPriorityOrder]);
+    }, [todos, selectedDate, sortPriorityOrder]);
 
     return (
         <div className="dashboard-todo">
@@ -147,7 +141,10 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
                         {sortPriorityOrder === 'DESC' && '중요도순 ▼'}
                         {sortPriorityOrder === 'ASC' && '중요도순 ▲'}
                     </button>
-                    <button onClick={() => setIsModalOpen(true)}>+ 새 할일</button>
+                    <button onClick={() => {
+                        setNewTodoDate(moment(selectedDate).format('YYYY-MM-DD'));
+                        setIsModalOpen(true);
+                    }}>+ 새 할일</button>
                 </div>
             </div>
 
@@ -183,8 +180,8 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
                         <div className="date-picker">
                             <input
                                 type="date"
-                                value={selectedDate}
-                                onChange={(e) => setSelectedDate(e.target.value)}
+                                value={newTodoDate}
+                                onChange={(e) => setNewTodoDate(e.target.value)}
                             />
                         </div>
                         <div className="modal-buttons">
@@ -214,7 +211,6 @@ const DashboardTodo = ({ todos, onDataChange, onItemClick }) => {
                             <span className={`priority-badge ${todo.priority.toLowerCase()}`}>
                                 {todo.priority}
                             </span>
-                            <span className="todo-date">{moment(todo.date).format('YYYY-MM-DD')}</span>
                             <div className="todo-actions">
                                 <button onClick={(e) => handleEditTodo(e, todo)} className="edit-button">수정</button>
                                 <button onClick={(e) => handleDeleteTodo(e, todo.id)} className="delete-button">삭제</button>

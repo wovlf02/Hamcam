@@ -10,7 +10,7 @@ const StudyStart = () => {
             <h1 className="study-start-title">학습 모드 선택</h1>
             <div className="study-start-card-row">
                 {/* 개인 학습 카드 */}
-                <div className="study-start-card">
+                <div className="study-start-card study-start-card-personal">
                     <div className="study-start-card-icon">
                         <span role="img" aria-label="개인">👤</span>
                     </div>
@@ -30,7 +30,7 @@ const StudyStart = () => {
                     </button>
                 </div>
                 {/* 팀 학습 카드 */}
-                <div className="study-start-card">
+                <div className="study-start-card study-start-card-team">
                     <div className="study-start-card-icon">
                         <span role="img" aria-label="팀">👥</span>
                     </div>

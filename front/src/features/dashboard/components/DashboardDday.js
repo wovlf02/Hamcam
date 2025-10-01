@@ -159,7 +159,6 @@ const DashboardDday = ({ examSchedules, onDataChange, onItemClick }) => {
                         return (
                             <div key={exam.id} className={`todo-item ${isPastExam ? 'completed' : ''}`} onClick={() => onItemClick(exam)}>
                                 <span className="todo-title">{exam.title}</span>
-                                <span className="todo-date">{moment(exam.exam_date).format('YYYY-MM-DD')}</span>
                                 <span className={`priority-badge ${dDay === 0 ? 'high' : (dDay > 0 && dDay <= 7 ? 'normal' : 'low')}`}>
                                     {dDay > 0 ? `D-${dDay}` : (dDay === 0 ? 'D-DAY' : `D+${Math.abs(dDay)}`)}
                                 </span>

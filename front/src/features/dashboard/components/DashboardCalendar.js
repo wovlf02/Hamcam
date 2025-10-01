@@ -1,22 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
 import '../styles/DashboardCalendar.css';
 
-const DashboardCalendar = ({ selectedDate: propSelectedDate, setSelectedDate: propSetSelectedDate, todos = [], examSchedules = [], onItemClick }) => {
+const DashboardCalendar = ({ selectedDate, setSelectedDate, todos = [], examSchedules = [], onItemClick }) => {
     const [currentDate, setCurrentDate] = useState(moment());
-    const [selectedDate, setSelectedDate] = useState(propSelectedDate ? moment(propSelectedDate) : null);
-
-    useEffect(() => {
-        if (propSelectedDate) {
-            setSelectedDate(moment(propSelectedDate));
-        }
-    }, [propSelectedDate]);
 
     const handleDateSelect = (date) => {
-        const momentDate = moment(date);
-        setSelectedDate(momentDate);
-        if (propSetSelectedDate) {
-            propSetSelectedDate(momentDate);
+        if (setSelectedDate) {
+            setSelectedDate(date.toDate()); // Pass Date object up to parent
         }
     };
 
@@ -29,30 +20,31 @@ const DashboardCalendar = ({ selectedDate: propSelectedDate, setSelectedDate: pr
         let day = startDate;
 
         while (day <= endDate) {
+            const currentDay = day.clone(); // Important for the onClick closure
             const todosForDay = todos.filter(todo => 
-                moment(todo.date).format('YYYY-MM-DD') === day.format('YYYY-MM-DD')
+                moment(todo.date).isSame(currentDay, 'day')
             );
 
             const examsForDay = Array.isArray(examSchedules) ? examSchedules.filter(exam => 
-                moment(exam.exam_date).format('YYYY-MM-DD') === day.format('YYYY-MM-DD')
+                moment(exam.exam_date).isSame(currentDay, 'day')
             ) : [];
 
             days.push(
                 <div
-                    key={day.format('YYYY-MM-DD')}
-                    className={`calendar-day ${day.month() !== currentDate.month() ? 'other-month' : ''} ${selectedDate && day.format('YYYY-MM-DD') === selectedDate.format('YYYY-MM-DD') ? 'selected' : ''}`}
-                    onClick={() => handleDateSelect(day)}
+                    key={currentDay.format('YYYY-MM-DD')}
+                    className={`calendar-day ${currentDay.month() !== currentDate.month() ? 'other-month' : ''} ${selectedDate && moment(selectedDate).isSame(currentDay, 'day') ? 'selected' : ''}`}
+                    onClick={() => handleDateSelect(currentDay)}
                 >
-                    <div className="day-number">{day.format('D')}</div>
+                    <div className="day-number">{currentDay.format('D')}</div>
                     <div className="day-todos">
                         {todosForDay.map(todo => (
-                            <div key={todo.id} className={`todo-item priority-${todo.priority}`} onClick={() => onItemClick(todo)}>
+                            <div key={todo.id} className={`todo-item priority-${todo.priority}`} onClick={(e) => { e.stopPropagation(); onItemClick(todo); }}>
                                 <span className="todo-icon">✓</span>
                                 {todo.title}
                             </div>
                         ))}
                         {examsForDay.map(exam => (
-                            <div key={exam.id} className="todo-item exam-item" onClick={() => onItemClick(exam)}>
+                            <div key={exam.id} className="todo-item exam-item" onClick={(e) => { e.stopPropagation(); onItemClick(exam); }}>
                                 <span className="exam-icon">📝</span>
                                 {exam.title}
                             </div>

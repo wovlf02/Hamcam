@@ -33,18 +33,17 @@ public class ExamScheduleService {
         User user = sessionService.getCurrentUser(request);
         List<ExamSchedule> schedules = examScheduleRepository.findAllByUserOrderByExamDateAsc(user);
         
-        List<ExamScheduleResponse> responses = new ArrayList<>();
-        for (ExamSchedule schedule : schedules) {
-            long dDay = ChronoUnit.DAYS.between(LocalDate.now(), schedule.getExamDate());
-            ExamScheduleResponse response = new ExamScheduleResponse();
-            response.setId(schedule.getId());
-            response.setTitle(schedule.getTitle());
-            response.setExamDate(schedule.getExamDate());
-            response.setExam_date(schedule.getExamDate().toString());
-            response.setDDay(dDay);
-            responses.add(response);
-        }
-        return responses;
+        return schedules.stream()
+                .map(schedule -> {
+                    long dDay = ChronoUnit.DAYS.between(LocalDate.now(), schedule.getExamDate());
+                    return ExamScheduleResponse.builder()
+                            .id(schedule.getId())
+                            .title(schedule.getTitle())
+                            .examDate(schedule.getExamDate())
+                            .dDay(dDay)
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional

@@ -16,7 +16,5 @@ public class ExamScheduleResponse {
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate examDate;
-    
-    private String exam_date;
     private Long dDay; // D-Day 계산값
 }

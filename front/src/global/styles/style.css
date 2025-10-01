@@ -8,9 +8,22 @@ html, body {
 :root {
     --brand-color: #006a79;
     --bg-light: #f6f8fa;
-    --card-bg: #fff;
+    --card-bg: #fff; /* Reverted to white */
     --card-radius: 16px;
     --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Specific palette colors for dashboard cards */
+.dashboard-notice-card {
+    background: #E8F0FE; /* Light Blue */
+}
+
+.dashboard-growth-card {
+    background: #E6F4EA; /* Light Green */
+}
+
+.dashboard-study-time-card-component {
+    background: #FFF7E6; /* Light Yellow */
 }
 
 * {
@@ -20,7 +33,7 @@ html, body {
 body {
     margin: 0;
     font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
-    background: var(--bg-light);
+    background: #D9E5FC; /* Light blue palette for page background */
     color: #222;
 }
 
@@ -34,7 +47,7 @@ body {
     flex-shrink: 0;
     width: 9%; /* Default for QHD and above */
     height: 100vh; /* Ensure it fills its height */
-    background: #f8f9fa;
+    background: #F5F5F5;
     border-right: 1px solid #e0e4ea;
     display: flex;
     flex-direction: column;
@@ -61,7 +74,7 @@ body {
 .side-menu-logo {
     width: 100%;
     height: 60px;
-    background: #ffffff;
+    background: #F5F5F5;
     color: #fff;
     font-size: 22px;
     font-weight: bold;
@@ -99,17 +112,22 @@ body {
     color: #222;
     border-radius: 6px;
     font-weight: 600;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s, color 0.15s, border-left 0.15s, padding-left 0.15s;
     text-align: left;
     padding-left: 12px;
 }
 
-.side-menu-button:hover,
-.side-menu-button.active {
-    background-color: #e2e6ea;
+.side-menu-button:hover {
+    background-color: #E8F0FE; /* Use primary-blue-light for hover */
     color: var(--brand-color);
 }
 
+.side-menu-button.active {
+    background-color: #E8F0FE; /* Use primary-blue-light for active */
+    color: var(--brand-color);
+    border-left: 4px solid var(--brand-color);
+    padding-left: 8px; /* Adjust padding for border */
+}
 .side-menu-list-item.active {
     background-color: #e2e6ea;
 }

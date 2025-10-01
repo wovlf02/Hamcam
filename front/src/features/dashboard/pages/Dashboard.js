@@ -45,7 +45,17 @@ function Dashboard() {
         try {
             const response = await api.get('/dashboard/exams');
             if (response.data && response.data.success) {
-                setExamSchedules(response.data.data || []);
+                const schedules = response.data.data || [];
+                const today = moment().startOf('day');
+                const pastExams = schedules.filter(exam => moment(exam.exam_date).isBefore(today));
+                const upcomingExams = schedules.filter(exam => !moment(exam.exam_date).isBefore(today));
+
+                if (pastExams.length > 0) {
+                    // Delete past exams without waiting for user confirmation
+                    await Promise.all(pastExams.map(exam => api.delete(`/dashboard/exams/${exam.id}`)));
+                }
+
+                setExamSchedules(upcomingExams);
             } else {
                 setExamSchedules([]);
             }

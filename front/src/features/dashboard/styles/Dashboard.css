@@ -1,45 +1,69 @@
 
 :root {
+    /* Modern Google SaaS Palette */
     --primary-blue: #4285F4; /* Google Blue */
     --primary-blue-light: #E8F0FE;
     --primary-blue-dark: #1A73E8;
-    --secondary-green: #34A853;
-    --secondary-red: #EA4335;
-    --secondary-yellow: #FBBC05;
+    --primary-blue-gradient-start: #4285F4;
+    --primary-blue-gradient-end: #286DE0;
 
-    --text-primary: #202124;
-    --text-secondary: #5F6368;
-    --text-light: #9AA0A6;
+    --secondary-green: #34A853;
+    --secondary-green-light: #E6F4EA;
+    --secondary-red: #EA4335;
+    --secondary-red-light: #FADFE1;
+    --secondary-yellow: #FBBC05;
+    --secondary-yellow-light: #FFF7E6;
+
+    /* Neutrals */
+    --text-primary: #202124; /* Dark Gray */
+    --text-secondary: #5F6368; /* Medium Gray */
+    --text-light: #9AA0A6; /* Light Gray */
     --text-white: #FFFFFF;
 
-    --bg-light: #F8F9FA;
-    --bg-medium: #E8EAED;
-    --bg-dark: #DADCE0;
+    --bg-light: #F8F9FA; /* Very Light Gray */
+    --bg-medium: #E8EAED; /* Light Gray */
+    --bg-dark: #DADCE0; /* Medium Light Gray */
     --bg-white: #FFFFFF;
 
     --border-light: #DADCE0;
     --border-medium: #BDC1C6;
 
+    /* Shadows for Claymorphism */
+    --shadow-clay-light: 3px 3px 6px rgba(0, 0, 0, 0.08), -3px -3px 6px rgba(255, 255, 255, 0.7);
+    --shadow-clay-medium: 6px 6px 12px rgba(0, 0, 0, 0.1), -6px -6px 12px rgba(255, 255, 255, 0.6);
+    --shadow-clay-dark: 8px 8px 16px rgba(0, 0, 0, 0.12), -8px -8px 16px rgba(255, 255, 255, 0.5);
+
+    /* General Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-clay-1: 5px 5px 10px rgba(0, 0, 0, 0.05), -5px -5px 10px rgba(255, 255, 255, 0.8);
-    --shadow-clay-2: 8px 8px 16px rgba(0, 0, 0, 0.08), -8px -8px 16px rgba(255, 255, 255, 0.7);
+
+    /* Inner Shadows for Claymorphism */
+    --shadow-clay-inset-light: inset 2px 2px 5px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.4);
+    --shadow-clay-inset-medium: inset 3px 3px 7px rgba(0, 0, 0, 0.08), inset -3px -3px 7px rgba(255, 255, 255, 0.5);
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-border: rgba(255, 255, 255, 0.3);
 }
 
 .dashboard-container {
     padding: 32px;
-    background: var(--bg-light);
-    min-height: 100vh; /* Ensure it takes full viewport height */
-    font-family: 'Roboto', sans-serif; /* Assuming Roboto is available or will be imported */
+    background: linear-gradient(135deg, #e0f2f7, #c8e6c9); /* Soft, modern gradient */
+    min-height: 100vh;
+    font-family: 'Roboto', sans-serif;
     color: var(--text-primary);
 }
 
 .dashboard-main-title {
-    font-size: 2.2rem;
-    font-weight: 700;
-    margin-bottom: 24px;
-    color: var(--text-primary);
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 40px;
+    text-align: center;
+    background: linear-gradient(45deg, var(--primary-blue-dark), #2aa853);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 }
 
 .card-title {
@@ -117,6 +141,7 @@
     display: flex;
     flex-direction: column;
     gap: 24px; /* Gap between study time card and todo list */
+    height: 100%;
 }
 
 
@@ -334,7 +359,7 @@
     display: inline-block;
     min-width: 38px;
     font-weight: 600;
-    color: #2563eb;
+    /* color: #2563eb; */ /* Removed conflicting color */
     margin-right: 8px;
 }
 
