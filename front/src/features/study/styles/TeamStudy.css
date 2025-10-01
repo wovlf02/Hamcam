@@ -140,8 +140,16 @@
 /* === View Layouts: Combined & Split === */
 .split-view-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
+    grid-template-columns: 1fr auto 1fr; /* Accommodate separator */
+    align-items: start; /* Align items to the top */
+}
+
+.split-view-separator {
+    width: 1px;
+    background-color: var(--c-border);
+    margin: 0 16px; /* Spacing around the separator */
+    height: 100%;
+    align-self: stretch; /* Ensure it stretches vertically */
 }
 
 .room-column h2 {

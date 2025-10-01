@@ -75,6 +75,7 @@ const SplitView = ({
                 totalPages={focusTotalPages}
                 onPageChange={onFocusPageChange}
             />
+            <div className="split-view-separator"></div>
             <RoomColumn 
                 title="문제 풀이방 (Quiz Rooms)"
                 rooms={quizRooms}

@@ -14,7 +14,7 @@ const ViewModeToggle = ({ viewMode, setViewMode }) => {
                 className={viewMode === 'split' ? 'active' : ''} 
                 onClick={() => setViewMode('split')}
             >
-                분할해서 보기
+                나눠서 보기
             </button>
         </div>
     );
