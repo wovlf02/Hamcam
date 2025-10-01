@@ -18,6 +18,23 @@ const useP2PRoom = (roomId) => {
     const [isCameraOn, setIsCameraOn] = useState(true);
     const [isMicOn, setIsMicOn] = useState(true);
     const [pendingPeers, setPendingPeers] = useState([]);
+    const [mutedRemoteUsers, setMutedRemoteUsers] = useState(new Map());
+
+    const toggleRemoteAudio = useCallback((socketId) => {
+        setMutedRemoteUsers(prev => {
+            const newMutedState = !prev.get(socketId);
+            const newMap = new Map(prev);
+            newMap.set(socketId, newMutedState);
+
+            const participant = participants.find(p => p.socketId === socketId);
+            if (participant && participant.stream) {
+                participant.stream.getAudioTracks().forEach(track => {
+                    track.enabled = !newMutedState; // Toggle based on newMutedState
+                });
+            }
+            return newMap;
+        });
+    }, [participants]);
 
     useEffect(() => {
         const socket = io('http://localhost:4000', { withCredentials: true });
@@ -205,12 +222,12 @@ const useP2PRoom = (roomId) => {
 
     const emitEvent = (eventName, payload) => socketRef.current.emit(eventName, { roomId, ...payload });
 
-    return { participants, chatMessages, problem, ranking, startLocalStream, emitEvent, localStream, socketId: socketRef.current?.id, isCameraOn, isMicOn, toggleCamera, toggleMicrophone };
+    return { participants, chatMessages, problem, ranking, startLocalStream, emitEvent, localStream, socketId: socketRef.current?.id, isCameraOn, isMicOn, toggleCamera, toggleMicrophone, mutedRemoteUsers, toggleRemoteAudio };
 };
 
 const QuizRoom = () => {
     const { roomId } = useParams();
-    const { participants, chatMessages, problem, ranking, startLocalStream, emitEvent, localStream, socketId, isCameraOn, isMicOn, toggleCamera, toggleMicrophone } = useP2PRoom(roomId);
+    const { participants, chatMessages, problem, ranking, startLocalStream, emitEvent, localStream, socketId, isCameraOn, isMicOn, toggleCamera, toggleMicrophone, mutedRemoteUsers, toggleRemoteAudio } = useP2PRoom(roomId);
 
     const [userId, setUserId] = useState(null);
     const [chatInput, setChatInput] = useState('');
@@ -287,6 +304,11 @@ const QuizRoom = () => {
                             <div key={p.socketId} className="video-tile">
                                 <video autoPlay playsInline ref={video => { if (video && p.stream) video.srcObject = p.stream; }} />
                                 <div className="name">{p.nickname}</div>
+                                <div className="controls">
+                                    <button onClick={() => toggleRemoteAudio(p.socketId)}>
+                                        {mutedRemoteUsers.get(p.socketId) ? '음소거 해제' : '음소거'}
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
