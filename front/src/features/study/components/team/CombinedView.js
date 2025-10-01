@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import ControlHeader from './ControlHeader';
 import RoomCard from './RoomCard';
 import Pagination from './Pagination';
@@ -48,4 +48,4 @@ const CombinedView = ({
     );
 };
 
-export default CombinedView;
+export default memo(CombinedView);

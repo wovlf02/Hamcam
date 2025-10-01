@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import ControlHeader from './ControlHeader';
 import RoomCard from './RoomCard';
 import Pagination from './Pagination';
@@ -45,8 +45,7 @@ const RoomColumn = ({
             />
         </div>
     );
-}
-
+};
 const SplitView = ({ 
     focusRooms, 
     quizRooms, 
@@ -93,4 +92,4 @@ const SplitView = ({
     );
 };
 
-export default SplitView;
+export default memo(SplitView);
