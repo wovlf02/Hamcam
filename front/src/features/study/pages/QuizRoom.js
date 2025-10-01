@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../api/api';
 import '../styles/QuizRoom.css';
@@ -10,11 +10,13 @@ import { API_BASE_URL_8080 } from "../../../api/apiUrl";
 const useP2PRoom = (roomId) => {
     const socketRef = useRef();
     const peersRef = useRef(new Map());
-    const localStreamRef = useRef();
+    const [localStream, setLocalStream] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [chatMessages, setChatMessages] = useState([]);
     const [problem, setProblem] = useState(null);
     const [ranking, setRanking] = useState([]);
+    const [isCameraOn, setIsCameraOn] = useState(true);
+    const [isMicOn, setIsMicOn] = useState(true);
 
     useEffect(() => {
         const socket = io('http://localhost:4000', { withCredentials: true });
@@ -34,15 +36,33 @@ const useP2PRoom = (roomId) => {
 
         socket.on('signal', async ({ fromSocketId, sdp, candidate }) => {
             const peer = peersRef.current.get(fromSocketId);
+            if (!peer) {
+                console.warn("Peer not found for signal from", fromSocketId);
+                return;
+            }
             if (sdp) {
-                await peer.setRemoteDescription(new RTCSessionDescription(sdp));
-                if (sdp.type === 'offer') {
-                    const answer = await peer.createAnswer();
-                    await peer.setLocalDescription(answer);
-                    socket.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
+                try {
+                    const remoteDesc = new RTCSessionDescription(sdp);
+                    // Avoid setting remote description if in an invalid state for an answer
+                    if (remoteDesc.type === 'answer' && peer.signalingState !== 'have-remote-offer' && peer.signalingState !== 'stable') {
+                        console.warn("Received answer in unexpected signaling state:", peer.signalingState);
+                        return;
+                    }
+                    await peer.setRemoteDescription(remoteDesc);
+                    if (sdp.type === 'offer') {
+                        const answer = await peer.createAnswer();
+                        await peer.setLocalDescription(answer);
+                        socket.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
+                    }
+                } catch (error) {
+                    console.error("Error setting remote description or creating answer:", error);
                 }
             } else if (candidate) {
-                await peer.addIceCandidate(new RTCIceCandidate(candidate));
+                try {
+                    await peer.addIceCandidate(new RTCIceCandidate(candidate));
+                } catch (error) {
+                    console.error("Error adding ICE candidate:", error);
+                }
             }
         });
 
@@ -57,21 +77,33 @@ const useP2PRoom = (roomId) => {
         socket.on('ranking-update', (newRanking) => setRanking(newRanking));
 
         return () => {
-            localStreamRef.current?.getTracks().forEach(track => track.stop());
+            localStream?.getTracks().forEach(track => track.stop());
             peersRef.current.forEach(peer => peer.close());
             socket.disconnect();
         };
     }, [roomId]);
 
+    // New useEffect to add local stream tracks to peer connections
+    useEffect(() => {
+        if (localStream) {
+            peersRef.current.forEach(peer => {
+                localStream.getTracks().forEach(track => {
+                    const sender = peer.getSenders().find(s => s.track === track);
+                    if (!sender) {
+                        peer.addTrack(track, localStream);
+                    }
+                });
+            });
+        }
+    }, [localStream]);
+
     const createPeer = (targetSocketId, initiatorSocketId) => {
         const peer = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
 
-        localStreamRef.current?.getTracks().forEach(track => peer.addTrack(track, localStreamRef.current));
-
         peer.onicecandidate = e => e.candidate && socketRef.current.emit('signal', { targetSocketId, candidate: e.candidate });
-        
+
         peer.ontrack = e => {
-            setParticipants(prev => prev.map(p => 
+            setParticipants(prev => prev.map(p =>
                 p.socketId === targetSocketId ? { ...p, stream: e.streams[0] } : p
             ));
         };
@@ -81,28 +113,52 @@ const useP2PRoom = (roomId) => {
                 .then(offer => peer.setLocalDescription(offer))
                 .then(() => socketRef.current.emit('signal', { targetSocketId, sdp: peer.localDescription }));
         }
-        
+
         peersRef.current.set(targetSocketId, peer);
     };
 
-    const startLocalStream = async () => {
+    const startLocalStream = useCallback(async () => {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             alert("카메라/마이크를 사용할 수 없습니다. HTTPS 또는 localhost 환경에서 접속해주세요.");
             throw new Error('getUserMedia is not supported in this browser/context.');
         }
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localStreamRef.current = stream;
+        setLocalStream(stream);
+        setIsCameraOn(stream.getVideoTracks().some(track => track.enabled));
+        setIsMicOn(stream.getAudioTracks().some(track => track.enabled));
         return stream;
+    }, []);
+
+    const toggleCamera = () => {
+        if (localStream) {
+            const videoTracks = localStream.getVideoTracks();
+            if (videoTracks.length > 0) {
+                const newState = !videoTracks[0].enabled;
+                videoTracks.forEach(track => (track.enabled = newState));
+                setIsCameraOn(newState);
+            }
+        }
+    };
+
+    const toggleMicrophone = () => {
+        if (localStream) {
+            const audioTracks = localStream.getAudioTracks();
+            if (audioTracks.length > 0) {
+                const newState = !audioTracks[0].enabled;
+                audioTracks.forEach(track => (track.enabled = newState));
+                setIsMicOn(newState);
+            }
+        }
     };
 
     const emitEvent = (eventName, payload) => socketRef.current.emit(eventName, { roomId, ...payload });
 
-    return { participants, chatMessages, problem, ranking, startLocalStream, emitEvent, localStreamRef, socketId: socketRef.current?.id };
+    return { participants, chatMessages, problem, ranking, startLocalStream, emitEvent, localStream, socketId: socketRef.current?.id, isCameraOn, isMicOn, toggleCamera, toggleMicrophone };
 };
 
 const QuizRoom = () => {
     const { roomId } = useParams();
-    const { participants, chatMessages, problem, ranking, startLocalStream, emitEvent, localStreamRef, socketId } = useP2PRoom(roomId);
+    const { participants, chatMessages, problem, ranking, startLocalStream, emitEvent, localStream, socketId, isCameraOn, isMicOn, toggleCamera, toggleMicrophone } = useP2PRoom(roomId);
 
     const [userId, setUserId] = useState(null);
     const [chatInput, setChatInput] = useState('');
@@ -112,10 +168,18 @@ const QuizRoom = () => {
 
     useEffect(() => {
         api.get('/users/me').then(res => setUserId(res.data.data.user_id));
-        startLocalStream().then(stream => {
-            if (myVideoRef.current) myVideoRef.current.srcObject = stream;
-        });
-    }, [startLocalStream]);
+        startLocalStream();
+    }, []);
+
+    useEffect(() => {
+        if (myVideoRef.current && localStream) {
+            if (isCameraOn) {
+                myVideoRef.current.srcObject = localStream;
+            } else {
+                myVideoRef.current.srcObject = null;
+            }
+        }
+    }, [isCameraOn, localStream]);
 
     useEffect(() => {
         if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
@@ -156,8 +220,16 @@ const QuizRoom = () => {
                     <h2>캠 화면</h2>
                     <div className="quizroom-video-grid">
                         <div className="video-tile">
-                            <video ref={myVideoRef} autoPlay muted playsInline />
+                            {isCameraOn ? (
+                                <video ref={myVideoRef} autoPlay muted playsInline />
+                            ) : (
+                                <div className="camera-off-placeholder">카메라 꺼짐</div>
+                            )}
                             <div className="name">나</div>
+                            <div className="controls">
+                                <button onClick={toggleCamera}>{isCameraOn ? '캠 끄기' : '캠 켜기'}</button>
+                                <button onClick={toggleMicrophone}>{isMicOn ? '마이크 끄기' : '마이크 켜기'}</button>
+                            </div>
                         </div>
                         {participants.map(p => (
                             <div key={p.socketId} className="video-tile">
