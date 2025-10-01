@@ -17,6 +17,7 @@ const useP2PRoom = (roomId) => {
     const [ranking, setRanking] = useState([]);
     const [isCameraOn, setIsCameraOn] = useState(true);
     const [isMicOn, setIsMicOn] = useState(true);
+    const [pendingPeers, setPendingPeers] = useState([]);
 
     useEffect(() => {
         const socket = io('http://localhost:4000', { withCredentials: true });
@@ -25,13 +26,21 @@ const useP2PRoom = (roomId) => {
         socket.emit('join-room', { roomId });
 
         socket.on('all-users', (users) => {
-            users.forEach(user => createPeer(user.socketId, socket.id));
+            if (localStream) {
+                users.forEach(user => createPeer(user.socketId, socket.id));
+            } else {
+                setPendingPeers(prev => [...prev, ...users.map(u => u.socketId)]);
+            }
             setParticipants(users);
         });
 
         socket.on('user-joined', (user) => {
             setParticipants(prev => [...prev, user]);
-            createPeer(user.socketId, socket.id);
+            if (localStream) {
+                createPeer(user.socketId, socket.id);
+            } else {
+                setPendingPeers(prev => [...prev, user.socketId]);
+            }
         });
 
         socket.on('signal', async ({ fromSocketId, sdp, candidate }) => {
@@ -54,6 +63,15 @@ const useP2PRoom = (roomId) => {
                     console.log(`After setRemoteDescription (type: ${remoteDesc.type}): ${peer.signalingState}`);
 
                     if (sdp.type === 'offer') {
+                        if (localStream) {
+                            localStream.getTracks().forEach(track => {
+                                const sender = peer.getSenders().find(s => s.track === track);
+                                if (!sender) {
+                                    peer.addTrack(track, localStream);
+                                }
+                            });
+                        }
+
                         console.log(`Before createAnswer: ${peer.signalingState}`);
                         const answer = await peer.createAnswer();
                         console.log(`After createAnswer, Before setLocalDescription: ${peer.signalingState}`);
@@ -91,24 +109,38 @@ const useP2PRoom = (roomId) => {
         };
     }, [roomId]);
 
-    // New useEffect to add local stream tracks to peer connections
+
+
+    // New useEffect to add local stream tracks to peer connections and process pending peers
     useEffect(() => {
         if (localStream) {
+            console.log(`[useEffect localStream] localStream available. Adding tracks to ${peersRef.current.size} peers.`);
             peersRef.current.forEach(peer => {
                 localStream.getTracks().forEach(track => {
+                    // Check if the track is already added to avoid duplicates
                     const sender = peer.getSenders().find(s => s.track === track);
                     if (!sender) {
                         peer.addTrack(track, localStream);
                     }
                 });
             });
+
+            // Process pending peers
+            if (pendingPeers.length > 0) { // Only process if there are pending peers
+                pendingPeers.forEach(socketId => {
+                    createPeer(socketId, socketRef.current.id);
+                });
+                setPendingPeers([]); // Clear pending peers after processing
+            }
         }
-    }, [localStream]);
+    }, [localStream, pendingPeers]);
 
     const createPeer = (targetSocketIdParam, initiatorSocketId) => {
-        const peer = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+        const peer = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] });
 
         const currentPeerTargetSocketId = targetSocketIdParam;
+        console.log(`[createPeer] Called for ${currentPeerTargetSocketId}. localStream available: ${!!localStream}`);
+
 
         peer.onicecandidate = e => e.candidate && socketRef.current.emit('signal', { targetSocketId: currentPeerTargetSocketId, candidate: e.candidate });
 
