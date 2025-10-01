@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../api/api';
 import '../styles/FocusRoom.css';
@@ -100,11 +100,11 @@ const useP2PRoom = (roomId) => {
         peersRef.current.set(targetSocketId, peer);
     };
 
-    const startLocalStream = async () => {
+    const startLocalStream = useCallback(async () => {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localStreamRef.current = stream;
         return stream;
-    };
+    }, []);
 
     const sendMessage = (message) => {
         socketRef.current.emit('send-message', { roomId, message });
@@ -128,17 +128,38 @@ const FocusRoom = () => {
     const chatRef = useRef(null);
 
     useEffect(() => {
-        api.get('/users/me').then(res => setUserId(res.data.data.user_id));
-        ModelLoader.loadModels().then(() => setModelsLoaded(true));
-        startLocalStream().then(stream => {
-            if (myVideoRef.current) {
-                myVideoRef.current.srcObject = stream;
+        const loadInitialData = async () => {
+            try {
+                const userRes = await api.get('/users/me');
+                setUserId(userRes.data.data.user_id);
+
+                console.log('FocusRoom 모델 로딩 시작...');
+                await ModelLoader.loadModels();
+                setModelsLoaded(true);
+                console.log('FocusRoom 모델 로딩 완료!');
+
+                const stream = await startLocalStream();
+                if (myVideoRef.current) {
+                    myVideoRef.current.srcObject = stream;
+                }
+            } catch (error) {
+                console.error('FocusRoom 초기 로딩 오류:', error);
+                if (error.message.includes('Load failed')) {
+                    alert('모델 파일을 불러올 수 없습니다. 페이지를 새로고침해주세요.');
+                } else if (error.name === 'NotAllowedError' || error.name === 'NotFoundError') {
+                    alert('카메라 접근에 실패했습니다. 권한을 허용해 주세요.');
+                    setCamOn(false);
+                } else {
+                    alert(`초기 로딩 실패: ${error.message}`);
+                }
+                setCamOn(false); // Ensure cam is off if stream fails
             }
-        }).catch(() => setCamOn(false));
+        };
+        loadInitialData();
     }, [startLocalStream]);
 
     useEffect(() => {
-        if (!modelsLoaded || !camOn) return;
+        if (!modelsLoaded || !camOn || !faceapi.nets.tinyFaceDetector.isLoaded) return;
         const intervalId = setInterval(async () => {
             if (myVideoRef.current) {
                 const detections = await faceapi.detectAllFaces(myVideoRef.current, new faceapi.TinyFaceDetectorOptions());
