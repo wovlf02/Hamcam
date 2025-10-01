@@ -44,24 +44,29 @@ const useP2PRoom = (roomId) => {
                 try {
                     const remoteDesc = new RTCSessionDescription(sdp);
                     if (remoteDesc.type === 'answer') {
-                        // If we receive an answer, we must be in 'have-local-offer' state.
-                        // If not, it's an unexpected answer.
                         if (peer.signalingState !== 'have-local-offer') {
                             console.warn("Received answer in unexpected signaling state:", peer.signalingState);
                             return;
                         }
                     }
+                    console.log(`Before setRemoteDescription (type: ${remoteDesc.type}): ${peer.signalingState}`);
                     await peer.setRemoteDescription(remoteDesc);
+                    console.log(`After setRemoteDescription (type: ${remoteDesc.type}): ${peer.signalingState}`);
+
                     if (sdp.type === 'offer') {
+                        console.log(`Before createAnswer: ${peer.signalingState}`);
                         const answer = await peer.createAnswer();
+                        console.log(`After createAnswer, Before setLocalDescription: ${peer.signalingState}`);
                         await peer.setLocalDescription(answer);
-                        socket.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
+                        console.log(`After setLocalDescription (answer): ${peer.signalingState}`);
+                        socketRef.current.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
                     }
                 } catch (error) {
                     console.error("Error setting remote description or creating answer:", error);
                 }
             } else if (candidate) {
                 try {
+                    console.log(`Adding ICE candidate: ${peer.signalingState}`);
                     await peer.addIceCandidate(new RTCIceCandidate(candidate));
                 } catch (error) {
                     console.error("Error adding ICE candidate:", error);
@@ -100,34 +105,36 @@ const useP2PRoom = (roomId) => {
         }
     }, [localStream]);
 
-    const createPeer = (targetSocketId, initiatorSocketId) => {
+    const createPeer = (targetSocketIdParam, initiatorSocketId) => {
         const peer = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
 
-        peer.onicecandidate = e => e.candidate && socketRef.current.emit('signal', { targetSocketId, candidate: e.candidate });
+        const currentPeerTargetSocketId = targetSocketIdParam;
+
+        peer.onicecandidate = e => e.candidate && socketRef.current.emit('signal', { targetSocketId: currentPeerTargetSocketId, candidate: e.candidate });
 
         peer.ontrack = e => {
+            console.log("ONTRAK event received!", e);
+            console.log("Stream received:", e.streams[0]);
             setParticipants(prev => prev.map(p =>
-                p.socketId === targetSocketId ? { ...p, stream: e.streams[0] } : p
+                p.socketId === currentPeerTargetSocketId ? { ...p, stream: e.streams[0] } : p
             ));
         };
 
         peer.onnegotiationneeded = async () => {
             try {
-                // Only create offer if we are the initiator or if the signaling state is stable
-                // This prevents creating offers when one is already in progress
-                if (initiatorSocketId === socketRef.current.id || peer.signalingState === 'stable') {
+                if (peer.signalingState === 'stable') {
                     const offer = await peer.createOffer();
                     await peer.setLocalDescription(offer);
-                    socketRef.current.emit('signal', { targetSocketId, sdp: peer.localDescription });
+                    socketRef.current.emit('signal', { targetSocketId: currentPeerTargetSocketId, sdp: peer.localDescription });
                 } else {
-                    console.warn("Negotiation needed, but not initiating offer. Signaling state:", peer.signalingState);
+                    console.warn("Negotiation needed, but peer not in stable state to create offer. Signaling state:", peer.signalingState);
                 }
             } catch (error) {
                 console.error("Error during negotiationneeded:", error);
             }
         };
 
-        peersRef.current.set(targetSocketId, peer);
+        peersRef.current.set(currentPeerTargetSocketId, peer);
     };
 
     const startLocalStream = useCallback(async () => {
