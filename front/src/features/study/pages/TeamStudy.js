@@ -26,7 +26,7 @@ const CreateRoomModal = ({ show, onClose, onCreate }) => {
     };
 
     return (
-        <div className="modal">
+        <div className="team-study-modal">
             <div className="modal-content">
                 <h2>새 학습방 만들기</h2>
                 <div className="form-group">
