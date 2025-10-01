@@ -18,6 +18,7 @@ public class TeamRoomSimpleInfo {
     private String inviteCode;
     private String password;          // 🔹 추가
     private int maxParticipants;      // 🔹 추가
+    private int currentParticipants;  // 🔹 추가: 현재 참여자 수
 
     public static TeamRoomSimpleInfo from(StudyRoom room) {
         return TeamRoomSimpleInfo.builder()
@@ -27,9 +28,10 @@ public class TeamRoomSimpleInfo {
                 .isActive(room.isActive())
                 .inviteCode(room.getInviteCode())
                 .password(room.getPassword())
-                .maxParticipants(room.getParticipants() != null
+                .maxParticipants(room.getMaxParticipants()) // ✅ StudyRoom 엔티티의 maxParticipants 사용
+                .currentParticipants(room.getParticipants() != null
                         ? room.getParticipants().size()
-                        : 0)
+                        : 0) // ✅ 현재 참여자 수
                 .build();
     }
 }

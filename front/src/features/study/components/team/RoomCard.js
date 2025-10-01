@@ -3,7 +3,7 @@ import React from 'react';
 import { Lock, Users } from 'react-feather'; // Using react-feather for icons
 
 const RoomCard = ({ room, onJoin }) => {
-    const { room_id, title, room_type, max_participants, password } = room;
+    const { room_id, title, room_type, max_participants, password, currentParticipants } = room;
 
     const handleJoin = () => {
         onJoin(room_id);
@@ -23,7 +23,7 @@ const RoomCard = ({ room, onJoin }) => {
             <div className="card-footer">
                 <div className="participants">
                     <Users size={16} />
-                    <span>{`1 / ${max_participants || 10}`}</span>
+                    <span>{`${currentParticipants || 0} / ${max_participants || 10}`}</span>
                 </div>
                 {password && (
                     <div className="lock-status">
