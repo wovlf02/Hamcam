@@ -21,9 +21,6 @@ const ControlHeader = ({
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <button>
-                    <Search size={18} />
-                </button>
             </div>
             
             <div className="filter-sort">

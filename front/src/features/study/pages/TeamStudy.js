@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api/api';
 import '../styles/TeamStudy.css'; // Main stylesheet
+import useDebounce from '../hooks/useDebounce';
 
 // Import new components
 import ViewModeToggle from '../components/team/ViewModeToggle';
@@ -81,16 +82,19 @@ const TeamStudy = () => {
 
     // State for Combined View
     const [combinedSearch, setCombinedSearch] = useState('');
+    const debouncedCombinedSearch = useDebounce(combinedSearch, 500);
     const [combinedFilter, setCombinedFilter] = useState('ALL');
     const [combinedSort, setCombinedSort] = useState('latest');
     const [combinedPage, setCombinedPage] = useState(1);
 
     // State for Split View
     const [focusSearch, setFocusSearch] = useState('');
+    const debouncedFocusSearch = useDebounce(focusSearch, 500);
     const [focusSort, setFocusSort] = useState('latest');
     const [focusPage, setFocusPage] = useState(1);
 
     const [quizSearch, setQuizSearch] = useState('');
+    const debouncedQuizSearch = useDebounce(quizSearch, 500);
     const [quizSort, setQuizSort] = useState('latest');
     const [quizPage, setQuizPage] = useState(1);
 
@@ -124,12 +128,12 @@ const TeamStudy = () => {
     // Combined View Data
     const combinedFilteredRooms = useMemo(() => {
         const rooms = allRooms.filter(room => combinedFilter === 'ALL' || room.room_type === combinedFilter);
-        return getProcessedRooms(rooms, combinedSearch, combinedSort);
-    }, [allRooms, combinedFilter, combinedSearch, combinedSort]);
+        return getProcessedRooms(rooms, debouncedCombinedSearch, combinedSort);
+    }, [allRooms, combinedFilter, debouncedCombinedSearch, combinedSort]);
 
     // Split View Data
-    const focusRooms = useMemo(() => getProcessedRooms(allRooms.filter(r => r.room_type === 'FOCUS'), focusSearch, focusSort), [allRooms, focusSearch, focusSort]);
-    const quizRooms = useMemo(() => getProcessedRooms(allRooms.filter(r => r.room_type === 'QUIZ'), quizSearch, quizSort), [allRooms, quizSearch, quizSort]);
+    const focusRooms = useMemo(() => getProcessedRooms(allRooms.filter(r => r.room_type === 'FOCUS'), debouncedFocusSearch, focusSort), [allRooms, debouncedFocusSearch, focusSort]);
+    const quizRooms = useMemo(() => getProcessedRooms(allRooms.filter(r => r.room_type === 'QUIZ'), debouncedQuizSearch, quizSort), [allRooms, debouncedQuizSearch, quizSort]);
 
     // Pagination Logic
     const paginate = (items, page) => items.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
