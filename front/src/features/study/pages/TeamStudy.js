@@ -9,10 +9,19 @@ import CombinedView from '../components/team/CombinedView';
 import SplitView from '../components/team/SplitView';
 
 // A re-styled and simplified modal
-const CreateRoomModal = ({ show, onClose, onCreate }) => {
+const CreateRoomModal = ({ show, onClose, onCreate, preselectedRoomType }) => {
     const [title, setTitle] = useState('');
-    const [roomType, setRoomType] = useState('QUIZ');
+    const [roomType, setRoomType] = useState(preselectedRoomType || 'QUIZ'); // Initialize with preselectedRoomType
+    const [maxParticipants, setMaxParticipants] = useState(10); // New state for max participants
     const [password, setPassword] = useState('');
+
+    useEffect(() => {
+        if (preselectedRoomType) {
+            setRoomType(preselectedRoomType);
+        } else {
+            setRoomType('QUIZ'); // Default when no preselection
+        }
+    }, [preselectedRoomType]);
 
     if (!show) return null;
 
@@ -21,8 +30,8 @@ const CreateRoomModal = ({ show, onClose, onCreate }) => {
             alert('학습방 이름을 입력해주세요.');
             return;
         }
-        onCreate({ title, room_type: roomType, password });
-        onClose(); // Close modal after creation attempt
+        onCreate({ title, room_type: roomType, max_participants: maxParticipants, password }); // Pass max_participants
+        onClose();
     };
 
     return (
@@ -35,10 +44,20 @@ const CreateRoomModal = ({ show, onClose, onCreate }) => {
                 </div>
                 <div className="form-group">
                     <label>학습방 종류</label>
-                    <select value={roomType} onChange={(e) => setRoomType(e.target.value)}>
+                    <select value={roomType} onChange={(e) => setRoomType(e.target.value)} disabled={!!preselectedRoomType}> // Disable if preselected
                         <option value="QUIZ">문제풀이방</option>
                         <option value="FOCUS">집중학습방</option>
                     </select>
+                </div>
+                <div className="form-group">
+                    <label>최대 참여자 수</label>
+                    <input
+                        type="number"
+                        value={maxParticipants}
+                        onChange={(e) => setMaxParticipants(parseInt(e.target.value))}
+                        min="1"
+                        placeholder="예: 10"
+                    />
                 </div>
                 <div className="form-group">
                     <label>비밀번호 (선택)</label>
@@ -57,6 +76,7 @@ const TeamStudy = () => {
     const [viewMode, setViewMode] = useState('combined'); // 'combined' or 'split'
     const [allRooms, setAllRooms] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [preselectedRoomType, setPreselectedRoomType] = useState(null); // New state
     const navigate = useNavigate();
 
     // State for Combined View
@@ -146,6 +166,11 @@ const TeamStudy = () => {
         }
     };
 
+    const handleShowCreateModal = (type = null) => {
+        setPreselectedRoomType(type);
+        setShowModal(true);
+    };
+
     return (
         <div className="team-study-container">
             <div className="page-header">
@@ -163,7 +188,7 @@ const TeamStudy = () => {
                     setFilterType={setCombinedFilter}
                     sortOrder={combinedSort}
                     setSortOrder={setCombinedSort}
-                    onShowCreateModal={() => setShowModal(true)}
+                    onShowCreateModal={() => handleShowCreateModal(null)}
                     currentPage={combinedPage}
                     totalPages={Math.ceil(combinedFilteredRooms.length / ITEMS_PER_PAGE)}
                     onPageChange={setCombinedPage}
@@ -173,7 +198,7 @@ const TeamStudy = () => {
                     focusRooms={focusPaginated}
                     quizRooms={quizPaginated}
                     onJoinRoom={handleJoinRoom}
-                    onShowCreateModal={() => setShowModal(true)}
+                    onShowCreateModal={handleShowCreateModal}
                     focusSearch={focusSearch}
                     setFocusSearch={setFocusSearch}
                     focusSort={focusSort}
@@ -195,6 +220,7 @@ const TeamStudy = () => {
                 show={showModal}
                 onClose={() => setShowModal(false)}
                 onCreate={handleCreateRoom}
+                preselectedRoomType={preselectedRoomType} // Pass preselectedRoomType
             />
         </div>
     );

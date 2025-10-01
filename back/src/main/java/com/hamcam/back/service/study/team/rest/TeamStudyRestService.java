@@ -63,6 +63,7 @@ public class TeamStudyRestService {
                     .month(request.getMonth())
                     .difficulty(request.getDifficulty())
                     .host(user) // ✅ 필수 추가
+                    .maxParticipants(request.getMaxParticipants()) // ✅ 추가
                     .build();
             quizRoomRepository.save((QuizRoom) room);
 
@@ -73,6 +74,7 @@ public class TeamStudyRestService {
                     .inviteCode(inviteCode)
                     .targetTime(request.getTargetTime())
                     .host(user) // ✅ 필수 추가
+                    .maxParticipants(request.getMaxParticipants()) // ✅ 추가
                     .build();
             focusRoomRepository.save((FocusRoom) room);
 

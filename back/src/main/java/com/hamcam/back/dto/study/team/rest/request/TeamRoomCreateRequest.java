@@ -22,6 +22,9 @@ public class TeamRoomCreateRequest {
     /** 비밀번호 (선택 입력) */
     private String password;
 
+    /** 최대 참여자 수 */
+    private int maxParticipants;
+
     /** 공부방인 경우에만 입력 (단위: 분) */
     private int targetTime;
 

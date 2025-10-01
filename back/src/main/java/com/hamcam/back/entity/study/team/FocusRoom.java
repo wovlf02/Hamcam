@@ -28,9 +28,10 @@ public class FocusRoom extends StudyRoom {
                      String password,
                      String inviteCode,
                      int targetTime,
-                     User host) {
+                     User host,
+                     int maxParticipants) {
         // ✅ RoomType.FOCUS 명시적으로 전달
-        super(title, password, inviteCode, RoomType.FOCUS, host);
+        super(title, password, inviteCode, RoomType.FOCUS, host, maxParticipants);
         this.targetTime = targetTime;
     }
 }

@@ -71,7 +71,7 @@ const SplitView = ({
                 setSearchTerm={setFocusSearch}
                 sortOrder={focusSort}
                 setSortOrder={setFocusSort}
-                onShowCreateModal={onShowCreateModal}
+                onShowCreateModal={() => onShowCreateModal('FOCUS')}
                 currentPage={focusCurrentPage}
                 totalPages={focusTotalPages}
                 onPageChange={onFocusPageChange}
@@ -84,7 +84,7 @@ const SplitView = ({
                 setSearchTerm={setQuizSearch}
                 sortOrder={quizSort}
                 setSortOrder={setQuizSort}
-                onShowCreateModal={onShowCreateModal}
+                onShowCreateModal={() => onShowCreateModal('QUIZ')}
                 currentPage={quizCurrentPage}
                 totalPages={quizTotalPages}
                 onPageChange={onQuizPageChange}
