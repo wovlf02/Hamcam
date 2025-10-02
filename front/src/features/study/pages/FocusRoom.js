@@ -93,7 +93,7 @@ const useP2PRoom = (roomId) => {
             peersRef.current.forEach(peer => peer.close());
             socket.disconnect();
         };
-    }, [roomId, participants, localStream]);
+    }, [roomId, localStream]);
 
     const createPeer = (targetSocketId, initiatorSocketId) => {
         if (!localStream) return;
