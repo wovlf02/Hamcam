@@ -9,10 +9,29 @@ import ModelLoader from '../../../utils/ModelLoader';
 const useP2PRoom = (roomId) => {
     const socketRef = useRef();
     const peersRef = useRef(new Map());
-    const localStreamRef = useRef();
+    const [localStream, setLocalStream] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [chatMessages, setChatMessages] = useState([]);
     const [focusTimes, setFocusTimes] = useState({});
+    const [isCameraOn, setIsCameraOn] = useState(true);
+    const [isMicOn, setIsMicOn] = useState(true);
+    const [mutedRemoteUsers, setMutedRemoteUsers] = useState(new Map());
+
+    const toggleRemoteAudio = useCallback((socketId) => {
+        setMutedRemoteUsers(prev => {
+            const newMutedState = !prev.get(socketId);
+            const newMap = new Map(prev);
+            newMap.set(socketId, newMutedState);
+
+            const participant = participants.find(p => p.socketId === socketId);
+            if (participant && participant.stream) {
+                participant.stream.getAudioTracks().forEach(track => {
+                    track.enabled = !newMutedState;
+                });
+            }
+            return newMap;
+        });
+    }, [participants]);
 
     useEffect(() => {
         const socket = io('http://localhost:4000', { withCredentials: true });
@@ -22,16 +41,20 @@ const useP2PRoom = (roomId) => {
 
         socket.on('all-users', (users) => {
             setParticipants(users);
-            users.forEach(user => {
-                if (user.socketId !== socket.id) {
-                    createPeer(user.socketId, socket.id);
-                }
-            });
+            if (localStream) {
+                users.forEach(user => {
+                    if (user.socketId !== socket.id) {
+                        createPeer(user.socketId, socket.id);
+                    }
+                });
+            }
         });
 
         socket.on('user-joined', (user) => {
             setParticipants(prev => [...prev, user]);
-            createPeer(user.socketId, socket.id);
+            if (localStream) {
+                createPeer(user.socketId, socket.id);
+            }
         });
 
         socket.on('signal', async ({ fromSocketId, sdp, candidate }) => {
@@ -51,8 +74,7 @@ const useP2PRoom = (roomId) => {
         });
 
         socket.on('user-left', (socketId) => {
-            const peer = peersRef.current.get(socketId);
-            if (peer) peer.close();
+            peersRef.current.get(socketId)?.close();
             peersRef.current.delete(socketId);
             setParticipants(prev => prev.filter(p => p.socketId !== socketId));
             setFocusTimes(prev => {
@@ -63,82 +85,70 @@ const useP2PRoom = (roomId) => {
             });
         });
 
-        socket.on('new-message', (message) => {
-            setChatMessages(prev => [...prev, message]);
-        });
-
-        socket.on('focus-time-update', ({ userId, time }) => {
-            setFocusTimes(prev => ({ ...prev, [userId]: time }));
-        });
+        socket.on('new-message', (message) => setChatMessages(prev => [...prev, message]));
+        socket.on('focus-time-update', ({ userId, time }) => setFocusTimes(prev => ({ ...prev, [userId]: time })));
 
         return () => {
-            localStreamRef.current?.getTracks().forEach(track => track.stop());
+            localStream?.getTracks().forEach(track => track.stop());
             peersRef.current.forEach(peer => peer.close());
             socket.disconnect();
         };
-    }, [roomId, participants]);
+    }, [roomId, participants, localStream]);
 
     const createPeer = (targetSocketId, initiatorSocketId) => {
-        if (!localStreamRef.current) return;
+        if (!localStream) return;
         const peer = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
 
-        localStreamRef.current.getTracks().forEach(track => {
-            peer.addTrack(track, localStreamRef.current);
-        });
+        localStream.getTracks().forEach(track => peer.addTrack(track, localStream));
 
-        peer.onicecandidate = (event) => {
-            if (event.candidate) {
-                socketRef.current.emit('signal', { targetSocketId, candidate: event.candidate });
-            }
-        };
+        peer.onicecandidate = e => e.candidate && socketRef.current.emit('signal', { targetSocketId, candidate: e.candidate });
 
-        peer.ontrack = (event) => {
-            setParticipants(prev => prev.map(p =>
-                p.socketId === targetSocketId ? { ...p, stream: event.streams[0] } : p
-            ));
-        };
+        peer.ontrack = e => setParticipants(prev => prev.map(p => p.socketId === targetSocketId ? { ...p, stream: e.streams[0] } : p));
 
         if (initiatorSocketId === socketRef.current.id) {
             peer.createOffer()
                 .then(offer => peer.setLocalDescription(offer))
-                .then(() => {
-                    socketRef.current.emit('signal', { targetSocketId, sdp: peer.localDescription });
-                });
+                .then(() => socketRef.current.emit('signal', { targetSocketId, sdp: peer.localDescription }));
         }
-
         peersRef.current.set(targetSocketId, peer);
     };
 
     const startLocalStream = useCallback(async () => {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localStreamRef.current = stream;
-        return stream;
+        setLocalStream(stream);
+        setIsCameraOn(stream.getVideoTracks().some(t => t.enabled));
+        setIsMicOn(stream.getAudioTracks().some(t => t.enabled));
     }, []);
 
-    const sendMessage = (message) => {
-        socketRef.current.emit('send-message', { roomId, message });
+    const toggleCamera = () => {
+        if (!localStream) return;
+        localStream.getVideoTracks().forEach(track => track.enabled = !track.enabled);
+        setIsCameraOn(prev => !prev);
     };
 
-    return { participants, chatMessages, startLocalStream, sendMessage, localStreamRef, socketId: socketRef.current?.id, focusTimes, socketRef };
+    const toggleMicrophone = () => {
+        if (!localStream) return;
+        localStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
+        setIsMicOn(prev => !prev);
+    };
+
+    const sendMessage = (message) => socketRef.current.emit('send-message', { roomId, message });
+
+    return { participants, chatMessages, startLocalStream, sendMessage, localStream, socketId: socketRef.current?.id, focusTimes, socketRef, isCameraOn, isMicOn, toggleCamera, toggleMicrophone, mutedRemoteUsers, toggleRemoteAudio };
 };
 
 const formatTime = (seconds) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
-
-    if (h > 0) {
-        return `${h}시 ${m}분 ${s}초`;
-    } else if (m > 0) {
-        return `${m}분 ${s}초`;
-    } else {
-        return `${s}초`;
-    }
+    if (h > 0) return `${h}시 ${m}분 ${s}초`;
+    if (m > 0) return `${m}분 ${s}초`;
+    return `${s}초`;
 };
 
 const FocusRoom = () => {
     const { roomId } = useParams();
-    const { participants, chatMessages, startLocalStream, sendMessage, localStreamRef, socketId, focusTimes, socketRef } = useP2PRoom(roomId);
+    const { participants, chatMessages, startLocalStream, sendMessage, localStream, socketId, focusTimes, socketRef, isCameraOn, isMicOn, toggleCamera, toggleMicrophone, mutedRemoteUsers, toggleRemoteAudio } = useP2PRoom(roomId);
 
     const [userId, setUserId] = useState(null);
     const [nickname, setNickname] = useState('');
@@ -155,14 +165,9 @@ const FocusRoom = () => {
                 const userRes = await api.get('/users/me');
                 setUserId(userRes.data.data.user_id);
                 setNickname(userRes.data.data.nickname);
-
                 await ModelLoader.loadModels();
                 setModelsLoaded(true);
-
-                const stream = await startLocalStream();
-                if (myVideoRef.current) {
-                    myVideoRef.current.srcObject = stream;
-                }
+                await startLocalStream();
             } catch (error) {
                 console.error('FocusRoom 초기 로딩 오류:', error);
                 alert(`초기 로딩 실패: ${error.message}`);
@@ -172,35 +177,39 @@ const FocusRoom = () => {
     }, [startLocalStream]);
 
     useEffect(() => {
-        if (!modelsLoaded || !faceapi.nets.tinyFaceDetector.isLoaded) return;
+        if (myVideoRef.current && localStream) {
+            if (isCameraOn) {
+                myVideoRef.current.srcObject = localStream;
+            } else {
+                myVideoRef.current.srcObject = null;
+            }
+        }
+    }, [isCameraOn, localStream]);
 
-        const faceDetectInterval = setInterval(async () => {
+    useEffect(() => {
+        if (!modelsLoaded || !faceapi.nets.tinyFaceDetector.isLoaded || !isCameraOn) return;
+        const interval = setInterval(async () => {
             if (myVideoRef.current) {
                 const detections = await faceapi.detectAllFaces(myVideoRef.current, new faceapi.TinyFaceDetectorOptions());
                 setFaceDetected(detections.length > 0);
             }
         }, 1000);
-
-        return () => clearInterval(faceDetectInterval);
-    }, [modelsLoaded]);
+        return () => clearInterval(interval);
+    }, [modelsLoaded, isCameraOn]);
 
     useEffect(() => {
         if (!userId || !socketRef.current) return;
-
-        const focusTimeInterval = setInterval(() => {
+        const interval = setInterval(() => {
             if (faceDetected) {
                 const newTime = (focusTimes[userId] || 0) + 1;
                 socketRef.current.emit('focus-time-update', { userId, time: newTime });
             }
         }, 1000);
-
-        return () => clearInterval(focusTimeInterval);
+        return () => clearInterval(interval);
     }, [faceDetected, userId, focusTimes, socketRef]);
 
     useEffect(() => {
-        if (chatRef.current) {
-            chatRef.current.scrollTop = chatRef.current.scrollHeight;
-        }
+        if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }, [chatMessages]);
 
     const handleSendMessage = (e) => {
@@ -218,20 +227,7 @@ const FocusRoom = () => {
         return all.sort((a, b) => (focusTimes[b.user_id] || 0) - (focusTimes[a.user_id] || 0));
     }, [participants, focusTimes, userId, nickname]);
 
-    const allParticipantsInGrid = useMemo(() => {
-        const remoteParticipants = participants.filter(p => p.socketId !== socketId);
-        const localParticipant = {
-            user_id: userId,
-            nickname,
-            socketId,
-            isLocal: true
-        };
-        return [localParticipant, ...remoteParticipants];
-    }, [participants, socketId, userId, nickname]);
-
-    const maxFocusTime = useMemo(() => 
-        Math.max(1, ...Object.values(focusTimes)),
-    [focusTimes]);
+    const maxFocusTime = useMemo(() => Math.max(1, ...Object.values(focusTimes)), [focusTimes]);
 
     return (
         <div className="focus-room-container">
@@ -239,18 +235,37 @@ const FocusRoom = () => {
             <div className="focus-room-main-content">
                 <div className="focus-room-left-panel">
                     <div className="video-grid">
-                        {allParticipantsInGrid.map(p => (
-                            <div key={p.socketId || p.user_id} className="video-wrapper">
-                                <video
-                                    ref={p.isLocal ? myVideoRef : video => { if (video && p.stream) video.srcObject = p.stream; }}
-                                    autoPlay
-                                    muted={p.isLocal}
-                                    playsInline
-                                />
-                                <p>
-                                    {p.nickname}
-                                    {p.isLocal ? ` (나) - ${faceDetected ? '집중' : '자리 비움'}` : ''}
-                                </p>
+                        {/* Local Participant */}
+                        <div className="video-wrapper">
+                            {isCameraOn ? (
+                                <video ref={myVideoRef} autoPlay muted playsInline />
+                            ) : (
+                                <div className="camera-off-placeholder">카메라 꺼짐</div>
+                            )}
+                            <div className="video-info">
+                                <p>{nickname} (나) - {faceDetected ? '집중' : '자리 비움'}</p>
+                            </div>
+                            <div className="video-controls">
+                                <button onClick={toggleCamera}>{isCameraOn ? '캠 끄기' : '캠 켜기'}</button>
+                                <button onClick={toggleMicrophone}>{isMicOn ? '마이크 끄기' : '마이크 켜기'}</button>
+                            </div>
+                        </div>
+                        {/* Remote Participants */}
+                        {participants.filter(p => p.socketId !== socketId).map(p => (
+                            <div key={p.socketId} className="video-wrapper">
+                                {p.stream ? (
+                                    <video autoPlay playsInline ref={video => { if (video) video.srcObject = p.stream; }} />
+                                ) : (
+                                    <div className="camera-off-placeholder">카메라 로딩중...</div>
+                                )}
+                                <div className="video-info">
+                                    <p>{p.nickname}</p>
+                                </div>
+                                <div className="video-controls">
+                                    <button onClick={() => toggleRemoteAudio(p.socketId)}>
+                                        {mutedRemoteUsers.get(p.socketId) ? '음소거 해제' : '음소거'}
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -258,9 +273,7 @@ const FocusRoom = () => {
 
                 <div className="focus-room-right-panel">
                     <div className="focus-room-ranking">
-                        <div className="ranking-header">
-                            <h3>✨ 실시간 집중 랭킹</h3>
-                        </div>
+                        <div className="ranking-header"><h3>✨ 실시간 집중 랭킹</h3></div>
                         <ul className="ranking-list">
                             {rankedParticipants.map((p, index) => {
                                 const userTime = focusTimes[p.user_id] || 0;
@@ -283,9 +296,7 @@ const FocusRoom = () => {
                         </ul>
                     </div>
                     <div className="focus-room-chat">
-                        <div className="chat-header">
-                            <h3>💬 채팅</h3>
-                        </div>
+                        <div className="chat-header"><h3>💬 채팅</h3></div>
                         <div className="chat-log" ref={chatRef}>
                             {chatMessages.map((chat, index) => (
                                 <div key={index} className={`chat-message ${chat.userId === userId ? 'mine' : 'other'}`}>
@@ -295,12 +306,7 @@ const FocusRoom = () => {
                             ))}
                         </div>
                         <form onSubmit={handleSendMessage} className="chat-input">
-                            <input
-                                type="text"
-                                value={chatInput}
-                                onChange={(e) => setChatInput(e.target.value)}
-                                placeholder="메시지를 입력하세요..."
-                            />
+                            <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="메시지를 입력하세요..." />
                             <button type="submit">전송</button>
                         </form>
                     </div>

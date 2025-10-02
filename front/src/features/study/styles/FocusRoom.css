@@ -45,42 +45,80 @@
 .video-grid {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
     padding: 18px;
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     overflow-y: auto;
+    align-content: start;
 }
 
 .video-wrapper {
-    border-radius: 16px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
-    box-shadow: var(--clay-shadow-outer);
-    position: relative;
-    aspect-ratio: 4 / 3;
 }
 
-.video-wrapper video {
+.video-wrapper video,
+.camera-off-placeholder {
     width: 100%;
-    height: 100%;
+    height: 200px;
     object-fit: cover;
-    display: block;
+    background: #000;
+    border-radius: 12px 12px 0 0;
 }
 
-.video-wrapper p {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.5);
-    color: var(--white);
-    padding: 8px;
-    margin: 0;
+.camera-off-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.2rem;
+    background-color: #333;
+}
+
+.video-info {
+    background: #444;
+    color: white;
+    font-size: 0.95rem;
+    padding: 0.5rem 0;
+    width: 100%;
     text-align: center;
-    font-size: 14px;
+}
+
+.video-info p {
+    margin: 0;
+}
+
+.video-controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.65rem 0;
+    background: #f4f4f4;
+    width: 100%;
+}
+
+.video-controls button {
+    background: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 6px;
+    padding: 0.45rem 1.1rem;
+    font-size: 0.96rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.video-controls button:hover {
+    background: #d5d5d5;
 }
 
 .focus-room-right-panel {
