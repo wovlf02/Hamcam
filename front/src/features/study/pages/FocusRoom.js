@@ -283,7 +283,9 @@ const FocusRoom = () => {
                         </ul>
                     </div>
                     <div className="focus-room-chat">
-                        <h3>💬 채팅</h3>
+                        <div className="chat-header">
+                            <h3>💬 채팅</h3>
+                        </div>
                         <div className="chat-log" ref={chatRef}>
                             {chatMessages.map((chat, index) => (
                                 <div key={index} className={`chat-message ${chat.userId === userId ? 'mine' : 'other'}`}>
