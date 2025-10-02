@@ -130,14 +130,14 @@ io.on("connection", (socket) => {
         // io.to(roomId).emit("ranking-update", newRanking);
     });
 
-    socket.on("update-time", ({ roomId }) => {
-        const room = rooms.get(roomId);
-        const participant = room?.participants.get(socket.id);
-        if (participant) {
-            participant.focusedSeconds++;
-            // TODO: 랭킹 업데이트 및 브로드캐스트 로직 구현
-        }
+    socket.on("focus-time-update", ({ userId, time }) => {
+        const roomIds = Array.from(socket.rooms);
+        const roomId = roomIds.find(r => r !== socket.id);
+        if (!roomId) return;
+
+        io.to(roomId).emit("focus-time-update", { userId, time });
     });
+
     // --- 로직 대체 끝 ---
 
     // 연결 해제 처리

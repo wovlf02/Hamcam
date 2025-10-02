@@ -187,10 +187,10 @@ const FocusRoom = () => {
     }, [isCameraOn, localStream]);
 
     useEffect(() => {
-        if (!modelsLoaded || !faceapi.nets.tinyFaceDetector.isLoaded || !isCameraOn) return;
+        if (!modelsLoaded || !faceapi.nets.ssdMobilenetv1.isLoaded || !isCameraOn) return;
         const interval = setInterval(async () => {
             if (myVideoRef.current) {
-                const detections = await faceapi.detectAllFaces(myVideoRef.current, new faceapi.TinyFaceDetectorOptions());
+                const detections = await faceapi.detectAllFaces(myVideoRef.current);
                 setFaceDetected(detections.length > 0);
             }
         }, 1000);
