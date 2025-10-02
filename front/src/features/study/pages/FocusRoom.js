@@ -155,6 +155,7 @@ const FocusRoom = () => {
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [faceDetected, setFaceDetected] = useState(false);
     const [chatInput, setChatInput] = useState('');
+    const [myFocusTime, setMyFocusTime] = useState(0); // 로컬 시간 상태 추가
 
     const myVideoRef = useRef(null);
     const chatRef = useRef(null);
@@ -187,26 +188,45 @@ const FocusRoom = () => {
     }, [isCameraOn, localStream]);
 
     useEffect(() => {
-        if (!modelsLoaded || !faceapi.nets.ssdMobilenetv1.isLoaded || !isCameraOn) return;
-        const interval = setInterval(async () => {
-            if (myVideoRef.current) {
+        const detectFace = async () => {
+            if (!myVideoRef.current) return;
+            try {
                 const detections = await faceapi.detectAllFaces(myVideoRef.current);
                 setFaceDetected(detections.length > 0);
+            } catch (error) {
+                console.error('FocusRoom 얼굴 감지 오류:', error);
             }
-        }, 1000);
-        return () => clearInterval(interval);
+        };
+
+        if (modelsLoaded && isCameraOn) {
+            const interval = setInterval(detectFace, 700);
+            return () => clearInterval(interval);
+        }
     }, [modelsLoaded, isCameraOn]);
 
     useEffect(() => {
         if (!userId || !socketRef.current) return;
+
         const interval = setInterval(() => {
             if (faceDetected) {
-                const newTime = (focusTimes[userId] || 0) + 1;
-                socketRef.current.emit('focus-time-update', { userId, time: newTime });
+                console.log(`FocusRoom: 얼굴 감지됨, 시간 증가 중... 현재: ${myFocusTime}초`);
+
+                // 로컬 시간 상태 증가
+                setMyFocusTime(prev => {
+                    const newTime = prev + 1;
+                    console.log(`FocusRoom: 새로운 시간 ${newTime}초를 서버로 전송`);
+
+                    // 서버로 새로운 시간 전송
+                    socketRef.current.emit('focus-time-update', { userId, time: newTime });
+                    return newTime;
+                });
+            } else {
+                console.log('FocusRoom: 얼굴이 감지되지 않아 시간이 멈춰있습니다.');
             }
         }, 1000);
+
         return () => clearInterval(interval);
-    }, [faceDetected, userId, focusTimes, socketRef]);
+    }, [faceDetected, userId, socketRef, myFocusTime]);
 
     useEffect(() => {
         if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
@@ -224,10 +244,22 @@ const FocusRoom = () => {
         if (userId && !all.some(p => p.user_id === userId)) {
             all.push({ user_id: userId, nickname });
         }
-        return all.sort((a, b) => (focusTimes[b.user_id] || 0) - (focusTimes[a.user_id] || 0));
-    }, [participants, focusTimes, userId, nickname]);
+        return all.sort((a, b) => {
+            // 내 시간은 로컬 상태를 사용하고, 다른 사람은 서버 데이터 사용
+            const aTime = a.user_id === userId ? myFocusTime : (focusTimes[a.user_id] || 0);
+            const bTime = b.user_id === userId ? myFocusTime : (focusTimes[b.user_id] || 0);
+            return bTime - aTime;
+        });
+    }, [participants, focusTimes, userId, nickname, myFocusTime]);
 
-    const maxFocusTime = useMemo(() => Math.max(1, ...Object.values(focusTimes)), [focusTimes]);
+    const maxFocusTime = useMemo(() => {
+        const allTimes = [...Object.values(focusTimes)];
+        if (userId) {
+            // 내 시간도 최대값 계산에 포함
+            allTimes.push(myFocusTime);
+        }
+        return Math.max(1, ...allTimes);
+    }, [focusTimes, myFocusTime, userId]);
 
     return (
         <div className="focus-room-container">
@@ -244,6 +276,13 @@ const FocusRoom = () => {
                             )}
                             <div className="video-info">
                                 <p>{nickname} (나)</p>
+                                {/* 얼굴 감지 상태 표시 */}
+                                <div className={`face-detection-status ${faceDetected ? 'detected' : 'not-detected'}`}>
+                                    {faceDetected ? '👤 얼굴 인식됨' : '❌ 얼굴 인식 안됨'}
+                                </div>
+                                <div className="model-status">
+                                    모델: {modelsLoaded ? '✅ 로드됨' : '⏳ 로딩중...'}
+                                </div>
                             </div>
                             <div className="video-controls">
                                 <button onClick={toggleCamera}>{isCameraOn ? '캠 끄기' : '캠 켜기'}</button>
@@ -276,7 +315,8 @@ const FocusRoom = () => {
                         <div className="ranking-header"><h3>✨ 실시간 집중 랭킹</h3></div>
                         <ul className="ranking-list">
                             {rankedParticipants.map((p, index) => {
-                                const userTime = focusTimes[p.user_id] || 0;
+                                // 내 시간은 로컬 상태를 사용하고, 다른 사람은 서버 데이터 사용
+                                const userTime = p.user_id === userId ? myFocusTime : (focusTimes[p.user_id] || 0);
                                 const progress = (userTime / maxFocusTime) * 100;
                                 return (
                                     <li key={p.user_id} className="ranking-item">
