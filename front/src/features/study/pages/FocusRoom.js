@@ -1,32 +1,32 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import api from '../../../api/api';
 import '../styles/FocusRoom.css';
 import io from 'socket.io-client';
 import * as faceapi from 'face-api.js';
 import ModelLoader from '../../../utils/ModelLoader';
 
-// A custom hook to encapsulate P2P and Socket.IO logic
 const useP2PRoom = (roomId) => {
     const socketRef = useRef();
     const peersRef = useRef(new Map());
     const localStreamRef = useRef();
     const [participants, setParticipants] = useState([]);
     const [chatMessages, setChatMessages] = useState([]);
+    const [focusTimes, setFocusTimes] = useState({});
 
     useEffect(() => {
         const socket = io('http://localhost:4000', { withCredentials: true });
         socketRef.current = socket;
 
-        // Initial connection
         socket.emit('join-room', { roomId });
 
         socket.on('all-users', (users) => {
-            // Create peer connections for all existing users
-            users.forEach(user => {
-                createPeer(user.socketId, socket.id);
-            });
             setParticipants(users);
+            users.forEach(user => {
+                if (user.socketId !== socket.id) {
+                    createPeer(user.socketId, socket.id);
+                }
+            });
         });
 
         socket.on('user-joined', (user) => {
@@ -36,6 +36,8 @@ const useP2PRoom = (roomId) => {
 
         socket.on('signal', async ({ fromSocketId, sdp, candidate }) => {
             const peer = peersRef.current.get(fromSocketId);
+            if (!peer) return;
+
             if (sdp) {
                 await peer.setRemoteDescription(new RTCSessionDescription(sdp));
                 if (sdp.type === 'offer') {
@@ -53,10 +55,20 @@ const useP2PRoom = (roomId) => {
             if (peer) peer.close();
             peersRef.current.delete(socketId);
             setParticipants(prev => prev.filter(p => p.socketId !== socketId));
+            setFocusTimes(prev => {
+                const newTimes = { ...prev };
+                const user = participants.find(p => p.socketId === socketId);
+                if (user) delete newTimes[user.user_id];
+                return newTimes;
+            });
         });
 
         socket.on('new-message', (message) => {
             setChatMessages(prev => [...prev, message]);
+        });
+
+        socket.on('focus-time-update', ({ userId, time }) => {
+            setFocusTimes(prev => ({ ...prev, [userId]: time }));
         });
 
         return () => {
@@ -64,12 +76,11 @@ const useP2PRoom = (roomId) => {
             peersRef.current.forEach(peer => peer.close());
             socket.disconnect();
         };
-    }, [roomId]);
+    }, [roomId, participants]);
 
     const createPeer = (targetSocketId, initiatorSocketId) => {
-        const peer = new RTCPeerConnection({
-            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
-        });
+        if (!localStreamRef.current) return;
+        const peer = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
 
         localStreamRef.current.getTracks().forEach(track => {
             peer.addTrack(track, localStreamRef.current);
@@ -82,9 +93,7 @@ const useP2PRoom = (roomId) => {
         };
 
         peer.ontrack = (event) => {
-            // This is where you would handle the remote stream
-            // For simplicity, we'll update participant state, and the component will render it
-            setParticipants(prev => prev.map(p => 
+            setParticipants(prev => prev.map(p =>
                 p.socketId === targetSocketId ? { ...p, stream: event.streams[0] } : p
             ));
         };
@@ -96,7 +105,7 @@ const useP2PRoom = (roomId) => {
                     socketRef.current.emit('signal', { targetSocketId, sdp: peer.localDescription });
                 });
         }
-        
+
         peersRef.current.set(targetSocketId, peer);
     };
 
@@ -110,18 +119,24 @@ const useP2PRoom = (roomId) => {
         socketRef.current.emit('send-message', { roomId, message });
     };
 
-    return { participants, chatMessages, startLocalStream, sendMessage, localStreamRef, socketId: socketRef.current?.id };
+    return { participants, chatMessages, startLocalStream, sendMessage, localStreamRef, socketId: socketRef.current?.id, focusTimes, socketRef };
+};
+
+const formatTime = (seconds) => {
+    const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+    const s = String(seconds % 60).padStart(2, '0');
+    return `${h}:${m}:${s}`;
 };
 
 const FocusRoom = () => {
     const { roomId } = useParams();
-    const navigate = useNavigate();
-    const { participants, chatMessages, startLocalStream, sendMessage, localStreamRef, socketId } = useP2PRoom(roomId);
+    const { participants, chatMessages, startLocalStream, sendMessage, localStreamRef, socketId, focusTimes, socketRef } = useP2PRoom(roomId);
 
     const [userId, setUserId] = useState(null);
+    const [nickname, setNickname] = useState('');
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [faceDetected, setFaceDetected] = useState(false);
-    const [camOn, setCamOn] = useState(true);
     const [chatInput, setChatInput] = useState('');
 
     const myVideoRef = useRef(null);
@@ -132,11 +147,10 @@ const FocusRoom = () => {
             try {
                 const userRes = await api.get('/users/me');
                 setUserId(userRes.data.data.user_id);
+                setNickname(userRes.data.data.nickname);
 
-                console.log('FocusRoom 모델 로딩 시작...');
                 await ModelLoader.loadModels();
                 setModelsLoaded(true);
-                console.log('FocusRoom 모델 로딩 완료!');
 
                 const stream = await startLocalStream();
                 if (myVideoRef.current) {
@@ -144,31 +158,38 @@ const FocusRoom = () => {
                 }
             } catch (error) {
                 console.error('FocusRoom 초기 로딩 오류:', error);
-                if (error.message.includes('Load failed')) {
-                    alert('모델 파일을 불러올 수 없습니다. 페이지를 새로고침해주세요.');
-                } else if (error.name === 'NotAllowedError' || error.name === 'NotFoundError') {
-                    alert('카메라 접근에 실패했습니다. 권한을 허용해 주세요.');
-                    setCamOn(false);
-                } else {
-                    alert(`초기 로딩 실패: ${error.message}`);
-                }
-                setCamOn(false); // Ensure cam is off if stream fails
+                alert(`초기 로딩 실패: ${error.message}`);
             }
         };
         loadInitialData();
     }, [startLocalStream]);
 
     useEffect(() => {
-        if (!modelsLoaded || !camOn || !faceapi.nets.tinyFaceDetector.isLoaded) return;
-        const intervalId = setInterval(async () => {
+        if (!modelsLoaded || !faceapi.nets.tinyFaceDetector.isLoaded) return;
+
+        const faceDetectInterval = setInterval(async () => {
             if (myVideoRef.current) {
                 const detections = await faceapi.detectAllFaces(myVideoRef.current, new faceapi.TinyFaceDetectorOptions());
                 setFaceDetected(detections.length > 0);
             }
         }, 1000);
-        return () => clearInterval(intervalId);
-    }, [modelsLoaded, camOn]);
-    
+
+        return () => clearInterval(faceDetectInterval);
+    }, [modelsLoaded]);
+
+    useEffect(() => {
+        if (!userId || !socketRef.current) return;
+
+        const focusTimeInterval = setInterval(() => {
+            if (faceDetected) {
+                const newTime = (focusTimes[userId] || 0) + 1;
+                socketRef.current.emit('focus-time-update', { userId, time: newTime });
+            }
+        }, 1000);
+
+        return () => clearInterval(focusTimeInterval);
+    }, [faceDetected, userId, focusTimes, socketRef]);
+
     useEffect(() => {
         if (chatRef.current) {
             chatRef.current.scrollTop = chatRef.current.scrollHeight;
@@ -182,38 +203,69 @@ const FocusRoom = () => {
         setChatInput('');
     };
 
+    const rankedParticipants = useMemo(() => {
+        const all = [...participants];
+        // Add local user to ranking if not already present
+        if (userId && !all.some(p => p.user_id === userId)) {
+            all.push({ user_id: userId, nickname });
+        }
+        return all.sort((a, b) => (focusTimes[b.user_id] || 0) - (focusTimes[a.user_id] || 0));
+    }, [participants, focusTimes, userId, nickname]);
+
+    const allParticipantsInGrid = useMemo(() => {
+        const remoteParticipants = participants.filter(p => p.socketId !== socketId);
+        const localParticipant = {
+            user_id: userId,
+            nickname,
+            socketId,
+            isLocal: true
+        };
+        return [localParticipant, ...remoteParticipants];
+    }, [participants, socketId, userId, nickname]);
+
+
     return (
         <div className="focus-room-container">
-            <h1>📚 시간 경쟁방</h1>
-            <div className="main-content">
-                <div id="video-container" className="video-grid">
-                    <div className="video-wrapper">
-                        <video ref={myVideoRef} autoPlay muted playsInline />
-                        <p>내 캠 (얼굴 {faceDetected ? '인식됨' : '미인식'})</p>
-                    </div>
-                    {participants.map(p => {
-                        if (p.socketId === socketId) return null; // 수정된 부분
-                        return (
-                            <div key={p.socketId} className="video-wrapper">
-                                <video 
-                                    autoPlay 
-                                    playsInline 
-                                    ref={video => { if (video && p.stream) video.srcObject = p.stream; }}
+            <h1 className="focus-room-title">📚 시간 경쟁방</h1>
+            <div className="focus-room-main-content">
+                <div className="focus-room-left-panel">
+                    <div className="video-grid">
+                        {allParticipantsInGrid.map(p => (
+                            <div key={p.socketId || p.user_id} className="video-wrapper">
+                                <video
+                                    ref={p.isLocal ? myVideoRef : video => { if (video && p.stream) video.srcObject = p.stream; }}
+                                    autoPlay
+                                    muted={p.isLocal}
+                                    playsInline
                                 />
-                                <p>{p.nickname}</p>
+                                <p>
+                                    {p.nickname}
+                                    {p.isLocal ? ` (나) - ${faceDetected ? '집중' : '자리 비움'}` : ''}
+                                </p>
                             </div>
-                        );
-                    })}
+                        ))}
+                    </div>
                 </div>
 
-                <div className="side-section">
-                    {/* Ranking and Chat sections would be updated based on new socket events */}
-                    <div className="chat-section">
-                         <div className="chat-log" ref={chatRef}>
+                <div className="focus-room-right-panel">
+                    <div className="focus-room-ranking">
+                        <h3>✨ 실시간 집중 랭킹</h3>
+                        <ul className="ranking-list">
+                            {rankedParticipants.map((p, index) => (
+                                <li key={p.user_id} className="ranking-item">
+                                    <span>{index + 1}. {p.nickname}</span>
+                                    <span className="time">{formatTime(focusTimes[p.user_id] || 0)}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    <div className="focus-room-chat">
+                        <h3>💬 채팅</h3>
+                        <div className="chat-log" ref={chatRef}>
                             {chatMessages.map((chat, index) => (
                                 <div key={index} className={`chat-message ${chat.userId === userId ? 'mine' : 'other'}`}>
-                                    {/* Simplified chat bubble for demonstration */}
-                                    <strong>{chat.nickname}:</strong> {chat.message}
+                                    <span className="chat-nickname">{chat.nickname}</span>
+                                    <div className="chat-bubble">{chat.message}</div>
                                 </div>
                             ))}
                         </div>
