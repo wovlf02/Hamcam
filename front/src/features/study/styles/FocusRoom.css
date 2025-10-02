@@ -1,8 +1,10 @@
 :root {
     --primary-blue-100: #D9E5FC;
+    --primary-blue-500: #4A85F6;
     --primary-blue-700: #3B6ACF;
     --white: #FFFFFF;
     --gray-100: #F0F2F5;
+    --gray-300: #DADBDE;
     --gray-700: #5F6368;
     --gray-900: #202124;
     --clay-shadow-outer: 5px 5px 10px rgba(0, 0, 0, 0.05), -5px -5px 10px rgba(255, 255, 255, 0.5);
@@ -34,9 +36,10 @@
 }
 
 .focus-room-left-panel {
-    flex: 1;
+    flex: 2;
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .video-grid {
@@ -57,6 +60,7 @@
     overflow: hidden;
     box-shadow: var(--clay-shadow-outer);
     position: relative;
+    aspect-ratio: 4 / 3;
 }
 
 .video-wrapper video {
@@ -84,6 +88,7 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+    min-width: 0;
 }
 
 .focus-room-ranking,
@@ -95,14 +100,21 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
-.focus-room-ranking h3,
-.focus-room-chat h3 {
+.ranking-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.ranking-header h3 {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--gray-900);
-    margin: 0 0 16px 0;
+    margin: 0;
 }
 
 .ranking-list {
@@ -114,29 +126,59 @@
 
 .ranking-item {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
     padding: 12px 8px;
-    border-radius: 8px;
-    transition: background 0.2s;
 }
 
 .ranking-item:not(:last-child) {
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--gray-300);
 }
 
-.ranking-item:hover {
-    background: rgba(255, 255, 255, 0.8);
+.ranking-main-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    width: 100%;
 }
 
-.ranking-item .nickname {
+.ranking-user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ranking-main-info .rank {
+    font-weight: 700;
+    color: var(--primary-blue-700);
+    width: 20px;
+    text-align: right;
+}
+
+.ranking-main-info .nickname {
     font-weight: 600;
     color: var(--gray-700);
 }
 
-.ranking-item .time {
+.ranking-main-info .time {
     font-weight: 500;
-    color: var(--primary-blue-700);
+    color: var(--gray-900);
+    font-size: 0.9rem;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: var(--white);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: var(--primary-blue-500);
+    border-radius: 4px;
+    transition: width 0.3s ease;
 }
 
 .chat-log {

@@ -123,10 +123,17 @@ const useP2PRoom = (roomId) => {
 };
 
 const formatTime = (seconds) => {
-    const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
-    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-    const s = String(seconds % 60).padStart(2, '0');
-    return `${h}:${m}:${s}`;
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+
+    if (h > 0) {
+        return `${h}시 ${m}분 ${s}초`;
+    } else if (m > 0) {
+        return `${m}분 ${s}초`;
+    } else {
+        return `${s}초`;
+    }
 };
 
 const FocusRoom = () => {
@@ -205,7 +212,6 @@ const FocusRoom = () => {
 
     const rankedParticipants = useMemo(() => {
         const all = [...participants];
-        // Add local user to ranking if not already present
         if (userId && !all.some(p => p.user_id === userId)) {
             all.push({ user_id: userId, nickname });
         }
@@ -223,6 +229,9 @@ const FocusRoom = () => {
         return [localParticipant, ...remoteParticipants];
     }, [participants, socketId, userId, nickname]);
 
+    const maxFocusTime = useMemo(() => 
+        Math.max(1, ...Object.values(focusTimes)),
+    [focusTimes]);
 
     return (
         <div className="focus-room-container">
@@ -249,14 +258,28 @@ const FocusRoom = () => {
 
                 <div className="focus-room-right-panel">
                     <div className="focus-room-ranking">
-                        <h3>✨ 실시간 집중 랭킹</h3>
+                        <div className="ranking-header">
+                            <h3>✨ 실시간 집중 랭킹</h3>
+                        </div>
                         <ul className="ranking-list">
-                            {rankedParticipants.map((p, index) => (
-                                <li key={p.user_id} className="ranking-item">
-                                    <span>{index + 1}. {p.nickname}</span>
-                                    <span className="time">{formatTime(focusTimes[p.user_id] || 0)}</span>
-                                </li>
-                            ))}
+                            {rankedParticipants.map((p, index) => {
+                                const userTime = focusTimes[p.user_id] || 0;
+                                const progress = (userTime / maxFocusTime) * 100;
+                                return (
+                                    <li key={p.user_id} className="ranking-item">
+                                        <div className="ranking-main-info">
+                                            <div className="ranking-user-info">
+                                                <span className="rank">{index + 1}</span>
+                                                <span className="nickname">{p.nickname}</span>
+                                            </div>
+                                            <span className="time">{formatTime(userTime)}</span>
+                                        </div>
+                                        <div className="progress-bar-bg">
+                                            <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
+                                        </div>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </div>
                     <div className="focus-room-chat">
