@@ -324,11 +324,19 @@ const FocusRoom = () => {
                                 // 내 시간은 로컬 상태를 사용하고, 다른 사람은 서버 데이터 사용
                                 const userTime = p.user_id === userId ? myFocusTime : (focusTimes[p.user_id] || 0);
                                 const progress = (userTime / maxFocusTime) * 100;
+
+                                // 메달 이모지 결정
+                                let medalEmoji = '';
+                                if (index === 0) medalEmoji = '🥇';
+                                else if (index === 1) medalEmoji = '🥈';
+                                else if (index === 2) medalEmoji = '🥉';
+
                                 return (
                                     <li key={p.user_id} className="ranking-item">
                                         <div className="ranking-main-info">
                                             <div className="ranking-user-info">
                                                 <span className="rank">{index + 1}</span>
+                                                {medalEmoji && <span className="medal">{medalEmoji}</span>}
                                                 <span className="nickname">{p.nickname}</span>
                                             </div>
                                             <span className="time">{formatTime(userTime)}</span>

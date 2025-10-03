@@ -198,7 +198,7 @@
 .ranking-user-info {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
 .ranking-main-info .rank {
@@ -206,6 +206,11 @@
     color: var(--primary-blue-700);
     width: 20px;
     text-align: right;
+}
+
+.ranking-main-info .medal {
+    font-size: 1.3rem;
+    line-height: 1;
 }
 
 .ranking-main-info .nickname {
