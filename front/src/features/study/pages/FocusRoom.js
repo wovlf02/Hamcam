@@ -187,6 +187,14 @@ const FocusRoom = () => {
         }
     }, [isCameraOn, localStream]);
 
+    // 캠이 꺼지면 얼굴 인식 상태를 즉시 리셋
+    useEffect(() => {
+        if (!isCameraOn) {
+            setFaceDetected(false);
+            console.log('FocusRoom: 캠 꺼짐 - 얼굴 인식 상태를 false로 리셋');
+        }
+    }, [isCameraOn]);
+
     useEffect(() => {
         const detectFace = async () => {
             if (!myVideoRef.current) return;
@@ -208,8 +216,9 @@ const FocusRoom = () => {
         if (!userId || !socketRef.current) return;
 
         const interval = setInterval(() => {
-            if (faceDetected) {
-                console.log(`FocusRoom: 얼굴 감지됨, 시간 증가 중... 현재: ${myFocusTime}초`);
+            // 캠이 켜져있고 얼굴이 감지되어야만 시간 증가
+            if (isCameraOn && faceDetected) {
+                console.log(`FocusRoom: 캠 켜짐 + 얼굴 감지됨, 시간 증가 중... 현재: ${myFocusTime}초`);
 
                 // 로컬 시간 상태 증가
                 setMyFocusTime(prev => {
@@ -221,12 +230,16 @@ const FocusRoom = () => {
                     return newTime;
                 });
             } else {
-                console.log('FocusRoom: 얼굴이 감지되지 않아 시간이 멈춰있습니다.');
+                if (!isCameraOn) {
+                    console.log('FocusRoom: 캠이 꺼져있어 시간이 멈춰있습니다.');
+                } else if (!faceDetected) {
+                    console.log('FocusRoom: 얼굴이 감지되지 않아 시간이 멈춰있습니다.');
+                }
             }
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [faceDetected, userId, socketRef, myFocusTime]);
+    }, [isCameraOn, faceDetected, userId, socketRef, myFocusTime]);
 
     useEffect(() => {
         if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
