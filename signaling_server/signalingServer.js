@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
             }
             const room = rooms.get(roomId);
             room.participants.set(socket.id, {
-                userId: user.user_id,
+                user_id: user.user_id,  // userId -> user_id로 변경
                 nickname: user.nickname,
                 profileImageUrl: user.profile_image_url,
                 focusedSeconds: 0,
@@ -109,7 +109,8 @@ io.on("connection", (socket) => {
         if (!sender) return;
 
         const chatMessage = {
-            ...sender,
+            userId: sender.user_id,  // 채팅에서 사용할 userId 추가
+            nickname: sender.nickname,
             message,
             timestamp: new Date()
         };

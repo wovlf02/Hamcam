@@ -34,6 +34,55 @@ const useP2PRoom = (roomId) => {
         });
     }, [participants]);
 
+    // createPeer 함수를 useCallback으로 메모이제이션
+    const createPeer = useCallback((targetSocketIdParam, initiatorSocketId) => {
+        if (peersRef.current.has(targetSocketIdParam)) {
+            console.log(`Peer already exists for ${targetSocketIdParam}`);
+            return;
+        }
+
+        const peer = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] });
+
+        console.log(`[createPeer] Creating peer for ${targetSocketIdParam}. localStream available: ${!!localStream}`);
+
+        peer.onicecandidate = e => {
+            if (e.candidate && socketRef.current) {
+                socketRef.current.emit('signal', { targetSocketId: targetSocketIdParam, candidate: e.candidate });
+            }
+        };
+
+        peer.ontrack = e => {
+            console.log("ONTRACK event received from", targetSocketIdParam);
+            console.log("Stream received:", e.streams[0]);
+            setParticipants(prev => prev.map(p =>
+                p.socketId === targetSocketIdParam ? { ...p, stream: e.streams[0] } : p
+            ));
+        };
+
+        peer.onconnectionstatechange = () => {
+            console.log(`[${targetSocketIdParam}] Connection state: ${peer.connectionState}`);
+            if (peer.connectionState === 'failed' || peer.connectionState === 'disconnected') {
+                console.warn(`Peer connection ${targetSocketIdParam} ${peer.connectionState}`);
+            }
+        };
+
+        peer.onnegotiationneeded = async () => {
+            try {
+                if (peer.signalingState === 'stable' && socketRef.current) {
+                    console.log(`[${targetSocketIdParam}] Negotiation needed, creating offer`);
+                    const offer = await peer.createOffer();
+                    await peer.setLocalDescription(offer);
+                    socketRef.current.emit('signal', { targetSocketId: targetSocketIdParam, sdp: peer.localDescription });
+                }
+            } catch (error) {
+                console.error(`[${targetSocketIdParam}] Error during negotiation:`, error);
+            }
+        };
+
+        peersRef.current.set(targetSocketIdParam, peer);
+        console.log(`[createPeer] Peer created and stored for ${targetSocketIdParam}`);
+    }, [localStream]);
+
     useEffect(() => {
         const socket = io('http://localhost:4000', { withCredentials: true });
         socketRef.current = socket;
@@ -41,17 +90,25 @@ const useP2PRoom = (roomId) => {
         socket.emit('join-room', { roomId });
 
         socket.on('all-users', (users) => {
+            console.log(`[all-users] Received ${users.length} existing users`);
+            setParticipants(users);
+
             if (localStream) {
-                users.forEach(user => createPeer(user.socketId, socket.id));
+                users.forEach(user => {
+                    if (user.socketId !== socket.id) {
+                        createPeer(user.socketId, socket.id);
+                    }
+                });
             } else {
                 setPendingPeers(prev => [...prev, ...users.map(u => u.socketId)]);
             }
-            setParticipants(users);
         });
 
         socket.on('user-joined', (user) => {
+            console.log(`[user-joined] New user: ${user.socketId}`);
             setParticipants(prev => [...prev, user]);
-            if (localStream) {
+
+            if (localStream && user.socketId !== socket.id) {
                 createPeer(user.socketId, socket.id);
             } else {
                 setPendingPeers(prev => [...prev, user.socketId]);
@@ -60,24 +117,27 @@ const useP2PRoom = (roomId) => {
 
         socket.on('signal', async ({ fromSocketId, sdp, candidate }) => {
             const peer = peersRef.current.get(fromSocketId);
+
             if (!peer) {
-                console.warn("Peer not found for signal from", fromSocketId);
+                console.warn(`Peer not found for signal from ${fromSocketId}, creating new peer`);
+                createPeer(fromSocketId, socket.id);
                 return;
             }
+
             if (sdp) {
                 try {
                     const remoteDesc = new RTCSessionDescription(sdp);
-                    if (remoteDesc.type === 'answer') {
-                        if (peer.signalingState !== 'have-local-offer') {
-                            console.warn("Received answer in unexpected signaling state:", peer.signalingState);
-                            return;
-                        }
+
+                    if (remoteDesc.type === 'answer' && peer.signalingState !== 'have-local-offer') {
+                        console.warn(`[${fromSocketId}] Received answer in unexpected state: ${peer.signalingState}`);
+                        return;
                     }
-                    console.log(`Before setRemoteDescription (type: ${remoteDesc.type}): ${peer.signalingState}`);
+
+                    console.log(`[${fromSocketId}] Setting remote description (${remoteDesc.type})`);
                     await peer.setRemoteDescription(remoteDesc);
-                    console.log(`After setRemoteDescription (type: ${remoteDesc.type}): ${peer.signalingState}`);
 
                     if (sdp.type === 'offer') {
+                        // Add local stream tracks if not already added
                         if (localStream) {
                             localStream.getTracks().forEach(track => {
                                 const sender = peer.getSenders().find(s => s.track === track);
@@ -87,140 +147,152 @@ const useP2PRoom = (roomId) => {
                             });
                         }
 
-                        console.log(`Before createAnswer: ${peer.signalingState}`);
+                        console.log(`[${fromSocketId}] Creating answer`);
                         const answer = await peer.createAnswer();
-                        console.log(`After createAnswer, Before setLocalDescription: ${peer.signalingState}`);
                         await peer.setLocalDescription(answer);
-                        console.log(`After setLocalDescription (answer): ${peer.signalingState}`);
-                        socketRef.current.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
+                        socket.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
                     }
                 } catch (error) {
-                    console.error("Error setting remote description or creating answer:", error);
+                    console.error(`[${fromSocketId}] Error handling SDP:`, error);
                 }
             } else if (candidate) {
                 try {
-                    console.log(`Adding ICE candidate: ${peer.signalingState}`);
                     await peer.addIceCandidate(new RTCIceCandidate(candidate));
+                    console.log(`[${fromSocketId}] ICE candidate added`);
                 } catch (error) {
-                    console.error("Error adding ICE candidate:", error);
+                    console.error(`[${fromSocketId}] Error adding ICE candidate:`, error);
                 }
             }
         });
 
         socket.on('user-left', (socketId) => {
-            peersRef.current.get(socketId)?.close();
-            peersRef.current.delete(socketId);
+            console.log(`[user-left] User disconnected: ${socketId}`);
+            const peer = peersRef.current.get(socketId);
+            if (peer) {
+                peer.close();
+                peersRef.current.delete(socketId);
+            }
             setParticipants(prev => prev.filter(p => p.socketId !== socketId));
             setFocusTimes(prev => {
                 const newTimes = { ...prev };
                 const user = participants.find(p => p.socketId === socketId);
-                if (user) delete newTimes[user.user_id];
+                if (user) delete newTimes[user.userId];
                 return newTimes;
             });
         });
 
-        socket.on('new-message', (message) => setChatMessages(prev => [...prev, message]));
-        socket.on('focus-time-update', ({ userId, time }) => setFocusTimes(prev => ({ ...prev, [userId]: time })));
+        socket.on('new-message', (message) => {
+            console.log('[new-message]', message);
+            setChatMessages(prev => [...prev, message]);
+        });
+
+        socket.on('focus-time-update', ({ userId, time }) => {
+            console.log(`[focus-time-update] User ${userId}: ${time}s`);
+            setFocusTimes(prev => ({ ...prev, [userId]: time }));
+        });
 
         return () => {
-            localStream?.getTracks().forEach(track => track.stop());
+            console.log('[cleanup] Disconnecting socket and closing peers');
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
             peersRef.current.forEach(peer => peer.close());
+            peersRef.current.clear();
             socket.disconnect();
         };
-    }, [roomId]);
+    }, [roomId]); // localStream 제거하여 무한 루프 방지
 
     // localStream이 준비되면 pending peers 처리
     useEffect(() => {
-        if (localStream) {
-            console.log(`[useEffect localStream] localStream available. Adding tracks to ${peersRef.current.size} peers.`);
-            peersRef.current.forEach(peer => {
+        if (localStream && pendingPeers.length > 0) {
+            console.log(`[localStream ready] Processing ${pendingPeers.length} pending peers`);
+
+            // 기존 peer에 track 추가
+            peersRef.current.forEach((peer, socketId) => {
                 localStream.getTracks().forEach(track => {
                     const sender = peer.getSenders().find(s => s.track === track);
                     if (!sender) {
+                        console.log(`[${socketId}] Adding track to existing peer`);
                         peer.addTrack(track, localStream);
                     }
                 });
             });
 
-            if (pendingPeers.length > 0) {
-                pendingPeers.forEach(socketId => {
+            // pending peer 처리
+            const uniquePendingPeers = [...new Set(pendingPeers)];
+            uniquePendingPeers.forEach(socketId => {
+                if (socketId !== socketRef.current?.id) {
                     createPeer(socketId, socketRef.current.id);
-                });
-                setPendingPeers([]);
-            }
-        }
-    }, [localStream, pendingPeers]);
-
-    const createPeer = (targetSocketIdParam, initiatorSocketId) => {
-        const peer = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] });
-
-        const currentPeerTargetSocketId = targetSocketIdParam;
-        console.log(`[createPeer] Called for ${currentPeerTargetSocketId}. localStream available: ${!!localStream}`);
-
-        peer.onicecandidate = e => e.candidate && socketRef.current.emit('signal', { targetSocketId: currentPeerTargetSocketId, candidate: e.candidate });
-
-        peer.ontrack = e => {
-            console.log("ONTRACK event received!", e);
-            console.log("Stream received:", e.streams[0]);
-            setParticipants(prev => prev.map(p =>
-                p.socketId === currentPeerTargetSocketId ? { ...p, stream: e.streams[0] } : p
-            ));
-        };
-
-        peer.onnegotiationneeded = async () => {
-            try {
-                if (peer.signalingState === 'stable') {
-                    const offer = await peer.createOffer();
-                    await peer.setLocalDescription(offer);
-                    socketRef.current.emit('signal', { targetSocketId: currentPeerTargetSocketId, sdp: peer.localDescription });
-                } else {
-                    console.warn("Negotiation needed, but peer not in stable state to create offer. Signaling state:", peer.signalingState);
                 }
-            } catch (error) {
-                console.error("Error during negotiationneeded:", error);
-            }
-        };
-
-        peersRef.current.set(currentPeerTargetSocketId, peer);
-    };
+            });
+            setPendingPeers([]);
+        }
+    }, [localStream, pendingPeers, createPeer]);
 
     const startLocalStream = useCallback(async () => {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert("카메라/마이크를 사용할 수 없습니다. HTTPS 또는 localhost 환경에서 접속해주세요.");
-            throw new Error('getUserMedia is not supported in this browser/context.');
+        try {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('카메라/마이크를 사용할 수 없습니다. HTTPS 또는 localhost 환경에서 접속해주세요.');
+            }
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            console.log('[startLocalStream] Stream obtained');
+            setLocalStream(stream);
+            setIsCameraOn(stream.getVideoTracks().some(track => track.enabled));
+            setIsMicOn(stream.getAudioTracks().some(track => track.enabled));
+            return stream;
+        } catch (error) {
+            console.error('[startLocalStream] Error:', error);
+            alert('카메라/마이크 접근에 실패했습니다.');
+            throw error;
         }
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        setLocalStream(stream);
-        setIsCameraOn(stream.getVideoTracks().some(track => track.enabled));
-        setIsMicOn(stream.getAudioTracks().some(track => track.enabled));
-        return stream;
     }, []);
 
-    const toggleCamera = () => {
+    const toggleCamera = useCallback(() => {
         if (localStream) {
             const videoTracks = localStream.getVideoTracks();
             if (videoTracks.length > 0) {
                 const newState = !videoTracks[0].enabled;
                 videoTracks.forEach(track => (track.enabled = newState));
                 setIsCameraOn(newState);
+                console.log(`[toggleCamera] Camera ${newState ? 'ON' : 'OFF'}`);
             }
         }
-    };
+    }, [localStream]);
 
-    const toggleMicrophone = () => {
+    const toggleMicrophone = useCallback(() => {
         if (localStream) {
             const audioTracks = localStream.getAudioTracks();
             if (audioTracks.length > 0) {
                 const newState = !audioTracks[0].enabled;
                 audioTracks.forEach(track => (track.enabled = newState));
                 setIsMicOn(newState);
+                console.log(`[toggleMicrophone] Microphone ${newState ? 'ON' : 'OFF'}`);
             }
         }
+    }, [localStream]);
+
+    const sendMessage = useCallback((message) => {
+        if (socketRef.current) {
+            socketRef.current.emit('send-message', { roomId, message });
+        }
+    }, [roomId]);
+
+    return {
+        participants,
+        chatMessages,
+        startLocalStream,
+        sendMessage,
+        localStream,
+        socketId: socketRef.current?.id,
+        focusTimes,
+        socketRef,
+        isCameraOn,
+        isMicOn,
+        toggleCamera,
+        toggleMicrophone,
+        mutedRemoteUsers,
+        toggleRemoteAudio
     };
-
-    const sendMessage = (message) => socketRef.current.emit('send-message', { roomId, message });
-
-    return { participants, chatMessages, startLocalStream, sendMessage, localStream, socketId: socketRef.current?.id, focusTimes, socketRef, isCameraOn, isMicOn, toggleCamera, toggleMicrophone, mutedRemoteUsers, toggleRemoteAudio };
 };
 
 const formatTime = (seconds) => {
@@ -385,9 +457,18 @@ const FocusRoom = () => {
                         {participants.filter(p => p.socketId !== socketId).map(p => (
                             <div key={p.socketId} className="video-wrapper">
                                 {p.stream ? (
-                                    <video autoPlay playsInline ref={video => { if (video) video.srcObject = p.stream; }} />
+                                    <video
+                                        autoPlay
+                                        playsInline
+                                        ref={video => {
+                                            if (video && video.srcObject !== p.stream) {
+                                                video.srcObject = p.stream;
+                                                console.log(`[Video] Stream attached to ${p.nickname}`);
+                                            }
+                                        }}
+                                    />
                                 ) : (
-                                    <div className="camera-off-placeholder">카메라 로딩중...</div>
+                                    <div className="camera-off-placeholder">연결중...</div>
                                 )}
                                 <div className="video-info">
                                     <p>{p.nickname}</p>
