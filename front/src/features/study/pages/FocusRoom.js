@@ -288,7 +288,7 @@ const FocusRoom = () => {
                                 <div className="camera-off-placeholder">카메라 꺼짐</div>
                             )}
                             <div className="video-info">
-                                <p>{nickname} (나)</p>
+                                <p>나</p>
                             </div>
                             <div className="video-controls">
                                 <button onClick={toggleCamera}>{isCameraOn ? '캠 끄기' : '캠 켜기'}</button>
