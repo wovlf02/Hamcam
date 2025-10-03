@@ -16,6 +16,7 @@ const useP2PRoom = (roomId) => {
     const [isCameraOn, setIsCameraOn] = useState(true);
     const [isMicOn, setIsMicOn] = useState(true);
     const [mutedRemoteUsers, setMutedRemoteUsers] = useState(new Map());
+    const [pendingPeers, setPendingPeers] = useState([]);
 
     const toggleRemoteAudio = useCallback((socketId) => {
         setMutedRemoteUsers(prev => {
@@ -40,36 +41,69 @@ const useP2PRoom = (roomId) => {
         socket.emit('join-room', { roomId });
 
         socket.on('all-users', (users) => {
-            setParticipants(users);
             if (localStream) {
-                users.forEach(user => {
-                    if (user.socketId !== socket.id) {
-                        createPeer(user.socketId, socket.id);
-                    }
-                });
+                users.forEach(user => createPeer(user.socketId, socket.id));
+            } else {
+                setPendingPeers(prev => [...prev, ...users.map(u => u.socketId)]);
             }
+            setParticipants(users);
         });
 
         socket.on('user-joined', (user) => {
             setParticipants(prev => [...prev, user]);
             if (localStream) {
                 createPeer(user.socketId, socket.id);
+            } else {
+                setPendingPeers(prev => [...prev, user.socketId]);
             }
         });
 
         socket.on('signal', async ({ fromSocketId, sdp, candidate }) => {
             const peer = peersRef.current.get(fromSocketId);
-            if (!peer) return;
-
+            if (!peer) {
+                console.warn("Peer not found for signal from", fromSocketId);
+                return;
+            }
             if (sdp) {
-                await peer.setRemoteDescription(new RTCSessionDescription(sdp));
-                if (sdp.type === 'offer') {
-                    const answer = await peer.createAnswer();
-                    await peer.setLocalDescription(answer);
-                    socket.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
+                try {
+                    const remoteDesc = new RTCSessionDescription(sdp);
+                    if (remoteDesc.type === 'answer') {
+                        if (peer.signalingState !== 'have-local-offer') {
+                            console.warn("Received answer in unexpected signaling state:", peer.signalingState);
+                            return;
+                        }
+                    }
+                    console.log(`Before setRemoteDescription (type: ${remoteDesc.type}): ${peer.signalingState}`);
+                    await peer.setRemoteDescription(remoteDesc);
+                    console.log(`After setRemoteDescription (type: ${remoteDesc.type}): ${peer.signalingState}`);
+
+                    if (sdp.type === 'offer') {
+                        if (localStream) {
+                            localStream.getTracks().forEach(track => {
+                                const sender = peer.getSenders().find(s => s.track === track);
+                                if (!sender) {
+                                    peer.addTrack(track, localStream);
+                                }
+                            });
+                        }
+
+                        console.log(`Before createAnswer: ${peer.signalingState}`);
+                        const answer = await peer.createAnswer();
+                        console.log(`After createAnswer, Before setLocalDescription: ${peer.signalingState}`);
+                        await peer.setLocalDescription(answer);
+                        console.log(`After setLocalDescription (answer): ${peer.signalingState}`);
+                        socketRef.current.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
+                    }
+                } catch (error) {
+                    console.error("Error setting remote description or creating answer:", error);
                 }
             } else if (candidate) {
-                await peer.addIceCandidate(new RTCIceCandidate(candidate));
+                try {
+                    console.log(`Adding ICE candidate: ${peer.signalingState}`);
+                    await peer.addIceCandidate(new RTCIceCandidate(candidate));
+                } catch (error) {
+                    console.error("Error adding ICE candidate:", error);
+                }
             }
         });
 
@@ -93,43 +127,95 @@ const useP2PRoom = (roomId) => {
             peersRef.current.forEach(peer => peer.close());
             socket.disconnect();
         };
-    }, [roomId, localStream]);
+    }, [roomId]);
 
-    const createPeer = (targetSocketId, initiatorSocketId) => {
-        if (!localStream) return;
-        const peer = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+    // localStream이 준비되면 pending peers 처리
+    useEffect(() => {
+        if (localStream) {
+            console.log(`[useEffect localStream] localStream available. Adding tracks to ${peersRef.current.size} peers.`);
+            peersRef.current.forEach(peer => {
+                localStream.getTracks().forEach(track => {
+                    const sender = peer.getSenders().find(s => s.track === track);
+                    if (!sender) {
+                        peer.addTrack(track, localStream);
+                    }
+                });
+            });
 
-        localStream.getTracks().forEach(track => peer.addTrack(track, localStream));
-
-        peer.onicecandidate = e => e.candidate && socketRef.current.emit('signal', { targetSocketId, candidate: e.candidate });
-
-        peer.ontrack = e => setParticipants(prev => prev.map(p => p.socketId === targetSocketId ? { ...p, stream: e.streams[0] } : p));
-
-        if (initiatorSocketId === socketRef.current.id) {
-            peer.createOffer()
-                .then(offer => peer.setLocalDescription(offer))
-                .then(() => socketRef.current.emit('signal', { targetSocketId, sdp: peer.localDescription }));
+            if (pendingPeers.length > 0) {
+                pendingPeers.forEach(socketId => {
+                    createPeer(socketId, socketRef.current.id);
+                });
+                setPendingPeers([]);
+            }
         }
-        peersRef.current.set(targetSocketId, peer);
+    }, [localStream, pendingPeers]);
+
+    const createPeer = (targetSocketIdParam, initiatorSocketId) => {
+        const peer = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] });
+
+        const currentPeerTargetSocketId = targetSocketIdParam;
+        console.log(`[createPeer] Called for ${currentPeerTargetSocketId}. localStream available: ${!!localStream}`);
+
+        peer.onicecandidate = e => e.candidate && socketRef.current.emit('signal', { targetSocketId: currentPeerTargetSocketId, candidate: e.candidate });
+
+        peer.ontrack = e => {
+            console.log("ONTRACK event received!", e);
+            console.log("Stream received:", e.streams[0]);
+            setParticipants(prev => prev.map(p =>
+                p.socketId === currentPeerTargetSocketId ? { ...p, stream: e.streams[0] } : p
+            ));
+        };
+
+        peer.onnegotiationneeded = async () => {
+            try {
+                if (peer.signalingState === 'stable') {
+                    const offer = await peer.createOffer();
+                    await peer.setLocalDescription(offer);
+                    socketRef.current.emit('signal', { targetSocketId: currentPeerTargetSocketId, sdp: peer.localDescription });
+                } else {
+                    console.warn("Negotiation needed, but peer not in stable state to create offer. Signaling state:", peer.signalingState);
+                }
+            } catch (error) {
+                console.error("Error during negotiationneeded:", error);
+            }
+        };
+
+        peersRef.current.set(currentPeerTargetSocketId, peer);
     };
 
     const startLocalStream = useCallback(async () => {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("카메라/마이크를 사용할 수 없습니다. HTTPS 또는 localhost 환경에서 접속해주세요.");
+            throw new Error('getUserMedia is not supported in this browser/context.');
+        }
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         setLocalStream(stream);
-        setIsCameraOn(stream.getVideoTracks().some(t => t.enabled));
-        setIsMicOn(stream.getAudioTracks().some(t => t.enabled));
+        setIsCameraOn(stream.getVideoTracks().some(track => track.enabled));
+        setIsMicOn(stream.getAudioTracks().some(track => track.enabled));
+        return stream;
     }, []);
 
     const toggleCamera = () => {
-        if (!localStream) return;
-        localStream.getVideoTracks().forEach(track => track.enabled = !track.enabled);
-        setIsCameraOn(prev => !prev);
+        if (localStream) {
+            const videoTracks = localStream.getVideoTracks();
+            if (videoTracks.length > 0) {
+                const newState = !videoTracks[0].enabled;
+                videoTracks.forEach(track => (track.enabled = newState));
+                setIsCameraOn(newState);
+            }
+        }
     };
 
     const toggleMicrophone = () => {
-        if (!localStream) return;
-        localStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
-        setIsMicOn(prev => !prev);
+        if (localStream) {
+            const audioTracks = localStream.getAudioTracks();
+            if (audioTracks.length > 0) {
+                const newState = !audioTracks[0].enabled;
+                audioTracks.forEach(track => (track.enabled = newState));
+                setIsMicOn(newState);
+            }
+        }
     };
 
     const sendMessage = (message) => socketRef.current.emit('send-message', { roomId, message });
