@@ -281,7 +281,7 @@ const FocusRoom = () => {
                 <div className="focus-room-left-panel">
                     <div className="video-grid">
                         {/* Local Participant */}
-                        <div className="video-wrapper">
+                        <div className={`video-wrapper ${faceDetected ? 'face-detected' : ''}`}>
                             {isCameraOn ? (
                                 <video ref={myVideoRef} autoPlay muted playsInline />
                             ) : (
@@ -289,13 +289,6 @@ const FocusRoom = () => {
                             )}
                             <div className="video-info">
                                 <p>{nickname} (나)</p>
-                                {/* 얼굴 감지 상태 표시 */}
-                                <div className={`face-detection-status ${faceDetected ? 'detected' : 'not-detected'}`}>
-                                    {faceDetected ? '👤 얼굴 인식됨' : '❌ 얼굴 인식 안됨'}
-                                </div>
-                                <div className="model-status">
-                                    모델: {modelsLoaded ? '✅ 로드됨' : '⏳ 로딩중...'}
-                                </div>
                             </div>
                             <div className="video-controls">
                                 <button onClick={toggleCamera}>{isCameraOn ? '캠 끄기' : '캠 켜기'}</button>
