@@ -93,6 +93,16 @@ const useP2PRoom = (roomId) => {
             console.log(`[all-users] Received ${users.length} existing users`);
             setParticipants(users);
 
+            // 기존 유저들의 누적 시간을 focusTimes에 초기화
+            const initialTimes = {};
+            users.forEach(user => {
+                if (user.focusedSeconds !== undefined) {
+                    initialTimes[user.user_id] = user.focusedSeconds;
+                    console.log(`[all-users] ${user.nickname}의 누적 시간 초기화: ${user.focusedSeconds}초`);
+                }
+            });
+            setFocusTimes(prev => ({ ...prev, ...initialTimes }));
+
             if (localStream) {
                 users.forEach(user => {
                     if (user.socketId !== socket.id) {
@@ -107,6 +117,12 @@ const useP2PRoom = (roomId) => {
         socket.on('user-joined', (user) => {
             console.log(`[user-joined] New user: ${user.socketId}`);
             setParticipants(prev => [...prev, user]);
+
+            // 새로 입장한 유저의 초기 시간을 focusTimes에 설정
+            if (user.focusedSeconds !== undefined) {
+                setFocusTimes(prev => ({ ...prev, [user.user_id]: user.focusedSeconds }));
+                console.log(`[user-joined] ${user.nickname}의 초기 시간 설정: ${user.focusedSeconds}초`);
+            }
 
             if (localStream && user.socketId !== socket.id) {
                 createPeer(user.socketId, socket.id);

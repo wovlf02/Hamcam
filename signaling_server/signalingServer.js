@@ -79,7 +79,9 @@ io.on("connection", (socket) => {
                 .filter(([id, _]) => id !== socket.id)
                 .map(([id, p]) => ({ socketId: id, ...p }));
 
-            // 새 유저에게 기존 참여자 목록 전송
+            // 새 유저에게 기존 참여자 목록과 누적 시간 전송
+            console.log(`[${roomId}] 새 유저 ${user.nickname}에게 기존 참여자 정보 전송:`,
+                otherParticipants.map(p => `${p.nickname}: ${p.focusedSeconds}초`));
             socket.emit("all-users", otherParticipants);
 
             // 기존 유저에게 새 유저 합류 알림
@@ -136,6 +138,17 @@ io.on("connection", (socket) => {
         const roomId = roomIds.find(r => r !== socket.id);
         if (!roomId) return;
 
+        const room = rooms.get(roomId);
+        if (room) {
+            // 서버 메모리에 해당 참여자의 시간 업데이트 (캠을 끄기 전 마지막 시간 저장)
+            const participant = room.participants.get(socket.id);
+            if (participant) {
+                participant.focusedSeconds = time;
+                console.log(`[${roomId}] ${participant.nickname}(${socket.id})의 집중 시간 업데이트: ${time}초`);
+            }
+        }
+
+        // 다른 유저들에게 업데이트된 시간 브로드캐스트
         io.to(roomId).emit("focus-time-update", { userId, time });
     });
 
