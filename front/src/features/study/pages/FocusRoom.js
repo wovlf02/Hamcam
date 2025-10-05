@@ -34,55 +34,6 @@ const useP2PRoom = (roomId) => {
         });
     }, [participants]);
 
-    // createPeer 함수를 useCallback으로 메모이제이션
-    const createPeer = useCallback((targetSocketIdParam, initiatorSocketId) => {
-        if (peersRef.current.has(targetSocketIdParam)) {
-            console.log(`Peer already exists for ${targetSocketIdParam}`);
-            return;
-        }
-
-        const peer = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] });
-
-        console.log(`[createPeer] Creating peer for ${targetSocketIdParam}. localStream available: ${!!localStream}`);
-
-        peer.onicecandidate = e => {
-            if (e.candidate && socketRef.current) {
-                socketRef.current.emit('signal', { targetSocketId: targetSocketIdParam, candidate: e.candidate });
-            }
-        };
-
-        peer.ontrack = e => {
-            console.log("ONTRACK event received from", targetSocketIdParam);
-            console.log("Stream received:", e.streams[0]);
-            setParticipants(prev => prev.map(p =>
-                p.socketId === targetSocketIdParam ? { ...p, stream: e.streams[0] } : p
-            ));
-        };
-
-        peer.onconnectionstatechange = () => {
-            console.log(`[${targetSocketIdParam}] Connection state: ${peer.connectionState}`);
-            if (peer.connectionState === 'failed' || peer.connectionState === 'disconnected') {
-                console.warn(`Peer connection ${targetSocketIdParam} ${peer.connectionState}`);
-            }
-        };
-
-        peer.onnegotiationneeded = async () => {
-            try {
-                if (peer.signalingState === 'stable' && socketRef.current) {
-                    console.log(`[${targetSocketIdParam}] Negotiation needed, creating offer`);
-                    const offer = await peer.createOffer();
-                    await peer.setLocalDescription(offer);
-                    socketRef.current.emit('signal', { targetSocketId: targetSocketIdParam, sdp: peer.localDescription });
-                }
-            } catch (error) {
-                console.error(`[${targetSocketIdParam}] Error during negotiation:`, error);
-            }
-        };
-
-        peersRef.current.set(targetSocketIdParam, peer);
-        console.log(`[createPeer] Peer created and stored for ${targetSocketIdParam}`);
-    }, [localStream]);
-
     useEffect(() => {
         const socket = io('http://localhost:4000', { withCredentials: true });
         socketRef.current = socket;
@@ -91,27 +42,23 @@ const useP2PRoom = (roomId) => {
 
         socket.on('all-users', (users) => {
             console.log(`[all-users] Received ${users.length} existing users`);
-            setParticipants(users);
 
             // 기존 유저들의 누적 시간을 focusTimes에 초기화
             const initialTimes = {};
             users.forEach(user => {
                 if (user.focusedSeconds !== undefined) {
                     initialTimes[user.user_id] = user.focusedSeconds;
-                    console.log(`[all-users] ${user.nickname}의 누적 시간 초기화: ${user.focusedSeconds}초`);
+                    console.log(`[all-users] ${user.nickname}의 누적 시간: ${user.focusedSeconds}초`);
                 }
             });
             setFocusTimes(prev => ({ ...prev, ...initialTimes }));
 
             if (localStream) {
-                users.forEach(user => {
-                    if (user.socketId !== socket.id) {
-                        createPeer(user.socketId, socket.id);
-                    }
-                });
+                users.forEach(user => createPeer(user.socketId, socket.id));
             } else {
                 setPendingPeers(prev => [...prev, ...users.map(u => u.socketId)]);
             }
+            setParticipants(users);
         });
 
         socket.on('user-joined', (user) => {
@@ -121,10 +68,10 @@ const useP2PRoom = (roomId) => {
             // 새로 입장한 유저의 초기 시간을 focusTimes에 설정
             if (user.focusedSeconds !== undefined) {
                 setFocusTimes(prev => ({ ...prev, [user.user_id]: user.focusedSeconds }));
-                console.log(`[user-joined] ${user.nickname}의 초기 시간 설정: ${user.focusedSeconds}초`);
+                console.log(`[user-joined] ${user.nickname}의 초기 시간: ${user.focusedSeconds}초`);
             }
 
-            if (localStream && user.socketId !== socket.id) {
+            if (localStream) {
                 createPeer(user.socketId, socket.id);
             } else {
                 setPendingPeers(prev => [...prev, user.socketId]);
@@ -133,27 +80,21 @@ const useP2PRoom = (roomId) => {
 
         socket.on('signal', async ({ fromSocketId, sdp, candidate }) => {
             const peer = peersRef.current.get(fromSocketId);
-
             if (!peer) {
-                console.warn(`Peer not found for signal from ${fromSocketId}, creating new peer`);
-                createPeer(fromSocketId, socket.id);
+                console.warn("Peer not found for signal from", fromSocketId);
                 return;
             }
-
             if (sdp) {
                 try {
                     const remoteDesc = new RTCSessionDescription(sdp);
-
                     if (remoteDesc.type === 'answer' && peer.signalingState !== 'have-local-offer') {
-                        console.warn(`[${fromSocketId}] Received answer in unexpected state: ${peer.signalingState}`);
+                        console.warn("Received answer in unexpected signaling state:", peer.signalingState);
                         return;
                     }
 
-                    console.log(`[${fromSocketId}] Setting remote description (${remoteDesc.type})`);
                     await peer.setRemoteDescription(remoteDesc);
 
                     if (sdp.type === 'offer') {
-                        // Add local stream tracks if not already added
                         if (localStream) {
                             localStream.getTracks().forEach(track => {
                                 const sender = peer.getSenders().find(s => s.track === track);
@@ -163,36 +104,31 @@ const useP2PRoom = (roomId) => {
                             });
                         }
 
-                        console.log(`[${fromSocketId}] Creating answer`);
                         const answer = await peer.createAnswer();
                         await peer.setLocalDescription(answer);
-                        socket.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
+                        socketRef.current.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
                     }
                 } catch (error) {
-                    console.error(`[${fromSocketId}] Error handling SDP:`, error);
+                    console.error("Error setting remote description or creating answer:", error);
                 }
             } else if (candidate) {
                 try {
                     await peer.addIceCandidate(new RTCIceCandidate(candidate));
-                    console.log(`[${fromSocketId}] ICE candidate added`);
                 } catch (error) {
-                    console.error(`[${fromSocketId}] Error adding ICE candidate:`, error);
+                    console.error("Error adding ICE candidate:", error);
                 }
             }
         });
 
         socket.on('user-left', (socketId) => {
             console.log(`[user-left] User disconnected: ${socketId}`);
-            const peer = peersRef.current.get(socketId);
-            if (peer) {
-                peer.close();
-                peersRef.current.delete(socketId);
-            }
+            peersRef.current.get(socketId)?.close();
+            peersRef.current.delete(socketId);
             setParticipants(prev => prev.filter(p => p.socketId !== socketId));
             setFocusTimes(prev => {
                 const newTimes = { ...prev };
                 const user = participants.find(p => p.socketId === socketId);
-                if (user) delete newTimes[user.userId];
+                if (user) delete newTimes[user.user_id];
                 return newTimes;
             });
         });
@@ -209,41 +145,68 @@ const useP2PRoom = (roomId) => {
 
         return () => {
             console.log('[cleanup] Disconnecting socket and closing peers');
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-            }
+            localStream?.getTracks().forEach(track => track.stop());
             peersRef.current.forEach(peer => peer.close());
             peersRef.current.clear();
             socket.disconnect();
         };
-    }, [roomId]); // localStream 제거하여 무한 루프 방지
+    }, [roomId]);
 
     // localStream이 준비되면 pending peers 처리
     useEffect(() => {
-        if (localStream && pendingPeers.length > 0) {
-            console.log(`[localStream ready] Processing ${pendingPeers.length} pending peers`);
-
-            // 기존 peer에 track 추가
-            peersRef.current.forEach((peer, socketId) => {
+        if (localStream) {
+            console.log(`[useEffect localStream] localStream available. Adding tracks to ${peersRef.current.size} peers.`);
+            peersRef.current.forEach(peer => {
                 localStream.getTracks().forEach(track => {
                     const sender = peer.getSenders().find(s => s.track === track);
                     if (!sender) {
-                        console.log(`[${socketId}] Adding track to existing peer`);
                         peer.addTrack(track, localStream);
                     }
                 });
             });
 
-            // pending peer 처리
-            const uniquePendingPeers = [...new Set(pendingPeers)];
-            uniquePendingPeers.forEach(socketId => {
-                if (socketId !== socketRef.current?.id) {
+            if (pendingPeers.length > 0) {
+                console.log(`[useEffect localStream] Processing ${pendingPeers.length} pending peers`);
+                pendingPeers.forEach(socketId => {
                     createPeer(socketId, socketRef.current.id);
-                }
-            });
-            setPendingPeers([]);
+                });
+                setPendingPeers([]);
+            }
         }
-    }, [localStream, pendingPeers, createPeer]);
+    }, [localStream, pendingPeers]);
+
+    const createPeer = (targetSocketIdParam, initiatorSocketId) => {
+        const peer = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] });
+
+        console.log(`[createPeer] Called for ${targetSocketIdParam}. localStream available: ${!!localStream}`);
+
+        peer.onicecandidate = e => e.candidate && socketRef.current.emit('signal', { targetSocketId: targetSocketIdParam, candidate: e.candidate });
+
+        peer.ontrack = e => {
+            console.log("ONTRACK event received from", targetSocketIdParam);
+            console.log("Stream received:", e.streams[0]);
+            setParticipants(prev => prev.map(p =>
+                p.socketId === targetSocketIdParam ? { ...p, stream: e.streams[0] } : p
+            ));
+        };
+
+        peer.onnegotiationneeded = async () => {
+            try {
+                if (peer.signalingState === 'stable') {
+                    console.log(`[${targetSocketIdParam}] Negotiation needed, creating offer`);
+                    const offer = await peer.createOffer();
+                    await peer.setLocalDescription(offer);
+                    socketRef.current.emit('signal', { targetSocketId: targetSocketIdParam, sdp: peer.localDescription });
+                } else {
+                    console.warn(`[${targetSocketIdParam}] Negotiation needed, but peer not in stable state:`, peer.signalingState);
+                }
+            } catch (error) {
+                console.error(`[${targetSocketIdParam}] Error during negotiationneeded:`, error);
+            }
+        };
+
+        peersRef.current.set(targetSocketIdParam, peer);
+    };
 
     const startLocalStream = useCallback(async () => {
         try {
