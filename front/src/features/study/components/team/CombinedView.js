@@ -1,4 +1,3 @@
-
 import React, { memo } from 'react';
 import ControlHeader from './ControlHeader';
 import RoomCard from './RoomCard';
@@ -6,6 +5,7 @@ import Pagination from './Pagination';
 
 const CombinedView = ({ 
     rooms,
+    realTimeParticipants,
     onJoinRoom,
     // Control Props
     searchTerm, setSearchTerm,
@@ -30,7 +30,12 @@ const CombinedView = ({
             {rooms.length > 0 ? (
                 <ul className="room-list">
                     {rooms.map(room => (
-                        <RoomCard key={room.room_id} room={room} onJoin={onJoinRoom} />
+                        <RoomCard
+                            key={room.room_id}
+                            room={room}
+                            onJoin={onJoinRoom}
+                            realTimeCount={realTimeParticipants[room.room_id]}
+                        />
                     ))}
                 </ul>
             ) : (

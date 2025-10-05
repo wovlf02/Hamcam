@@ -252,6 +252,31 @@
     gap: 6px;
 }
 
+/* 🔹 실시간 접속자 수 배지 스타일 */
+.real-time-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #81C995, #66B885);
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 8px;
+    margin-left: 4px;
+    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 2px 4px rgba(129, 201, 149, 0.3);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.85;
+        transform: scale(1.05);
+    }
+}
+
 /* === Pagination === */
 .pagination {
     display: flex;

@@ -1,4 +1,3 @@
-
 import React, { memo } from 'react';
 import ControlHeader from './ControlHeader';
 import RoomCard from './RoomCard';
@@ -7,6 +6,7 @@ import Pagination from './Pagination';
 const RoomColumn = ({ 
     title,
     rooms,
+    realTimeParticipants,
     onJoinRoom,
     // Control Props
     searchTerm, setSearchTerm,
@@ -29,7 +29,12 @@ const RoomColumn = ({
             {rooms.length > 0 ? (
                 <ul className="room-list">
                     {rooms.map(room => (
-                        <RoomCard key={room.room_id} room={room} onJoin={onJoinRoom} />
+                        <RoomCard
+                            key={room.room_id}
+                            room={room}
+                            onJoin={onJoinRoom}
+                            realTimeCount={realTimeParticipants[room.room_id]}
+                        />
                     ))}
                 </ul>
             ) : (
@@ -48,8 +53,9 @@ const RoomColumn = ({
 };
 const SplitView = ({ 
     focusRooms, 
-    quizRooms, 
-    onJoinRoom, 
+    quizRooms,
+    realTimeParticipants,
+    onJoinRoom,
     onShowCreateModal,
     // Focus Room Props
     focusSearch, setFocusSearch,
@@ -66,6 +72,7 @@ const SplitView = ({
                             <RoomColumn
                                 title="시간 경쟁방 (Focus Rooms)"
                                 rooms={focusRooms}
+                                realTimeParticipants={realTimeParticipants}
                                 onJoinRoom={onJoinRoom}
                                 searchTerm={focusSearch}
                                 setSearchTerm={setFocusSearch}
@@ -82,6 +89,7 @@ const SplitView = ({
                             <RoomColumn
                                 title="문제 풀이방 (Quiz Rooms)"
                                 rooms={quizRooms}
+                                realTimeParticipants={realTimeParticipants}
                                 onJoinRoom={onJoinRoom}
                                 searchTerm={quizSearch}
                                 setSearchTerm={setQuizSearch}

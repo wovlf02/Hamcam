@@ -76,6 +76,7 @@ const CreateRoomModal = ({ show, onClose, onCreate, preselectedRoomType }) => {
 const TeamStudy = () => {
     const [viewMode, setViewMode] = useState('combined'); // 'combined' or 'split'
     const [allRooms, setAllRooms] = useState([]);
+    const [realTimeParticipants, setRealTimeParticipants] = useState({}); // 🔹 실시간 접속자 수 state 추가
     const [showModal, setShowModal] = useState(false);
     const [preselectedRoomType, setPreselectedRoomType] = useState(null); // New state
     const navigate = useNavigate();
@@ -111,6 +112,35 @@ const TeamStudy = () => {
             }
         };
         fetchRooms();
+    }, []);
+
+    // 🔹 실시간 접속자 수 polling (5초마다)
+    useEffect(() => {
+        const SIGNALING_SERVER_URL = 'http://localhost:4000';
+
+        const fetchRealTimeParticipants = async () => {
+            try {
+                const response = await fetch(`${SIGNALING_SERVER_URL}/room-counts`);
+                if (!response.ok) {
+                    throw new Error('실시간 접속자 수 조회 실패');
+                }
+                const counts = await response.json();
+                setRealTimeParticipants(counts);
+                console.log('📊 실시간 접속자 수 업데이트:', counts);
+            } catch (error) {
+                console.error('실시간 접속자 수 조회 실패:', error);
+                // 에러 발생 시에도 계속 polling 진행 (signaling server 재시작 시 자동 복구)
+            }
+        };
+
+        // 초기 로드
+        fetchRealTimeParticipants();
+
+        // 5초마다 polling
+        const interval = setInterval(fetchRealTimeParticipants, 5000);
+
+        // cleanup
+        return () => clearInterval(interval);
     }, []);
 
     // Memoized logic for filtering and sorting rooms
@@ -185,6 +215,7 @@ const TeamStudy = () => {
             {viewMode === 'combined' ? (
                 <CombinedView 
                     rooms={combinedPaginated}
+                    realTimeParticipants={realTimeParticipants}
                     onJoinRoom={handleJoinRoom}
                     searchTerm={combinedSearch}
                     setSearchTerm={setCombinedSearch}
@@ -201,6 +232,7 @@ const TeamStudy = () => {
                 <SplitView 
                     focusRooms={focusPaginated}
                     quizRooms={quizPaginated}
+                    realTimeParticipants={realTimeParticipants}
                     onJoinRoom={handleJoinRoom}
                     onShowCreateModal={handleShowCreateModal}
                     focusSearch={focusSearch}

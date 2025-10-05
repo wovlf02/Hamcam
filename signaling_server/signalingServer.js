@@ -4,7 +4,36 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 
-const server = http.createServer();
+// HTTP 서버 생성 및 라우팅 처리
+const server = http.createServer((req, res) => {
+    // CORS 헤더 설정
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    // OPTIONS 요청 처리 (CORS preflight)
+    if (req.method === 'OPTIONS') {
+        res.writeHead(200);
+        res.end();
+        return;
+    }
+
+    // 실시간 접속자 수 조회 엔드포인트
+    if (req.url === '/room-counts' && req.method === 'GET') {
+        const counts = {};
+        rooms.forEach((room, roomId) => {
+            counts[roomId] = room.participants.size;
+        });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(counts));
+        console.log(`📊 실시간 접속자 수 조회: ${Object.keys(counts).length}개 방`);
+        return;
+    }
+
+    // 404 처리
+    res.writeHead(404);
+    res.end('Not Found');
+});
 
 // 동적으로 Spring API URL 설정
 let SPRING_API_URL = "";

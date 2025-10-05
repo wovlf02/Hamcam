@@ -1,13 +1,15 @@
-
 import React from 'react';
 import { Lock, Users } from 'react-feather'; // Using react-feather for icons
 
-const RoomCard = ({ room, onJoin }) => {
+const RoomCard = ({ room, onJoin, realTimeCount }) => {
     const { room_id, title, room_type, max_participants, password, currentParticipants } = room;
 
     const handleJoin = () => {
         onJoin(room_id);
     };
+
+    // 🔹 실시간 접속자 수 우선 사용, 없으면 DB 기준 사용
+    const displayCount = realTimeCount !== undefined ? realTimeCount : (currentParticipants || 0);
 
     return (
         <li className="room-card" onClick={handleJoin}>
@@ -23,7 +25,10 @@ const RoomCard = ({ room, onJoin }) => {
             <div className="card-footer">
                 <div className="participants">
                     <Users size={16} />
-                    <span>{`${currentParticipants || 0} / ${max_participants || 10}`}</span>
+                    <span>
+                        {displayCount} / {max_participants || 10}
+                        {realTimeCount !== undefined && <span className="real-time-badge"> 실시간</span>}
+                    </span>
                 </div>
                 {password && (
                     <div className="lock-status">
