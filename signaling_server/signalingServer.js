@@ -118,6 +118,13 @@ io.on("connection", (socket) => {
 
             console.log(`[${roomId}] ${user.nickname}(${socket.id}) 님이 입장했습니다. (총 ${room.participants.size}명)`);
 
+            // 🔹 전체 클라이언트에게 해당 방의 접속자 수 변경 브로드캐스트
+            io.emit("room-count-update", {
+                roomId: roomId,
+                count: room.participants.size
+            });
+            console.log(`📊 [${roomId}] 접속자 수 업데이트 브로드캐스트: ${room.participants.size}명`);
+
         } catch (error) {
             console.error(`[ERROR] join-room 실패 (socketId: ${socket.id}):`, error.message);
             socket.emit("error", "방 입장에 실패했습니다.");
@@ -193,6 +200,13 @@ io.on("connection", (socket) => {
                 room.participants.delete(socket.id);
                 io.to(roomId).emit("user-left", socket.id);
                 console.log(`[${roomId}] 사용자 퇴장: ${socket.id}. (남은 인원 ${room.participants.size}명)`);
+
+                // 🔹 전체 클라이언트에게 해당 방의 접속자 수 변경 브로드캐스트
+                io.emit("room-count-update", {
+                    roomId: roomId,
+                    count: room.participants.size
+                });
+                console.log(`📊 [${roomId}] 접속자 수 업데이트 브로드캐스트: ${room.participants.size}명`);
 
                 if (room.participants.size === 0) {
                     // TODO: 방 종료 시 Spring API로 최종 데이터 전송 로직

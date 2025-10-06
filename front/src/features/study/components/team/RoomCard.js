@@ -41,4 +41,12 @@ const RoomCard = ({ room, onJoin, realTimeCount }) => {
     );
 };
 
-export default RoomCard;
+// 🚀 React.memo로 감싸서 props가 변경되지 않은 카드는 리렌더링 방지
+export default React.memo(RoomCard, (prevProps, nextProps) => {
+    // room_id, realTimeCount, onJoin만 비교 (얕은 비교)
+    return (
+        prevProps.room.room_id === nextProps.room.room_id &&
+        prevProps.realTimeCount === nextProps.realTimeCount &&
+        prevProps.onJoin === nextProps.onJoin
+    );
+});

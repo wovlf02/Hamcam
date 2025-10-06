@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../../api/api';
 import '../styles/TeamStudy.css'; // Main stylesheet
 import useDebounce from '../hooks/useDebounce';
+import { connectSocket } from '../../../socket'; // Socket.IO 연결 함수 import
 
 // Import new components
 import ViewModeToggle from '../components/team/ViewModeToggle';
@@ -76,7 +77,7 @@ const CreateRoomModal = ({ show, onClose, onCreate, preselectedRoomType }) => {
 const TeamStudy = () => {
     const [viewMode, setViewMode] = useState('combined'); // 'combined' or 'split'
     const [allRooms, setAllRooms] = useState([]);
-    const [realTimeParticipants, setRealTimeParticipants] = useState({}); // 🔹 실시간 접속자 수 state 추가
+    const [realTimeParticipants, setRealTimeParticipants] = useState({}); // 🔹 실시간 접속자 수 state
     const [showModal, setShowModal] = useState(false);
     const [preselectedRoomType, setPreselectedRoomType] = useState(null); // New state
     const navigate = useNavigate();
@@ -114,33 +115,41 @@ const TeamStudy = () => {
         fetchRooms();
     }, []);
 
-    // 🔹 실시간 접속자 수 polling (5초마다)
+    // 🔹 Socket.IO 기반 실시간 접속자 수 업데이트
     useEffect(() => {
-        const SIGNALING_SERVER_URL = 'http://localhost:4000';
+        const socket = connectSocket();
 
-        const fetchRealTimeParticipants = async () => {
+        // 초기 접속자 수 불러오기 (HTTP 요청 1회만)
+        const SIGNALING_SERVER_URL = 'http://localhost:4000';
+        const fetchInitialCounts = async () => {
             try {
                 const response = await fetch(`${SIGNALING_SERVER_URL}/room-counts`);
-                if (!response.ok) {
-                    throw new Error('실시간 접속자 수 조회 실패');
+                if (response.ok) {
+                    const counts = await response.json();
+                    setRealTimeParticipants(counts);
+                    console.log('📊 초기 접속자 수 로드:', counts);
                 }
-                const counts = await response.json();
-                setRealTimeParticipants(counts);
-                console.log('📊 실시간 접속자 수 업데이트:', counts);
             } catch (error) {
-                console.error('실시간 접속자 수 조회 실패:', error);
-                // 에러 발생 시에도 계속 polling 진행 (signaling server 재시작 시 자동 복구)
+                console.error('초기 접속자 수 조회 실패:', error);
             }
         };
+        fetchInitialCounts();
 
-        // 초기 로드
-        fetchRealTimeParticipants();
+        // 🚀 실시간 업데이트 리스너 등록
+        const handleRoomCountUpdate = ({ roomId, count }) => {
+            setRealTimeParticipants(prev => ({
+                ...prev,
+                [roomId]: count
+            }));
+            console.log(`🔄 [${roomId}] 접속자 수 실시간 업데이트: ${count}명`);
+        };
 
-        // 5초마다 polling
-        const interval = setInterval(fetchRealTimeParticipants, 5000);
+        socket.on('room-count-update', handleRoomCountUpdate);
 
         // cleanup
-        return () => clearInterval(interval);
+        return () => {
+            socket.off('room-count-update', handleRoomCountUpdate);
+        };
     }, []);
 
     // Memoized logic for filtering and sorting rooms
@@ -263,3 +272,4 @@ const TeamStudy = () => {
 };
 
 export default TeamStudy;
+
