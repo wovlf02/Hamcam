@@ -167,17 +167,34 @@ io.on("connection", (socket) => {
     });
 
     // --- 이전 STOMP 로직 대체 ---
-    socket.on("start-problem", ({ roomId, subject, unit, level }) => {
-        // TODO: 문제 선택 로직 구현 (Spring API 호출 또는 자체 DB)
-        console.log(`[${roomId}] 문제 시작 요청: ${subject}, ${unit}, ${level}`);
-        // const problem = ...
-        // io.to(roomId).emit("new-problem", problem);
+    socket.on("start-problem", ({ roomId, problem }) => {
+        console.log(`[${roomId}] 문제 시작 요청 받음:`, problem);
+        // 방 전체에 문제 브로드캐스트
+        io.to(roomId).emit("new-problem", problem);
     });
 
     socket.on("submit-answer", ({ roomId, answer }) => {
-        // TODO: 정답 확인 및 랭킹 업데이트 로직 구현
-        console.log(`[${roomId}] 정답 제출: ${answer}`);
-        // io.to(roomId).emit("ranking-update", newRanking);
+        const room = rooms.get(roomId);
+        const participant = room?.participants.get(socket.id);
+
+        if (!participant) {
+            console.warn(`[${roomId}] 참여자를 찾을 수 없음: ${socket.id}`);
+            return;
+        }
+
+        console.log(`[${roomId}] ${participant.nickname}님 정답 제출: ${answer}`);
+
+        // TODO: 실제 정답 검증 로직 구현 필요
+        // 임시로 제출한 순서대로 랭킹 업데이트
+        const currentRanking = Array.from(room.participants.values())
+            .map(p => ({
+                nickname: p.nickname,
+                user_id: p.user_id,
+                score: p.score
+            }))
+            .sort((a, b) => b.score - a.score);
+
+        io.to(roomId).emit("ranking-update", currentRanking);
     });
 
     socket.on("focus-time-update", ({ userId, time }) => {

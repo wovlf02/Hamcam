@@ -232,13 +232,72 @@ const QuizRoom = () => {
     const [userId, setUserId] = useState(null);
     const [chatInput, setChatInput] = useState('');
     const [userAnswer, setUserAnswer] = useState('');
+    const [showProblemModal, setShowProblemModal] = useState(false);
+    const [subjects, setSubjects] = useState([]);
+    const [units, setUnits] = useState([]);
+    const [selectedSubject, setSelectedSubject] = useState('');
+    const [selectedUnit, setSelectedUnit] = useState('');
+    const [selectedLevel, setSelectedLevel] = useState('중');
     const myVideoRef = useRef();
     const chatRef = useRef();
 
     useEffect(() => {
         api.get('/users/me').then(res => setUserId(res.data.data.user_id));
         startLocalStream();
+        // 과목 목록 불러오기
+        loadSubjects();
     }, []);
+
+    const loadSubjects = async () => {
+        try {
+            const response = await api.get('/quiz/problems/subjects');
+            setSubjects(response.data || []);
+        } catch (error) {
+            console.error('과목 목록 불러오기 실패:', error);
+        }
+    };
+
+    const loadUnits = async (subject) => {
+        try {
+            const response = await api.get(`/quiz/problems/units?subject=${subject}`);
+            setUnits(response.data || []);
+        } catch (error) {
+            console.error('단원 목록 불러오기 실패:', error);
+        }
+    };
+
+    const handleSubjectChange = (subject) => {
+        setSelectedSubject(subject);
+        setSelectedUnit('');
+        setUnits([]);
+        if (subject) {
+            loadUnits(subject);
+        }
+    };
+
+    const handleFetchProblem = async () => {
+        if (!selectedSubject || !selectedUnit || !selectedLevel) {
+            alert('과목, 단원, 난이도를 모두 선택해주세요.');
+            return;
+        }
+
+        try {
+            const response = await api.get('/quiz/problems/random', {
+                params: {
+                    subject: selectedSubject,
+                    unit: selectedUnit,
+                    level: selectedLevel
+                }
+            });
+
+            // Socket으로 문제 전달 (방 전체에 브로드캐스트)
+            emitEvent('start-problem', { problem: response.data });
+            setShowProblemModal(false);
+        } catch (error) {
+            console.error('문제 불러오기 실패:', error);
+            alert('문제를 불러오는데 실패했습니다.');
+        }
+    };
 
     useEffect(() => {
         if (myVideoRef.current && localStream) {
@@ -273,16 +332,55 @@ const QuizRoom = () => {
             <h1 className="quizroom-title">📘 문제풀이방</h1>
             <div className="quizroom-main-content">
                 <section className="quizroom-problem-section">
-                    {/* Problem display logic here */}
-                    {problem ? (
-                        <div>
-                            <img src={`${API_BASE_URL_8080}${problem.image_path}`} alt="문제" className="problem-image"/>
-                            <form onSubmit={handleSubmitAnswer} className="answer-form">
-                                <input type="text" value={userAnswer} onChange={e => setUserAnswer(e.target.value)} />
-                                <button type="submit">제출</button>
-                            </form>
-                        </div>
-                    ) : <p>문제를 기다리고 있습니다...</p>}
+                    <div className="problem-header">
+                        <h2>문제</h2>
+                        <button
+                            className="problem-select-button"
+                            onClick={() => setShowProblemModal(true)}
+                        >
+                            📝 문제 불러오기
+                        </button>
+                    </div>
+
+                    <div className="problem-scroll">
+                        {problem ? (
+                            <div>
+                                {problem.passage && (
+                                    <div className="problem-passage">
+                                        <h3>지문</h3>
+                                        <p>{problem.passage}</p>
+                                    </div>
+                                )}
+                                <img src={`${API_BASE_URL_8080}${problem.imagePath}`} alt="문제" className="problem-image"/>
+                                {problem.choices && problem.choices.length > 0 && (
+                                    <div className="problem-choices">
+                                        {problem.choices.map((choice, idx) => (
+                                            <div key={idx}>{choice}</div>
+                                        ))}
+                                    </div>
+                                )}
+                                <div className="answer-input-wrapper">
+                                    <label className="answer-label">
+                                        정답 입력
+                                        <span className="answer-guidance">(예: 1, 2, 3...)</span>
+                                    </label>
+                                    <form onSubmit={handleSubmitAnswer}>
+                                        <input
+                                            type="text"
+                                            value={userAnswer}
+                                            onChange={e => setUserAnswer(e.target.value)}
+                                            placeholder="정답 번호 입력"
+                                        />
+                                        <button type="submit">제출</button>
+                                    </form>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="no-problem-placeholder">
+                                <p>📝 우측 상단의 "문제 불러오기" 버튼을 눌러 문제를 선택하세요.</p>
+                            </div>
+                        )}
+                    </div>
                 </section>
 
                 <section className="quizroom-video-section">
@@ -337,6 +435,58 @@ const QuizRoom = () => {
                     </div>
                 </section>
             </div>
+
+            {/* 문제 선택 모달 */}
+            {showProblemModal && (
+                <div className="modal-overlay" onClick={() => setShowProblemModal(false)}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <h3>📚 문제 선택</h3>
+
+                        <div className="condition-row">
+                            <select
+                                value={selectedSubject}
+                                onChange={(e) => handleSubjectChange(e.target.value)}
+                            >
+                                <option value="">과목 선택</option>
+                                {subjects.map((subject, idx) => (
+                                    <option key={idx} value={subject}>{subject}</option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={selectedUnit}
+                                onChange={(e) => setSelectedUnit(e.target.value)}
+                                disabled={!selectedSubject}
+                            >
+                                <option value="">단원 선택</option>
+                                {units.map((unit, idx) => (
+                                    <option key={idx} value={unit}>{unit}</option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={selectedLevel}
+                                onChange={(e) => setSelectedLevel(e.target.value)}
+                            >
+                                <option value="최하">최하</option>
+                                <option value="하">하</option>
+                                <option value="중">중</option>
+                                <option value="상">상</option>
+                                <option value="최상">최상</option>
+                            </select>
+                        </div>
+
+                        <div className="modal-buttons">
+                            <button className="fetch-button" onClick={handleFetchProblem}>
+                                문제 불러오기
+                            </button>
+                            <button className="cancel-button" onClick={() => setShowProblemModal(false)}>
+                                취소
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
