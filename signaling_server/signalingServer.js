@@ -86,6 +86,11 @@ io.on("connection", (socket) => {
                 throw new Error("사용자 정보를 가져올 수 없습니다.");
             }
 
+            // 🔍 디버깅: API 응답의 모든 필드 확인
+            console.log(`[join-room] 백엔드 API 응답:`, JSON.stringify(user, null, 2));
+            console.log(`[join-room] user.userId:`, user.userId);
+            console.log(`[join-room] user.profileImageUrl:`, user.profileImageUrl);
+
             socket.join(roomId);
 
             // 인메모리 상태 관리
@@ -97,9 +102,9 @@ io.on("connection", (socket) => {
             }
             const room = rooms.get(roomId);
             room.participants.set(socket.id, {
-                user_id: user.user_id,  // userId -> user_id로 변경
+                user_id: user.user_id,  // snake_case 필드명 사용
                 nickname: user.nickname,
-                profileImageUrl: user.profile_image_url,
+                profileImageUrl: user.profile_image_url,  // snake_case 필드명 사용
                 focusedSeconds: 0,
                 score: 0
             });
@@ -146,12 +151,18 @@ io.on("connection", (socket) => {
         const sender = room?.participants.get(socket.id);
         if (!sender) return;
 
+        console.log(`[send-message] 발신자 정보:`, sender);
+        console.log(`[send-message] profileImageUrl:`, sender.profileImageUrl);
+
         const chatMessage = {
             userId: sender.user_id,  // 채팅에서 사용할 userId 추가
             nickname: sender.nickname,
+            profileImageUrl: sender.profileImageUrl,  // 프로필 이미지 추가
             message,
             timestamp: new Date()
         };
+
+        console.log(`[send-message] 전송할 메시지:`, chatMessage);
         io.to(roomId).emit("new-message", chatMessage);
     });
 

@@ -286,6 +286,20 @@
         -2px -2px 4px rgba(255, 255, 255, 0.8);
     margin-top: 0;
     align-self: flex-start;
+    overflow: hidden;
+}
+
+.chat-profile-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.chat-profile-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .chat-message.mine .chat-profile-img {

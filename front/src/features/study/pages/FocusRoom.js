@@ -5,6 +5,8 @@ import '../styles/FocusRoom.css';
 import io from 'socket.io-client';
 import * as faceapi from 'face-api.js';
 import ModelLoader from '../../../utils/ModelLoader';
+import { API_BASE_URL_8080 } from '../../../api/apiUrl';
+import base_profile from '../../../assets/icons/base_profile.png';
 
 const useP2PRoom = (roomId) => {
     const socketRef = useRef();
@@ -134,7 +136,8 @@ const useP2PRoom = (roomId) => {
         });
 
         socket.on('new-message', (message) => {
-            console.log('[new-message]', message);
+            console.log('[new-message] 받은 메시지 데이터:', message);
+            console.log('[new-message] profileImageUrl:', message.profileImageUrl);
             setChatMessages(prev => [...prev, message]);
         });
 
@@ -499,9 +502,6 @@ const FocusRoom = () => {
                         <div className="chat-header"><h3>💬 채팅</h3></div>
                         <div className="chat-log" ref={chatRef}>
                             {chatMessages.map((chat, index) => {
-                                // 프로필 이미지용 이니셜 생성 (닉네임 첫 글자)
-                                const initial = chat.nickname ? chat.nickname.charAt(0).toUpperCase() : '?';
-
                                 // 시간 포맷팅 (HH:MM 형식)
                                 const formatTime = (timestamp) => {
                                     if (!timestamp) {
@@ -512,11 +512,23 @@ const FocusRoom = () => {
                                     return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
                                 };
 
+                                // 프로필 이미지 또는 이니셜 표시
+                                const initial = chat.nickname ? chat.nickname.charAt(0).toUpperCase() : '?';
+                                const hasProfileImage = chat.profileImageUrl && chat.profileImageUrl.trim() !== '';
+                                // 네비게이션 바처럼 완전한 이미지 경로 생성
+                                const profileImageSrc = hasProfileImage
+                                    ? `${API_BASE_URL_8080}${chat.profileImageUrl}`
+                                    : base_profile;
+
                                 return (
                                     <div key={index} className={`chat-message ${chat.userId === userId ? 'mine' : 'other'}`}>
                                         {/* 프로필 이미지 */}
                                         <div className="chat-profile-img">
-                                            {initial}
+                                            {hasProfileImage ? (
+                                                <img src={profileImageSrc} alt={chat.nickname} />
+                                            ) : (
+                                                <span className="chat-profile-initial">{initial}</span>
+                                            )}
                                         </div>
 
                                         {/* 메시지 컨텐츠 */}
