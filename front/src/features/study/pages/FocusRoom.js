@@ -498,12 +498,43 @@ const FocusRoom = () => {
                     <div className="focus-room-chat">
                         <div className="chat-header"><h3>💬 채팅</h3></div>
                         <div className="chat-log" ref={chatRef}>
-                            {chatMessages.map((chat, index) => (
-                                <div key={index} className={`chat-message ${chat.userId === userId ? 'mine' : 'other'}`}>
-                                    <span className="chat-nickname">{chat.nickname}</span>
-                                    <div className="chat-bubble">{chat.message}</div>
-                                </div>
-                            ))}
+                            {chatMessages.map((chat, index) => {
+                                // 프로필 이미지용 이니셜 생성 (닉네임 첫 글자)
+                                const initial = chat.nickname ? chat.nickname.charAt(0).toUpperCase() : '?';
+
+                                // 시간 포맷팅 (HH:MM 형식)
+                                const formatTime = (timestamp) => {
+                                    if (!timestamp) {
+                                        const now = new Date();
+                                        return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                                    }
+                                    const date = new Date(timestamp);
+                                    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                                };
+
+                                return (
+                                    <div key={index} className={`chat-message ${chat.userId === userId ? 'mine' : 'other'}`}>
+                                        {/* 프로필 이미지 */}
+                                        <div className="chat-profile-img">
+                                            {initial}
+                                        </div>
+
+                                        {/* 메시지 컨텐츠 */}
+                                        <div className="chat-content-wrapper">
+                                            {/* 닉네임 (상대방 메시지에만 표시) */}
+                                            {chat.userId !== userId && (
+                                                <span className="chat-nickname">{chat.nickname}</span>
+                                            )}
+
+                                            {/* 메시지 버블과 시간 */}
+                                            <div className="chat-bubble-time-wrapper">
+                                                <div className="chat-bubble">{chat.message}</div>
+                                                <span className="chat-time">{formatTime(chat.timestamp || chat.time)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                         <form onSubmit={handleSendMessage} className="chat-input">
                             <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="메시지를 입력하세요..." />
