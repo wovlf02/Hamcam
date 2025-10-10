@@ -295,10 +295,21 @@ const FocusRoom = () => {
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [faceDetected, setFaceDetected] = useState(false);
     const [chatInput, setChatInput] = useState('');
-    const [myFocusTime, setMyFocusTime] = useState(0); // 로컬 시간 상태 추가
+    const [myFocusTime, setMyFocusTime] = useState(0);
 
     const myVideoRef = useRef(null);
     const chatRef = useRef(null);
+    const remoteVideoRefs = useRef(new Map()); // 원격 비디오 요소 참조 저장
+
+    // 음소거 토글 핸들러
+    const handleToggleMute = useCallback((socketId) => {
+        const videoElement = remoteVideoRefs.current.get(socketId);
+        if (videoElement) {
+            videoElement.muted = !videoElement.muted;
+            toggleRemoteAudio(socketId);
+            console.log(`[Mute Toggle] ${socketId} 음소거: ${videoElement.muted}`);
+        }
+    }, [toggleRemoteAudio]);
 
     useEffect(() => {
         const loadInitialData = async () => {
@@ -443,9 +454,19 @@ const FocusRoom = () => {
                                         autoPlay
                                         playsInline
                                         ref={video => {
-                                            if (video && video.srcObject !== p.stream) {
-                                                video.srcObject = p.stream;
-                                                console.log(`[Video] Stream attached to ${p.nickname}`);
+                                            if (video) {
+                                                // 비디오 요소 참조를 Map에 저장
+                                                remoteVideoRefs.current.set(p.socketId, video);
+
+                                                if (video.srcObject !== p.stream) {
+                                                    video.srcObject = p.stream;
+                                                    console.log(`[Video] Stream attached to ${p.nickname}`);
+                                                }
+
+                                                // 기존 음소거 상태 적용
+                                                if (mutedRemoteUsers.has(p.socketId)) {
+                                                    video.muted = mutedRemoteUsers.get(p.socketId);
+                                                }
                                             }
                                         }}
                                     />
@@ -456,7 +477,7 @@ const FocusRoom = () => {
                                     <p>{p.nickname}</p>
                                 </div>
                                 <div className="video-controls">
-                                    <button onClick={() => toggleRemoteAudio(p.socketId)}>
+                                    <button onClick={() => handleToggleMute(p.socketId)}>
                                         {mutedRemoteUsers.get(p.socketId) ? '음소거 해제' : '음소거'}
                                     </button>
                                 </div>
