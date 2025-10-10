@@ -287,6 +287,7 @@
     padding: 0 4px;
 }
 
+/* FocusChat.css의 스타일을 사용하므로 주석 처리
 .chat-input {
     display: flex;
     gap: 8px;
@@ -319,6 +320,7 @@
 .chat-input button:hover {
     background: var(--primary-blue-500);
 }
+*/
 
 /* 얼굴 감지 상태 표시 스타일 */
 .face-detection-status {
