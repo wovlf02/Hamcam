@@ -521,10 +521,8 @@ const FocusRoom = () => {
 
                                         {/* 메시지 컨텐츠 */}
                                         <div className="chat-content-wrapper">
-                                            {/* 닉네임 (상대방 메시지에만 표시) */}
-                                            {chat.userId !== userId && (
-                                                <span className="chat-nickname">{chat.nickname}</span>
-                                            )}
+                                            {/* 닉네임 - 모든 메시지에 표시 */}
+                                            <span className="chat-nickname">{chat.nickname}</span>
 
                                             {/* 메시지 버블과 시간 */}
                                             <div className="chat-bubble-time-wrapper">

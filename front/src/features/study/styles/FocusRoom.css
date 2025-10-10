@@ -252,14 +252,18 @@
     display: flex;
     gap: 2px;
     align-items: flex-start;
+    width: 100%;
+    margin-bottom: 12px;
 }
 
 .chat-message.mine {
     flex-direction: row-reverse;
+    justify-content: flex-start;
 }
 
 .chat-message.other {
     flex-direction: row;
+    justify-content: flex-start;
 }
 
 /* 프로필 이미지 */
@@ -285,7 +289,7 @@
 }
 
 .chat-message.mine .chat-profile-img {
-    display: none;
+    display: flex;
 }
 
 /* 메시지 컨텐츠 영역 (닉네임 + 버블 + 시간) */
@@ -319,7 +323,7 @@
 }
 
 .chat-message.mine .chat-nickname {
-    display: none;
+    display: flex;
 }
 
 /* 버블과 시간을 감싸는 컨테이너 */
