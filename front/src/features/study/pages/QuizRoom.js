@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import api from '../../../api/api';
 import '../styles/QuizRoom.css';
 import io from 'socket.io-client';
 import { API_BASE_URL_8080 } from "../../../api/apiUrl";
+import base_profile from '../../../assets/icons/base_profile.png';
 
 // This hook would be in its own file, e.g., features/rtc/hooks/useP2PRoom.js
 // For this example, it's defined here for clarity.
@@ -29,7 +30,7 @@ const useP2PRoom = (roomId) => {
             const participant = participants.find(p => p.socketId === socketId);
             if (participant && participant.stream) {
                 participant.stream.getAudioTracks().forEach(track => {
-                    track.enabled = !newMutedState; // Toggle based on newMutedState
+                    track.enabled = !newMutedState;
                 });
             }
             return newMap;
@@ -75,9 +76,7 @@ const useP2PRoom = (roomId) => {
                             return;
                         }
                     }
-                    console.log(`Before setRemoteDescription (type: ${remoteDesc.type}): ${peer.signalingState}`);
                     await peer.setRemoteDescription(remoteDesc);
-                    console.log(`After setRemoteDescription (type: ${remoteDesc.type}): ${peer.signalingState}`);
 
                     if (sdp.type === 'offer') {
                         if (localStream) {
@@ -89,11 +88,8 @@ const useP2PRoom = (roomId) => {
                             });
                         }
 
-                        console.log(`Before createAnswer: ${peer.signalingState}`);
                         const answer = await peer.createAnswer();
-                        console.log(`After createAnswer, Before setLocalDescription: ${peer.signalingState}`);
                         await peer.setLocalDescription(answer);
-                        console.log(`After setLocalDescription (answer): ${peer.signalingState}`);
                         socketRef.current.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
                     }
                 } catch (error) {
@@ -101,7 +97,6 @@ const useP2PRoom = (roomId) => {
                 }
             } else if (candidate) {
                 try {
-                    console.log(`Adding ICE candidate: ${peer.signalingState}`);
                     await peer.addIceCandidate(new RTCIceCandidate(candidate));
                 } catch (error) {
                     console.error("Error adding ICE candidate:", error);
@@ -115,9 +110,20 @@ const useP2PRoom = (roomId) => {
             setParticipants(prev => prev.filter(p => p.socketId !== socketId));
         });
 
-        socket.on('new-message', (message) => setChatMessages(prev => [...prev, message]));
-        socket.on('new-problem', (newProblem) => setProblem(newProblem));
-        socket.on('ranking-update', (newRanking) => setRanking(newRanking));
+        socket.on('new-message', (message) => {
+            console.log('[QuizRoom] new-message received:', message);
+            setChatMessages(prev => [...prev, message]);
+        });
+
+        socket.on('new-problem', (newProblem) => {
+            console.log('[QuizRoom] new-problem received:', newProblem);
+            setProblem(newProblem);
+        });
+
+        socket.on('ranking-update', (newRanking) => {
+            console.log('[QuizRoom] ranking-update received:', newRanking);
+            setRanking(newRanking);
+        });
 
         return () => {
             localStream?.getTracks().forEach(track => track.stop());
@@ -220,14 +226,46 @@ const useP2PRoom = (roomId) => {
         }
     };
 
-    const emitEvent = (eventName, payload) => socketRef.current.emit(eventName, { roomId, ...payload });
+    const sendMessage = useCallback((message) => {
+        if (socketRef.current) {
+            console.log('[QuizRoom] Sending message:', { roomId, message });
+            socketRef.current.emit('send-message', { roomId, message });
+        } else {
+            console.error('[QuizRoom] Socket not connected');
+        }
+    }, [roomId]);
 
-    return { participants, chatMessages, problem, ranking, startLocalStream, emitEvent, localStream, socketId: socketRef.current?.id, isCameraOn, isMicOn, toggleCamera, toggleMicrophone, mutedRemoteUsers, toggleRemoteAudio };
+    const emitEvent = (eventName, payload) => {
+        if (socketRef.current) {
+            console.log(`[QuizRoom] Emitting ${eventName}:`, { roomId, ...payload });
+            socketRef.current.emit(eventName, { roomId, ...payload });
+        } else {
+            console.error(`[QuizRoom] Socket not connected, cannot emit ${eventName}`);
+        }
+    };
+
+    return {
+        participants,
+        chatMessages,
+        problem,
+        ranking,
+        startLocalStream,
+        sendMessage,
+        emitEvent,
+        localStream,
+        socketId: socketRef.current?.id,
+        isCameraOn,
+        isMicOn,
+        toggleCamera,
+        toggleMicrophone,
+        mutedRemoteUsers,
+        toggleRemoteAudio
+    };
 };
 
 const QuizRoom = () => {
     const { roomId } = useParams();
-    const { participants, chatMessages, problem, ranking, startLocalStream, emitEvent, localStream, socketId, isCameraOn, isMicOn, toggleCamera, toggleMicrophone, mutedRemoteUsers, toggleRemoteAudio } = useP2PRoom(roomId);
+    const { participants, chatMessages, problem, ranking, startLocalStream, sendMessage, emitEvent, localStream, isCameraOn, isMicOn, toggleCamera, toggleMicrophone, mutedRemoteUsers, toggleRemoteAudio } = useP2PRoom(roomId);
 
     const [userId, setUserId] = useState(null);
     const [chatInput, setChatInput] = useState('');
@@ -316,7 +354,8 @@ const QuizRoom = () => {
     const handleSendMessage = (e) => {
         e.preventDefault();
         if (!chatInput.trim()) return;
-        emitEvent('send-message', { message: chatInput });
+        console.log('[QuizRoom] handleSendMessage called with:', chatInput);
+        sendMessage(chatInput);
         setChatInput('');
     };
 
@@ -422,14 +461,52 @@ const QuizRoom = () => {
                     <div className="quizroom-chat-wrapper">
                         <h2 className="section-title">💬 채팅</h2>
                         <div className="chat-log" ref={chatRef}>
-                            {chatMessages.map((chat, idx) => (
-                                <div key={idx} className={`chat-message ${chat.userId === userId ? 'mine' : 'other'}`}>
-                                    <strong>{chat.nickname}:</strong> {chat.message}
-                                </div>
-                            ))}
+                            {chatMessages.map((chat, index) => {
+                                // 시간 포맷팅 (HH:MM 형식)
+                                const formatTime = (timestamp) => {
+                                    if (!timestamp) {
+                                        const now = new Date();
+                                        return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                                    }
+                                    const date = new Date(timestamp);
+                                    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                                };
+
+                                // 프로필 이미지 또는 이니셜 표시
+                                const initial = chat.nickname ? chat.nickname.charAt(0).toUpperCase() : '?';
+                                const hasProfileImage = chat.profileImageUrl && chat.profileImageUrl.trim() !== '';
+                                const profileImageSrc = hasProfileImage
+                                    ? `${API_BASE_URL_8080}${chat.profileImageUrl}`
+                                    : base_profile;
+
+                                return (
+                                    <div key={index} className={`chat-message ${chat.userId === userId ? 'mine' : 'other'}`}>
+                                        {/* 프로필 이미지 */}
+                                        <div className="chat-profile-img">
+                                            {hasProfileImage ? (
+                                                <img src={profileImageSrc} alt={chat.nickname} />
+                                            ) : (
+                                                <span className="chat-profile-initial">{initial}</span>
+                                            )}
+                                        </div>
+
+                                        {/* 메시지 컨텐츠 */}
+                                        <div className="chat-content-wrapper">
+                                            {/* 닉네임 - 모든 메시지에 표시 */}
+                                            <span className="chat-nickname">{chat.nickname}</span>
+
+                                            {/* 메시지 버블과 시간 */}
+                                            <div className="chat-bubble-time-wrapper">
+                                                <div className="chat-bubble">{chat.message}</div>
+                                                <span className="chat-time">{formatTime(chat.timestamp || chat.time)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                         <form onSubmit={handleSendMessage} className="chat-input">
-                            <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="메시지를 입력하세요." />
+                            <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="메시지를 입력하세요..." />
                             <button type="submit">전송</button>
                         </form>
                     </div>

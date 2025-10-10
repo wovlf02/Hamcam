@@ -217,181 +217,276 @@
     background: #d5d5d5;
 }
 
-/* ===== 채팅 영역 (좌우 말풍선, 정렬) ===== */
+/* ========== 💬 채팅 섹션 - FocusRoom 스타일 적용 ========== */
 .chat-log {
     flex: 1;
     overflow-y: auto;
-    background: #f9f9f9;
-    border-radius: 0.6rem;
-    padding: 1rem;
-    font-size: 0.98rem;
+    margin-bottom: 16px;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
-    margin-bottom: 1rem;
+    gap: 16px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    box-shadow:
+        inset 4px 4px 8px rgba(159, 162, 180, 0.1),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.5);
+}
+
+/* 스크롤바 스타일링 */
+.chat-log::-webkit-scrollbar {
+    width: 10px;
+}
+
+.chat-log::-webkit-scrollbar-track {
+    background: rgba(243, 244, 246, 0.5);
+    border-radius: 10px;
+}
+
+.chat-log::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #a8b4ff 0%, #ffc4d6 100%);
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.chat-log::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #8898ff 0%, #ffb4cc 100%);
 }
 
 .chat-message {
     display: flex;
+    gap: 2px;
+    align-items: flex-start;
     width: 100%;
+    margin-bottom: 12px;
+    animation: slideInLeft 0.3s ease;
 }
 
 .chat-message.mine {
-    justify-content: flex-end;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    animation: slideInRight 0.3s ease;
 }
 
 .chat-message.other {
+    flex-direction: row;
     justify-content: flex-start;
 }
 
-.chat-bubble-right {
-    background: #1976d2;
-    color: white;
-    border-radius: 18px 18px 2px 18px;
-    padding: 0.9rem 1.25rem;
-    max-width: 64%;
-    word-break: break-word;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.chat-bubble-left {
-    background: #f1f1f1;
-    color: #222;
-    border-radius: 18px 18px 18px 2px;
-    padding: 0.9rem 1.25rem;
-    max-width: 64%;
-    word-break: break-word;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 0.6rem;
-    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.06);
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
+/* 프로필 이미지 */
 .chat-profile-img {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
     border-radius: 50%;
-    object-fit: cover;
-    margin-right: 0.5rem;
+    background: linear-gradient(135deg, #a8b4ff 0%, #ffc4d6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
     flex-shrink: 0;
-    background: #e0e0e0;
+    box-shadow:
+        3px 3px 6px rgba(159, 162, 180, 0.2),
+        -2px -2px 4px rgba(255, 255, 255, 0.8);
+    margin-top: 0;
+    align-self: flex-start;
+    overflow: hidden;
 }
 
-.chat-info {
+.chat-profile-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.chat-profile-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 메시지 컨텐츠 영역 (닉네임 + 버블 + 시간) */
+.chat-content-wrapper {
     display: flex;
     flex-direction: column;
+    gap: 2px;
+    max-width: 60%;
+    min-width: 0;
+}
+
+.chat-message.mine .chat-content-wrapper {
+    align-items: flex-end;
+}
+
+.chat-message.other .chat-content-wrapper {
     align-items: flex-start;
-    gap: 0.2rem;
 }
 
+/* 닉네임 */
 .chat-nickname {
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 0.05rem;
-    font-size: 1rem;
-}
-
-.chat-content {
-    font-size: 1rem;
-    margin-bottom: 0.2rem;
-    line-height: 1.5;
-}
-
-.chat-time {
-    font-size: 0.92rem;
-    color: #999;
-    margin-top: 0.1rem;
-    align-self: flex-end;
-}
-
-/* 오른쪽 말풍선(내 메시지)의 시간 */
-.chat-bubble-right .chat-time {
-    align-self: flex-start;
-    margin-bottom: 0.3rem;
-    color: #bbe1ff;
-    font-size: 0.89rem;
-    font-weight: 400;
-}
-
-/* 왼쪽 말풍선(상대 메시지)의 시간 */
-.chat-bubble-left .chat-time {
-    color: #888;
-    font-size: 0.9rem;
-    margin-top: 0.1rem;
-    align-self: flex-start;
-}
-
-/* ===== 입력창 ===== */
-.chat-input {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7aff;
+    padding: 0 4px;
+    margin-bottom: 0;
+    line-height: 42px;
+    height: 42px;
     display: flex;
-    gap: 0.6rem;
     align-items: center;
 }
+
+.chat-message.mine .chat-nickname {
+    display: flex;
+}
+
+/* 버블과 시간을 감싸는 컨테이너 */
+.chat-bubble-time-wrapper {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+}
+
+.chat-message.mine .chat-bubble-time-wrapper {
+    flex-direction: row-reverse;
+}
+
+/* 말풍선 */
+.chat-bubble {
+    padding: 10px 14px;
+    border-radius: 18px;
+    word-break: break-word;
+    line-height: 1.4;
+    box-shadow:
+        2px 2px 4px rgba(159, 162, 180, 0.15),
+        -1px -1px 3px rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+}
+
+.chat-message.mine .chat-bubble {
+    background: linear-gradient(135deg, #6b7aff 0%, #8898ff 100%);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-message.other .chat-bubble {
+    background: white;
+    color: #202124;
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(159, 162, 180, 0.1);
+}
+
+/* 전송 시각 */
+.chat-time {
+    font-size: 11px;
+    color: #a8b4c8;
+    white-space: nowrap;
+    margin-bottom: 4px;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+/* 채팅 입력창 */
+.chat-input {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+}
+
 .chat-input input {
     flex: 1;
-    font-size: 0.98rem;
-    padding: 0.6rem 0.8rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    background: #fafbfc;
+    padding: 14px 18px;
+    border: none;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    box-shadow:
+        inset 4px 4px 8px rgba(159, 162, 180, 0.12),
+        inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+    outline: none;
+    color: #4a5568;
 }
+
+.chat-input input:focus {
+    box-shadow:
+        inset 4px 4px 10px rgba(107, 122, 255, 0.15),
+        inset -4px -4px 10px rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.chat-input input::placeholder {
+    color: #cbd5e0;
+}
+
 .chat-input button {
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #6b7aff 0%, #ff6b9d 100%);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow:
+        6px 6px 12px rgba(159, 162, 180, 0.2),
+        -3px -3px 8px rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-width: 70px;
 }
 
-/* ===== 반응형 ===== */
-@media (max-width: 900px) {
-    .quizroom-wrapper {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
+.chat-input button:hover {
+    background: linear-gradient(135deg, #5a68ee 0%, #ee5a8c 100%);
+    box-shadow:
+        8px 8px 16px rgba(159, 162, 180, 0.25),
+        -4px -4px 10px rgba(255, 255, 255, 0.7);
+    transform: translateY(-2px);
+}
 
-    .quizroom-main-content {
-        flex-direction: column;
-        width: 100%;
-        height: auto;
-    }
+.chat-input button:active {
+    transform: translateY(0);
+    box-shadow:
+        4px 4px 8px rgba(159, 162, 180, 0.2),
+        -2px -2px 6px rgba(255, 255, 255, 0.5);
+}
 
-    .quizroom-problem-section,
-    .quizroom-video-section,
-    .quizroom-chat-section {
-        padding: 1rem;
-        height: auto;
-    }
-
-    .quizroom-video-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    }
-
-    .video-tile video {
-        height: 30vw;
-    }
-
-    .chat-log,
-    .chat-input input,
-    .chat-input button {
-        font-size: 1rem;
-    }
-
-    .quizroom-problem-section h2,
-    .quizroom-video-section h2,
-    .quizroom-chat-section h2 {
-        font-size: 1.2rem;
-    }
-
-    .chat-bubble-right,
-    .chat-bubble-left {
-        max-width: 80vw;
-        font-size: 0.98rem;
-        padding: 0.85rem 1rem;
-    }
-    .video-tile .controls {
-        padding: 0.4rem 0;
-    }
+/* 기존 채팅 스타일 제거 */
+.chat-bubble-right,
+.chat-bubble-left,
+.chat-info {
+    display: none;
 }
 
 /* ===== 모달 영역 ===== */
@@ -543,6 +638,14 @@
     flex-direction: column;
 }
 
+.quizroom-ranking-wrapper h2.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #202124;
+    margin: 0 0 0.8rem 0;
+    text-align: center;
+}
+
 .ranking-list {
     list-style: none;
     padding: 0;
@@ -587,12 +690,12 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
-.quizroom-chat-wrapper h2.section-title,
-.quizroom-ranking-wrapper h2.section-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 0.8rem;
-    color: #2a2a2a;
+.quizroom-chat-wrapper h2.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #202124;
+    margin: 0 0 0.8rem 0;
+    text-align: center;
 }
 
 .quizroom-chat-section {
@@ -670,4 +773,109 @@
     border-radius: 8px;
     margin: 1rem 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.problem-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+    margin-bottom: 1rem;
+    max-height: 55vh;
+}
+
+.answer-input-wrapper {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.answer-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.answer-guidance {
+    font-size: 0.92rem;
+    color: #888;
+    margin-left: 0.5rem;
+}
+
+.answer-input-wrapper input {
+    padding: 1rem 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 160px;
+}
+
+.answer-input-wrapper button {
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.answer-input-wrapper form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.answer-input-wrapper button:hover {
+    background-color: #125ea5;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 900px) {
+    .quizroom-wrapper {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .quizroom-main-content {
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+    }
+
+    .quizroom-problem-section,
+    .quizroom-video-section,
+    .quizroom-chat-section {
+        padding: 1rem;
+        height: auto;
+    }
+
+    .quizroom-video-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+
+    .video-tile video {
+        height: 30vw;
+    }
+
+    .chat-log,
+    .chat-input input,
+    .chat-input button {
+        font-size: 1rem;
+    }
+
+    .quizroom-problem-section h2,
+    .quizroom-video-section h2,
+    .quizroom-chat-section h2 {
+        font-size: 1.2rem;
+    }
+
+    .chat-content-wrapper {
+        max-width: 80%;
+    }
+
+    .video-tile .controls {
+        padding: 0.4rem 0;
+    }
 }
