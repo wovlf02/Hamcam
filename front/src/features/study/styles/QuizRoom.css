@@ -638,6 +638,7 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    min-height: 0; /* flex 아이템이 내용 크기보다 작아질 수 있도록 허용 */
 }
 
 .quizroom-ranking-wrapper h2.section-title {
