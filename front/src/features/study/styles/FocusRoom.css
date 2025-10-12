@@ -239,13 +239,35 @@
 }
 
 .chat-log {
-    flex: 1;
-    overflow-y: auto;
+    flex-grow: 1; /* flex-grow를 1로 설정하여 사용 가능한 공간을 채우도록 함 */
+    height: 0; /* flex 아이템의 높이 계산 기준을 0으로 설정 */
+    overflow-y: auto; /* 내용이 넘칠 경우 세로 스크롤 생성 */
+    overflow-x: hidden; /* 가로 스크롤은 항상 숨김 */
     margin-bottom: 16px;
     display: flex;
     flex-direction: column;
     gap: 16px;
     padding: 8px;
+}
+
+/* 스크롤바 스타일링 */
+.chat-log::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-log::-webkit-scrollbar-track {
+    background: rgba(243, 244, 246, 0.5);
+    border-radius: 10px;
+}
+
+.chat-log::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #a8b4ff 0%, #ffc4d6 100%);
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.chat-log::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #8898ff 0%, #ffb4cc 100%);
 }
 
 .chat-message {
