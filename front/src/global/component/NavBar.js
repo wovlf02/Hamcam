@@ -9,7 +9,7 @@ import {
     FiHome, FiPlayCircle, FiFileText, FiBarChart2, FiMessageSquare, FiUser
 } from 'react-icons/fi';
 
-const SideMenu = ({ menuItems, handleNavigation, selectedTab, selectedSubTab, user }) => {
+const SideMenu = ({ menuItems, handleNavigation, selectedTab, user }) => {
     return (
         <div className="side-menu">
             <div className="side-menu-logo">
@@ -19,34 +19,15 @@ const SideMenu = ({ menuItems, handleNavigation, selectedTab, selectedSubTab, us
             <div className="nav-main">
                 <ul className="side-menu-list">
                     {menuItems.map((item) => (
-                        <React.Fragment key={item.name}>
-                            <li className="side-menu-list-item">
-                                <button
-                                    onClick={() => handleNavigation(item.name, item.path)}
-                                    className={`side-menu-button${selectedTab === item.name && selectedSubTab === '' ? ' active' : ''}`}
-                                >
-                                    {item.icon}
-                                    <span>{item.name}</span>
-                                </button>
-                            </li>
-                            {item.name === '커뮤니티' && selectedTab === '커뮤니티' && (
-                                <ul className="side-submenu-list">
-                                    {item.subItems.map((sub) => (
-                                        <li
-                                            key={sub.name}
-                                            className={`side-submenu-item ${selectedSubTab === sub.name ? 'active' : ''}`}
-                                        >
-                                            <button
-                                                onClick={() => handleNavigation('커뮤니티', sub.path, sub.name)}
-                                                className={`side-submenu-button ${selectedSubTab === sub.name ? 'active' : ''}`}
-                                            >
-                                                {sub.name}
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </React.Fragment>
+                        <li key={item.name} className="side-menu-list-item">
+                            <button
+                                onClick={() => handleNavigation(item.name, item.path)}
+                                className={`side-menu-button${selectedTab === item.name ? ' active' : ''}`}
+                            >
+                                {item.icon}
+                                <span>{item.name}</span>
+                            </button>
+                        </li>
                     ))}
                 </ul>
             </div>
@@ -82,7 +63,6 @@ const NavBar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [selectedTab, setSelectedTab] = useState('');
-    const [selectedSubTab, setSelectedSubTab] = useState('');
     const [user, setUser] = useState(null);
 
     const hideSidebarPaths = ['/unit-evaluation/start'];
@@ -96,39 +76,20 @@ const NavBar = () => {
             name: '커뮤니티',
             path: '/community',
             icon: <FiMessageSquare className="side-menu-icon" />,
-            subItems: [
-                { name: '공지사항', path: '/community/notice' },
-                { name: '채팅', path: '/community/chat' },
-                { name: '게시판', path: '/community/post' },
-                { name: '친구', path: '/community/friend' },
-            ],
         },
     ];
 
     useEffect(() => {
         const path = location.pathname;
-        if (path.startsWith('/community')) {
-            setSelectedTab('커뮤니티');
-            if (path.includes('/notice')) setSelectedSubTab('공지사항');
-            else if (path.includes('/chat')) setSelectedSubTab('채팅');
-            else if (path.includes('/post')) setSelectedSubTab('게시판');
-            else if (path.includes('/friend')) setSelectedSubTab('친구');
-            else setSelectedSubTab('');
-        } else {
-            const mainItem = menuItems.find((item) => path.startsWith(item.path));
-            setSelectedTab(mainItem ? mainItem.name : '');
-            setSelectedSubTab('');
-        }
+        const mainItem = menuItems.find((item) => path.startsWith(item.path));
+        setSelectedTab(mainItem ? mainItem.name : '');
     }, [location.pathname]);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
                 const res = await api.get('/users/me');
-                console.log(res.data); // 구조 확인용
-
-                setUser(res.data.data); // ✅ 내부 data를 user로 설정
-
+                setUser(res.data.data);
             } catch (error) {
                 console.error('프로필 조회 실패:', error);
             }
@@ -139,9 +100,8 @@ const NavBar = () => {
 
     if (hideSidebarPaths.includes(location.pathname)) return null;
 
-    const handleNavigation = (name, path, subName = '') => {
+    const handleNavigation = (name, path) => {
         setSelectedTab(name);
-        setSelectedSubTab(subName);
         navigate(path);
     };
 
@@ -150,7 +110,6 @@ const NavBar = () => {
             menuItems={menuItems}
             handleNavigation={handleNavigation}
             selectedTab={selectedTab}
-            selectedSubTab={selectedSubTab}
             user={user}
         />
     );

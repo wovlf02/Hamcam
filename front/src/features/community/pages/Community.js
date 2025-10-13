@@ -48,30 +48,26 @@ const Community = () => {
 
     return (
         <div className="community-root">
-            {/* Left Sidebar */}
-            <aside className="community-sidebar">
-                <div className="sidebar-header">
-                    <FiAward className="sidebar-logo" />
-                    <h1 className="sidebar-title">커뮤니티</h1>
-                </div>
-                <nav className="sidebar-menu">
-                    {menu.map((item) => (
-                        <div
-                            key={item.label}
-                            className={`sidebar-menu-item ${activeMenu === item.label ? 'active' : ''}`}
-                            onClick={() => handleMenuClick(item.path, item.label)}
-                            tabIndex={0}
-                            role="button"
-                        >
-                            {item.icon}
-                            <span>{item.label}</span>
-                        </div>
-                    ))}
-                </nav>
-            </aside>
-
             {/* Main Content */}
             <main className="community-main-content">
+                {/* Top Navigation Bar */}
+                <nav className="community-top-nav">
+                    <div className="top-nav-menu">
+                        {menu.map((item) => (
+                            <div
+                                key={item.label}
+                                className={`top-nav-item ${activeMenu === item.label ? 'active' : ''}`}
+                                onClick={() => handleMenuClick(item.path, item.label)}
+                                tabIndex={0}
+                                role="button"
+                            >
+                                {item.icon}
+                                <span>{item.label}</span>
+                            </div>
+                        ))}
+                    </div>
+                </nav>
+
                 <header className="main-header">
                     <div className="search-bar">
                         <FiSearch className="search-icon" />
