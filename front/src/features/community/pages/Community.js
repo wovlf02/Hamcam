@@ -98,6 +98,46 @@ const mockPostsDetails = [
         likes: 31,
         comments: 12
     },
+    {
+        title: 'Docker 컨테이너 최적화 가이드',
+        content: 'Docker 이미지 크기를 줄이고 빌드 시간을 단축하는 실전 팁들을 소개합니다.',
+        date: '2025.01.07',
+        time: '10:20',
+        likes: 15,
+        comments: 6
+    },
+    {
+        title: 'TypeScript 제네릭 완벽 정리',
+        content: 'TypeScript의 제네릭을 실무에서 어떻게 활용하는지 예제와 함께 설명합니다.',
+        date: '2025.01.05',
+        time: '15:30',
+        likes: 27,
+        comments: 9
+    },
+    {
+        title: 'AWS Lambda 서버리스 아키텍처',
+        content: '서버리스 아키텍처의 장단점과 Lambda를 활용한 실전 구현 방법을 다룹니다.',
+        date: '2025.01.03',
+        time: '13:45',
+        likes: 22,
+        comments: 7
+    },
+    {
+        title: 'GraphQL vs REST API 비교 분석',
+        content: '실제 프로젝트에서 경험한 두 API 방식의 장단점을 비교 분석했습니다.',
+        date: '2025.01.01',
+        time: '11:00',
+        likes: 19,
+        comments: 11
+    },
+    {
+        title: 'Redis 캐싱 전략 정리',
+        content: 'Redis를 활용한 다양한 캐싱 전략과 성능 개선 사례를 공유합니다.',
+        date: '2024.12.30',
+        time: '16:15',
+        likes: 25,
+        comments: 8
+    },
 ];
 
 const mockCommentsDetails = [
@@ -119,6 +159,48 @@ const mockCommentsDetails = [
         date: '2025.01.11',
         time: '22:10'
     },
+    {
+        title: 'Node.js 비동기 처리 질문',
+        content: 'Promise.all()을 사용하면 병렬로 처리할 수 있어요. 성능이 훨씬 좋아집니다!',
+        date: '2025.01.10',
+        time: '14:50'
+    },
+    {
+        title: 'MongoDB 인덱싱 전략',
+        content: '복합 인덱스 설계할 때 쿼리 패턴을 먼저 분석하는 게 중요합니다.',
+        date: '2025.01.09',
+        time: '09:30'
+    },
+    {
+        title: 'Webpack 설정 최적화',
+        content: '빌드 시간을 절반으로 줄인 방법 공유해주셔서 감사합니다!',
+        date: '2025.01.08',
+        time: '17:20'
+    },
+    {
+        title: 'Git 브랜치 전략 문의',
+        content: 'Git Flow가 팀 규모에 따라 적합할 수 있습니다. GitHub Flow도 고려해보세요.',
+        date: '2025.01.07',
+        time: '12:40'
+    },
+    {
+        title: 'SQL 쿼리 튜닝 팁',
+        content: 'EXPLAIN ANALYZE로 실행 계획 보면서 최적화하는 방법이 효과적이었습니다.',
+        date: '2025.01.06',
+        time: '15:55'
+    },
+    {
+        title: 'Vue 3 Composition API 장점',
+        content: '로직 재사용성이 정말 좋아졌네요. 코드가 훨씬 깔끔해졌어요.',
+        date: '2025.01.05',
+        time: '10:15'
+    },
+    {
+        title: 'Nginx 로드밸런싱 설정',
+        content: 'upstream 설정 예제가 정말 도움됐습니다. 바로 적용했어요!',
+        date: '2025.01.04',
+        time: '13:25'
+    },
 ];
 
 const mockLikesDetails = [
@@ -133,6 +215,24 @@ const mockLikesDetails = [
         content: '리액트고수님 외 17명이 좋아합니다.',
         date: '2025.01.12',
         likes: 18
+    },
+    {
+        title: '내가 작성한 "REST API 설계"',
+        content: 'API마스터님 외 30명이 좋아합니다.',
+        date: '2025.01.11',
+        likes: 31
+    },
+    {
+        title: '내가 작성한 "Docker 최적화"',
+        content: '클라우드전문가님 외 14명이 좋아합니다.',
+        date: '2025.01.10',
+        likes: 15
+    },
+    {
+        title: '내가 작성한 "TypeScript 제네릭"',
+        content: 'TS고수님 외 26명이 좋아합니다.',
+        date: '2025.01.09',
+        likes: 27
     },
 ];
 
@@ -154,6 +254,36 @@ const mockQuestsDetails = [
         content: '프로필을 새롭게 꾸몄습니다.',
         date: '2025.01.11',
         time: '15:45'
+    },
+    {
+        title: '게시글 5개 작성하기',
+        content: '유익한 게시글을 작성하여 커뮤니티에 기여했습니다.',
+        date: '2025.01.10',
+        time: '18:20'
+    },
+    {
+        title: '댓글 10개 달기',
+        content: '활발하게 소통하며 커뮤니티를 활성화했습니다.',
+        date: '2025.01.09',
+        time: '12:30'
+    },
+    {
+        title: '친구 5명 추가하기',
+        content: '새로운 친구들과 네트워킹을 확장했습니다.',
+        date: '2025.01.08',
+        time: '16:45'
+    },
+    {
+        title: '스터디 그룹 참여하기',
+        content: '스터디 그룹에 참여하여 함께 성장하고 있습니다.',
+        date: '2025.01.07',
+        time: '10:00'
+    },
+    {
+        title: '좋아요 20개 받기',
+        content: '작성한 콘텐츠로 많은 분들께 도움을 드렸습니다.',
+        date: '2025.01.06',
+        time: '14:15'
     },
 ];
 
