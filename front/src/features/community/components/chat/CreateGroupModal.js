@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../../styles/CreateGroupModal.css';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaUsers, FaImage, FaSearch, FaCheck } from 'react-icons/fa';
 import api from '../../../../api/api';
 import baseProfile from '../../../../assets/icons/base_profile.png';
 
@@ -10,6 +10,7 @@ const CreateGroupModal = ({ onClose, onCreate }) => {
     const [selected, setSelected] = useState([]);
     const [search, setSearch] = useState('');
     const [image, setImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
     useEffect(() => {
         fetchFriends();
@@ -79,7 +80,10 @@ const CreateGroupModal = ({ onClose, onCreate }) => {
 
     const handleFileChange = (e) => {
         const file = e.target.files?.[0];
-        if (file) setImage(file);
+        if (file) {
+            setImage(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
     };
 
     const filteredFriends = friends.filter(friend =>
@@ -87,76 +91,111 @@ const CreateGroupModal = ({ onClose, onCreate }) => {
     );
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-wrapper">
-                <div className="modal-box">
-                    <div className="modal-header">
-                        <h3>그룹 채팅방 생성</h3>
-                        <button className="modal-close" onClick={onClose}>
+        <div className="modal-overlay modern-overlay" onClick={onClose}>
+            <div className="modal-wrapper modern-wrapper" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-box modern-modal">
+                    {/* 헤더 */}
+                    <div className="modal-header modern-header">
+                        <div className="modal-title-group">
+                            <FaUsers className="modal-title-icon" />
+                            <h3>새로운 그룹 채팅</h3>
+                        </div>
+                        <button className="modal-close modern-close" onClick={onClose}>
                             <FaTimes />
                         </button>
                     </div>
 
-                    <div className="modal-avatar-wrapper">
-                        <img
-                            src={image ? URL.createObjectURL(image) : baseProfile}
-                            alt="대표 이미지"
-                            className="modal-avatar"
-                        />
-                        <label className="modal-image-upload">
-                            대표 이미지 선택
-                            <input type="file" accept="image/*" onChange={handleFileChange} hidden />
-                        </label>
+                    {/* 대표 이미지 섹션 */}
+                    <div className="modal-avatar-section">
+                        <div className="modal-avatar-wrapper modern-avatar">
+                            <img
+                                src={imagePreview || baseProfile}
+                                alt="그룹 이미지"
+                                className="modal-avatar"
+                            />
+                            <label className="modal-image-upload modern-upload">
+                                <FaImage />
+                                <span>이미지 선택</span>
+                                <input type="file" accept="image/*" onChange={handleFileChange} hidden />
+                            </label>
+                        </div>
                     </div>
 
-                    <input
-                        type="text"
-                        maxLength={30}
-                        placeholder="채팅방 이름 (최대 30자)"
-                        value={roomName}
-                        onChange={(e) => setRoomName(e.target.value)}
-                        className="modal-input"
-                    />
-                    <div className="modal-char-count">{roomName.length}/30</div>
+                    {/* 채팅방 이름 입력 */}
+                    <div className="modal-input-group">
+                        <label className="modal-label">채팅방 이름</label>
+                        <div className="modal-input-wrapper">
+                            <input
+                                type="text"
+                                maxLength={30}
+                                placeholder="그룹의 이름을 입력하세요 ✨"
+                                value={roomName}
+                                onChange={(e) => setRoomName(e.target.value)}
+                                className="modal-input modern-input"
+                            />
+                            <span className="modal-char-count modern-count">{roomName.length}/30</span>
+                        </div>
+                    </div>
 
-                    <input
-                        type="text"
-                        placeholder="닉네임으로 검색"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="modal-input"
-                    />
+                    {/* 친구 검색 */}
+                    <div className="modal-input-group">
+                        <label className="modal-label">참여자 추가</label>
+                        <div className="modal-search-wrapper">
+                            <FaSearch className="search-icon" />
+                            <input
+                                type="text"
+                                placeholder="친구 이름으로 검색하기"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="modal-input modern-input search-input"
+                            />
+                        </div>
+                    </div>
 
-                    <div className="friend-scroll">
-                        {filteredFriends.map(friend => (
-                            <div
-                                key={friend.userId}
-                                className={`friend-item ${selected.includes(friend.userId) ? 'selected' : ''}`}
-                                onClick={() => handleSelect(friend.userId)}
-                            >
-                                <img
-                                    src={friend.profileImageUrl}
-                                    alt={friend.nickname}
-                                    className="friend-avatar"
-                                    onError={(e) => { e.target.src = baseProfile; }}
-                                />
-                                <span>{friend.nickname}</span>
-                                <div className={`friend-check ${selected.includes(friend.userId) ? 'checked' : ''}`} />
+                    {/* 친구 리스트 */}
+                    <div className="friend-scroll modern-scroll">
+                        {filteredFriends.length === 0 ? (
+                            <div className="friend-empty modern-empty">
+                                {search ? '검색 결과가 없습니다 🔍' : '친구가 없습니다 👥'}
                             </div>
-                        ))}
-                        {filteredFriends.length === 0 && <div className="friend-empty">검색 결과 없음</div>}
+                        ) : (
+                            filteredFriends.map(friend => (
+                                <div
+                                    key={friend.userId}
+                                    className={`friend-item modern-item ${selected.includes(friend.userId) ? 'selected' : ''}`}
+                                    onClick={() => handleSelect(friend.userId)}
+                                >
+                                    <img
+                                        src={friend.profileImageUrl}
+                                        alt={friend.nickname}
+                                        className="friend-avatar modern-friend-avatar"
+                                        onError={(e) => { e.target.src = baseProfile; }}
+                                    />
+                                    <span className="friend-name">{friend.nickname}</span>
+                                    <div className={`friend-check modern-check ${selected.includes(friend.userId) ? 'checked' : ''}`}>
+                                        {selected.includes(friend.userId) && <FaCheck size={12} />}
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
 
-                    <div className="modal-selected-count">
-                        선택된 인원: {selected.length}명
-                    </div>
+                    {/* 선택된 인원 표시 */}
+                    {selected.length > 0 && (
+                        <div className="modal-selected-badge">
+                            <FaUsers size={14} />
+                            <span>선택된 인원: <strong>{selected.length}명</strong></span>
+                        </div>
+                    )}
 
+                    {/* 생성 버튼 */}
                     <button
-                        className={`modal-submit ${!roomName.trim() || selected.length === 0 ? 'disabled' : ''}`}
+                        className={`modal-submit modern-submit ${!roomName.trim() || selected.length === 0 ? 'disabled' : ''}`}
                         onClick={handleCreate}
                         disabled={!roomName.trim() || selected.length === 0}
                     >
-                        채팅방 만들기
+                        <span>채팅방 만들기</span>
+                        <span className="submit-icon">🚀</span>
                     </button>
                 </div>
             </div>
