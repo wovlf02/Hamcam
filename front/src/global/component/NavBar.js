@@ -40,7 +40,10 @@ const SideMenu = ({ menuItems, handleNavigation, selectedTab, user }) => {
                             alt="프로필"
                             className="side-user-image"
                         />
-                        <div className="side-user-nickname">{user.nickname}</div>
+                        <div className="side-user-info">
+                            <div className="side-user-nickname">{user.nickname}</div>
+                            <div className="side-user-level">Lv. 5</div>
+                        </div>
                     </div>
                 )}
 

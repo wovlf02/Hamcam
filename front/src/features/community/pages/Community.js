@@ -29,6 +29,12 @@ const mockUserStats = {
 const mockQuests = [
     { id: 1, text: '질문에 답변하기 (1/1)', completed: true },
     { id: 2, text: '스터디룸 30분 참여 (0/1)', completed: false },
+    { id: 3, text: '게시글에 좋아요 누르기 (0/5)', completed: false },
+    { id: 4, text: '새로운 친구 1명 추가하기 (0/1)', completed: false },
+    { id: 5, text: '커뮤니티 게시글 작성 (0/1)', completed: false },
+    { id: 6, text: '출석 체크하기 (1/1)', completed: true },
+    { id: 7, text: '단원평가 1회 응시 (0/1)', completed: false },
+    { id: 8, text: '알고리즘 문제 풀기 (0/3)', completed: false },
 ];
 const mockNotices = [
     { id: 1, title: 'Hamcam 서비스 점검 안내 (03:00~04:00)' },
@@ -119,92 +125,89 @@ const Community = () => {
             <div className="community-body-layout">
                 {/* Main Content Area */}
                 <main className="main-content-feed">
-                    {/* My Activity Summary */}
-                    <div className="activity-summary-panel clay-panel">
-                        <div className="stat-card-list">
-                            <StatCard icon={<FiEdit />} value={mockUserStats.posts} label="게시글" />
-                            <StatCard icon={<FiMessageCircle />} value={mockUserStats.comments} label="댓글" />
-                            <StatCard icon={<FiThumbsUp />} value={mockUserStats.likesReceived} label="받은 좋아요" />
-                            <StatCard icon={<FiAward />} value={mockUserStats.questsCompleted} label="퀘스트 완료" />
-                        </div>
-                    </div>
+                    <div className="community-main-content-wrapper">
+                        <div className="community-posts-and-notices">
+                            {/* My Activity Summary */}
+                            <div className="activity-summary-panel clay-panel">
+                                <div className="stat-card-list">
+                                    <StatCard icon={<FiEdit />} value={mockUserStats.posts} label="게시글" />
+                                    <StatCard icon={<FiMessageCircle />} value={mockUserStats.comments} label="댓글" />
+                                    <StatCard icon={<FiThumbsUp />} value={mockUserStats.likesReceived} label="받은 좋아요" />
+                                    <StatCard icon={<FiAward />} value={mockUserStats.questsCompleted} label="퀘스트 완료" />
+                                </div>
+                            </div>
 
-                    {/* Notices Summary */}
-                    <div className="summary-panel clay-panel">
-                        <header className="summary-header">
-                            <h2>주요 공지사항</h2>
-                            <button className="more-btn" onClick={() => navigate('/community/notice')}>
-                                더보기 <FiChevronRight />
-                            </button>
-                        </header>
-                        <div className="summary-list">
-                            {mockNotices.slice(0, 5).map(notice => (
-                                <SummaryItem key={notice.id} title={notice.title} onClick={() => navigate(`/community/notice/${notice.id}`)} />
-                            ))}
-                        </div>
-                    </div>
+                            {/* Notices Summary */}
+                            <div className="summary-panel clay-panel">
+                                <header className="summary-header">
+                                    <h2>주요 공지사항</h2>
+                                    <button className="more-btn" onClick={() => navigate('/community/notice')}>
+                                        더보기 <FiChevronRight />
+                                    </button>
+                                </header>
+                                <div className="summary-list">
+                                    {mockNotices.slice(0, 5).map(notice => (
+                                        <SummaryItem key={notice.id} title={notice.title} onClick={() => navigate(`/community/notice/${notice.id}`)} />
+                                    ))}
+                                </div>
+                            </div>
 
-                    {/* Posts Summary */}
-                    <div className="summary-panel clay-panel">
-                        <header className="summary-header">
-                            <h2>최신 게시글</h2>
-                            <button className="more-btn" onClick={() => navigate('/community/post')}>
-                                더보기 <FiChevronRight />
-                            </button>
-                        </header>
-                        <div className="summary-list">
-                            {mockPosts.slice(0, 5).map(post => (
-                                <SummaryItem key={post.id} title={post.title} author={post.author} onClick={() => navigate(`/community/post/${post.id}`)} />
-                            ))}
+                            {/* Posts Summary */}
+                            <div className="summary-panel clay-panel">
+                                <header className="summary-header">
+                                    <h2>최신 게시글</h2>
+                                    <button className="more-btn" onClick={() => navigate('/community/post')}>
+                                        더보기 <FiChevronRight />
+                                    </button>
+                                </header>
+                                <div className="summary-list">
+                                    {mockPosts.slice(0, 5).map(post => (
+                                        <SummaryItem key={post.id} title={post.title} author={post.author} onClick={() => navigate(`/community/post/${post.id}`)} />
+                                    ))}
+                                </div>
+                            </div>
                         </div>
+
+                        {/* Right Sidebar */}
+                        <aside className="right-gamification-panel">
+                            {/* My Activity Feed */}
+                            <div className="activity-feed-panel clay-panel">
+                                <h3>내 활동 피드</h3>
+                                <div className="activity-feed-list">
+                                    {mockActivityFeed.map(activity => (
+                                        <ActivityItem key={activity.id} type={activity.type} text={activity.text} />
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Online Friends */}
+                            <div className="online-friends-panel clay-panel">
+                                <h3><FiUsers /> 접속 중인 친구</h3>
+                                <div className="online-friends-list">
+                                    {mockOnlineFriends.map(friend => (
+                                        <div key={friend.id} className="online-friend-item">
+                                            <div className="online-friend-avatar-container">
+                                                <img src={friend.avatar} alt={friend.nickname} className="online-friend-avatar" />
+                                                <div className="online-status-dot"></div>
+                                            </div>
+                                            <span>{friend.nickname}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Daily Quests */}
+                            <div className="quests-module clay-panel">
+                                <h3><FiAward /> 일일 퀘스트</h3>
+                                <ul className="quest-list">
+                                    {mockQuests.map(q => (
+                                        <li key={q.id} className={`quest-item ${q.completed ? 'completed' : ''}`}>{q.text}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </aside>
                     </div>
                 </main>
-
-                {/* Right Sidebar */}
-                <aside className="right-gamification-panel">
-                    {/* My Activity */}
-                    <div className="player-card clay-panel">
-                        <img src={mockUser.avatar} alt="User Avatar" className="player-avatar" />
-                        <div className="player-name">{mockUser.nickname}</div>
-                        <div className="player-level">Lv. {mockUser.level}</div>
-                    </div>
-
-                    {/* My Activity Feed */}
-                    <div className="activity-feed-panel clay-panel">
-                        <h3>내 활동 피드</h3>
-                        <div className="activity-feed-list">
-                            {mockActivityFeed.map(activity => (
-                                <ActivityItem key={activity.id} type={activity.type} text={activity.text} />
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Online Friends */}
-                    <div className="online-friends-panel clay-panel">
-                        <h3><FiUsers /> 접속 중인 친구</h3>
-                        <div className="online-friends-list">
-                            {mockOnlineFriends.map(friend => (
-                                <div key={friend.id} className="online-friend-item">
-                                    <div className="online-friend-avatar-container">
-                                        <img src={friend.avatar} alt={friend.nickname} className="online-friend-avatar" />
-                                        <div className="online-status-dot"></div>
-                                    </div>
-                                    <span>{friend.nickname}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Daily Quests */}
-                    <div className="quests-module clay-panel">
-                        <h3><FiAward /> 일일 퀘스트</h3>
-                        <ul className="quest-list">
-                            {mockQuests.map(q => (
-                                <li key={q.id} className={`quest-item ${q.completed ? 'completed' : ''}`}>{q.text}</li>
-                            ))}
-                        </ul>
-                    </div>
-                </aside>
             </div>
         </div>
     );

@@ -145,3 +145,15 @@
     font-size: 15px;
     color: var(--text-primary);
 }
+
+.side-user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.side-user-level {
+    font-size: 13px;
+    color: var(--primary-accent);
+    font-weight: 500;
+    margin-top: 2px;
+}
