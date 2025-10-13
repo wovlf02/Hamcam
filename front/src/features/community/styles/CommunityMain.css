@@ -34,11 +34,12 @@
     display: flex;
     justify-content: center;
     margin-bottom: 24px;
-    background: var(--glass-bg);
+    background: #FFFFFF; /* Solid white background */
     backdrop-filter: blur(10px);
     border-radius: var(--border-radius-large);
     padding: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow for prominence */
 }
 
 .top-nav-item {
