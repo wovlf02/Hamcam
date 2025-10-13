@@ -102,9 +102,10 @@ const MOCK_NOTICES = [
 const Notice = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [notices, setNotices] = useState(MOCK_NOTICES); // Mock 데이터 사용
+    const [notices, setNotices] = useState(MOCK_NOTICES);
     const [activeMenu, setActiveMenu] = useState('공지사항');
     const [selectedNotice, setSelectedNotice] = useState(null);
+    const [activeFilter, setActiveFilter] = useState('all'); // 필터 상태 추가
 
     useEffect(() => {
         // Mock 데이터로 초기화
@@ -152,6 +153,21 @@ const Notice = () => {
         ));
     };
 
+    // 필터링 로직 추가
+    const getFilteredNotices = () => {
+        switch (activeFilter) {
+            case 'important':
+                return notices.filter(n => n.isImportant);
+            case 'new':
+                return notices.filter(n => n.isNew);
+            case 'all':
+            default:
+                return notices;
+        }
+    };
+
+    const filteredNotices = getFilteredNotices();
+
     const getCategoryColor = (category) => {
         const colors = {
             '업데이트': 'linear-gradient(135deg, #7B68EE, #6B5FD8)',
@@ -191,34 +207,30 @@ const Notice = () => {
 
             {/* 공지사항 리스트 */}
             <div className="notice-content">
-                <div className="notice-title-section">
-                    <h2 className="notice-main-title">
-                        <FiBell className="notice-title-icon" />
-                        공지사항
-                    </h2>
-                    <p className="notice-subtitle">Hamcam의 중요한 소식을 확인하세요</p>
-
-                    {/* 통계 정보 */}
-                    <div className="notice-stats">
-                        <div className="notice-stat-card">
-                            <FiAlertCircle className="stat-icon important" />
-                            <div className="stat-info">
-                                <span className="stat-label">중요 공지</span>
-                                <span className="stat-value">{notices.filter(n => n.isImportant).length}개</span>
-                            </div>
-                        </div>
-                        <div className="notice-stat-card">
-                            <FiTrendingUp className="stat-icon new" />
-                            <div className="stat-info">
-                                <span className="stat-label">신규 공지</span>
-                                <span className="stat-value">{notices.filter(n => n.isNew).length}개</span>
-                            </div>
-                        </div>
-                    </div>
+                {/* 필터 버튼 추가 */}
+                <div className="notice-filter">
+                    <button
+                        className={`filter-button ${activeFilter === 'all' ? 'active' : ''}`}
+                        onClick={() => setActiveFilter('all')}
+                    >
+                        전체 공지
+                    </button>
+                    <button
+                        className={`filter-button ${activeFilter === 'new' ? 'active' : ''}`}
+                        onClick={() => setActiveFilter('new')}
+                    >
+                        신규 공지
+                    </button>
+                    <button
+                        className={`filter-button ${activeFilter === 'important' ? 'active' : ''}`}
+                        onClick={() => setActiveFilter('important')}
+                    >
+                        중요 공지
+                    </button>
                 </div>
 
                 <div className="notice-list">
-                    {notices.map((notice) => (
+                    {filteredNotices.map((notice) => (
                         <div
                             key={notice.id}
                             className={`notice-card ${notice.isImportant ? 'important' : ''}`}
