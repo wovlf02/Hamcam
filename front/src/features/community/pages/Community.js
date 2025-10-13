@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/Community.css';
 import api from '../../../api/api';
 import {
-    FiBell, FiMessageSquare, FiGrid, FiUsers, FiSearch, FiPlus, FiHeart, FiAward
+    FiBell, FiMessageSquare, FiGrid, FiUsers, FiSearch, FiPlus, FiHeart, FiAward, FiHome
 } from 'react-icons/fi';
 
 const menu = [
+    { label: '홈', icon: <FiHome className="menu-icon" />, path: '/community' },
     { label: '게시판', icon: <FiGrid className="menu-icon" />, path: '/community/post' },
     { label: '공지사항', icon: <FiBell className="menu-icon" />, path: '/community/notice' },
     { label: '채팅', icon: <FiMessageSquare className="menu-icon" />, path: '/community/chat' },
@@ -15,13 +16,33 @@ const menu = [
 
 const Community = () => {
     const navigate = useNavigate();
-    const [activeMenu, setActiveMenu] = useState('게시판');
+    const location = useLocation();
+    const [activeMenu, setActiveMenu] = useState('홈');
 
     const [notices, setNotices] = useState([]);
     const [popularPosts, setPopularPosts] = useState([]);
     const [onlineFriends, setOnlineFriends] = useState([]);
 
     useEffect(() => {
+        const currentPath = location.pathname;
+        const currentMenuItem = menu.find(item => item.path === currentPath);
+        if (currentMenuItem) {
+            setActiveMenu(currentMenuItem.label);
+        } else {
+            // Handle cases where the path is a sub-path, e.g., /community/post/1
+            if (currentPath.startsWith('/community/post')) {
+                setActiveMenu('게시판');
+            } else if (currentPath.startsWith('/community/notice')) {
+                setActiveMenu('공지사항');
+            } else if (currentPath.startsWith('/community/chat')) {
+                setActiveMenu('채팅');
+            } else if (currentPath.startsWith('/community/friend')) {
+                setActiveMenu('친구');
+            } else {
+                setActiveMenu('홈');
+            }
+        }
+
         // Mock Data for UI display
         setNotices([
             { id: 1, title: 'Hamcam 서비스 점검 안내 (03:00~04:00)', date: '2024.10.24', views: 102 },
@@ -39,7 +60,7 @@ const Community = () => {
             { user_id: 4, nickname: '데이지', profile_image_url: '/path/to/avatar4.png' },
             { user_id: 5, nickname: '엘라', profile_image_url: '/path/to/avatar5.png' },
         ]);
-    }, []);
+    }, [location.pathname]);
 
     const handleMenuClick = (path, label) => {
         setActiveMenu(label);
