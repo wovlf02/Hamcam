@@ -31,9 +31,7 @@
 /* --- Base Layout --- */
 .community-page-container {
     font-family: var(--font-family);
-    background-color: var(--background-color);
-    min-height: 100vh;
-    padding: 24px;
+    height: 100%;
 }
 
 .community-top-nav {

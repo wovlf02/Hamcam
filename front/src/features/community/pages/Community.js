@@ -107,7 +107,7 @@ const Community = () => {
     };
 
     return (
-        <div className="community-page-container">
+        <div className="community-page-container clay-panel">
             {/* Top Navigation Bar */}
             <nav className="community-top-nav">
                 {menu.map((item) => (
