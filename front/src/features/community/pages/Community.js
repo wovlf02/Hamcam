@@ -327,7 +327,9 @@ const Community = () => {
     });
 
     useEffect(() => {
-        const currentMenuItem = menu.find(item => location.pathname.startsWith(item.path));
+        // 더 긴 경로부터 매칭하도록 정렬하여 정확한 메뉴 활성화
+        const sortedMenu = [...menu].sort((a, b) => b.path.length - a.path.length);
+        const currentMenuItem = sortedMenu.find(item => location.pathname.startsWith(item.path));
         setActiveMenu(currentMenuItem ? currentMenuItem.label : '홈');
     }, [location.pathname]);
 

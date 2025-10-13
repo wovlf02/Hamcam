@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/Post.css';
 import '../styles/PostNew.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../../api/api';
 import {
     FiHome, FiChevronRight, FiEdit, FiClock, FiEye, FiThumbsUp, FiMessageCircle,
-    FiTrendingUp, FiBookOpen, FiHash
+    FiTrendingUp, FiBookOpen, FiHash, FiBell, FiMessageSquare, FiGrid, FiUsers
 } from 'react-icons/fi';
+
+const menu = [
+    { label: '홈', icon: <FiHome />, path: '/community' },
+    { label: '게시판', icon: <FiGrid />, path: '/community/post' },
+    { label: '공지사항', icon: <FiBell />, path: '/community/notice' },
+    { label: '채팅', icon: <FiMessageSquare />, path: '/community/chat' },
+    { label: '친구', icon: <FiUsers />, path: '/community/friend' },
+];
 
 const categories = ['전체', '질문', '정보공유', '스터디', '익명', '일반', '공지사항'];
 
@@ -30,6 +38,7 @@ const POSTS_PER_PAGE = 10;
 
 const Post = () => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [posts, setPosts] = useState([]);
     const [popularPosts, setPopularPosts] = useState([]);
@@ -40,6 +49,7 @@ const Post = () => {
     const [searchType, setSearchType] = useState('title');
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
+    const [activeMenu, setActiveMenu] = useState('게시판');
 
     // 🔹 게시글 목록
     const fetchPosts = async () => {
@@ -119,6 +129,13 @@ const Post = () => {
         fetchPosts();
     }, [selectedCategory]);
 
+    useEffect(() => {
+        // 더 긴 경로부터 매칭하도록 정렬하여 정확한 메뉴 활성화
+        const sortedMenu = [...menu].sort((a, b) => b.path.length - a.path.length);
+        const currentMenuItem = sortedMenu.find(item => location.pathname.startsWith(item.path));
+        setActiveMenu(currentMenuItem ? currentMenuItem.label : '게시판');
+    }, [location.pathname]);
+
     // 🔹 검색 필터링
     const filteredPosts = posts.filter((post) => {
         const term = searchTerm.toLowerCase();
@@ -156,6 +173,11 @@ const Post = () => {
         setPage(1);
     };
 
+    const handleMenuClick = (path, label) => {
+        setActiveMenu(label);
+        navigate(path);
+    };
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         const now = new Date();
@@ -172,8 +194,22 @@ const Post = () => {
     };
 
     return (
-        <div className="post-page-container">
-            {/* 상단 헤더 */}
+        <div className="post-page-container clay-panel">
+            {/* 상단 네비게이션 바 */}
+            <nav className="community-top-nav">
+                {menu.map((item) => (
+                    <div
+                        key={item.label}
+                        className={`top-nav-item ${activeMenu === item.label ? 'active' : ''}`}
+                        onClick={() => handleMenuClick(item.path, item.label)}
+                    >
+                        {item.icon}
+                        <span>{item.label}</span>
+                    </div>
+                ))}
+            </nav>
+
+            {/* Breadcrumb & 글쓰기 버튼 */}
             <div className="post-page-header">
                 <div className="post-breadcrumb">
                     <FiHome className="post-breadcrumb-icon" />
