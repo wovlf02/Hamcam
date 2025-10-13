@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/Post.css';
-import '../styles/PostNew.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../../api/api';
 import {
