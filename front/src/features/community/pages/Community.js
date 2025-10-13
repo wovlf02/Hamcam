@@ -34,6 +34,8 @@ const mockNotices = [
     { id: 1, title: 'Hamcam 서비스 점검 안내 (03:00~04:00)' },
     { id: 2, title: '커뮤니티 이용규칙 업데이트' },
     { id: 3, title: '10월 마일리지 지급 안내' },
+    { id: 4, title: '개인정보 처리방침 개정 안내' },
+    { id: 5, title: '신규 스터디 그룹 기능 오픈!' },
 ];
 const mockPosts = [
     { id: 1, title: 'JPA N+1 문제, 이렇게 해결했어요.', author: '개발왕김코딩' },
@@ -65,7 +67,7 @@ const ActivityItem = ({ type, text }) => {
     const iconMap = {
         post: <FiEdit />,
         comment: <FiMessageCircle />,
-        quest: <FiStar />,
+        quest: <FiAward />,
     };
     return (
         <div className="activity-item">
