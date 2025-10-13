@@ -35,6 +35,9 @@ const mockQuests = [
     { id: 6, text: '출석 체크하기 (1/1)', completed: true },
     { id: 7, text: '단원평가 1회 응시 (0/1)', completed: false },
     { id: 8, text: '알고리즘 문제 풀기 (0/3)', completed: false },
+    { id: 9, text: '댓글 5개 작성하기 (2/5)', completed: false },
+    { id: 10, text: '스터디 그룹 참여하기 (0/1)', completed: false },
+    { id: 11, text: '프로필 사진 변경하기 (1/1)', completed: true },
 ];
 const mockNotices = [
     { id: 1, title: 'Hamcam 서비스 점검 안내 (03:00~04:00)' },
@@ -54,12 +57,24 @@ const mockOnlineFriends = [
     { id: 1, nickname: '에이스', avatar: `https://ui-avatars.com/api/?name=에이스&background=random` },
     { id: 2, nickname: '벨', avatar: `https://ui-avatars.com/api/?name=벨&background=random` },
     { id: 3, nickname: '캐시', avatar: `https://ui-avatars.com/api/?name=캐시&background=random` },
+    { id: 4, nickname: '데이브', avatar: `https://ui-avatars.com/api/?name=데이브&background=random` },
+    { id: 5, nickname: '엘라', avatar: `https://ui-avatars.com/api/?name=엘라&background=random` },
+    { id: 6, nickname: '프랭크', avatar: `https://ui-avatars.com/api/?name=프랭크&background=random` },
+    { id: 7, nickname: '그레이스', avatar: `https://ui-avatars.com/api/?name=그레이스&background=random` },
+    { id: 8, nickname: '헨리', avatar: `https://ui-avatars.com/api/?name=헨리&background=random` },
+    { id: 9, nickname: '아이비', avatar: `https://ui-avatars.com/api/?name=아이비&background=random` },
 ];
 const mockActivityFeed = [
     { id: 1, type: 'post', text: "'JPA N+1 문제..' 글을 작성했습니다." },
     { id: 2, type: 'comment', text: "'React 19 훅..' 글에 댓글을 남겼습니다." },
     { id: 3, type: 'quest', text: "'질문에 답변하기' 퀘스트를 완료했습니다!" },
     { id: 4, type: 'post', text: "'알고리즘 문제 풀이..' 글을 작성했습니다." },
+    { id: 5, type: 'comment', text: "'CS 스터디 모집..' 글에 댓글을 남겼습니다." },
+    { id: 6, type: 'post', text: "'Spring Boot 최적화..' 글을 작성했습니다." },
+    { id: 7, type: 'quest', text: "'출석 체크하기' 퀘스트를 완료했습니다!" },
+    { id: 8, type: 'comment', text: "'자바스크립트 클로저..' 글에 댓글을 남겼습니다." },
+    { id: 9, type: 'post', text: "'Git 충돌 해결 방법..' 글을 작성했습니다." },
+    { id: 10, type: 'quest', text: "'게시글 좋아요 누르기' 퀘스트를 완료했습니다!" },
 ];
 
 const SummaryItem = ({ title, author, onClick }) => (
