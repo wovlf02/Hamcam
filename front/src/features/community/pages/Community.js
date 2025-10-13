@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/CommunityMain.css'; // Using the same CSS file
-import api from '../../../api/api';
+import ActivityDetailModal from '../components/ActivityDetailModal';
 import {
-    FiBell, FiMessageSquare, FiGrid, FiUsers, FiHome, FiAward, FiChevronRight, FiEdit, FiMessageCircle, FiStar, FiThumbsUp
+    FiBell, FiMessageSquare, FiGrid, FiUsers, FiHome, FiAward, FiChevronRight, FiEdit, FiMessageCircle, FiThumbsUp
 } from 'react-icons/fi';
 
 const menu = [
@@ -15,11 +15,6 @@ const menu = [
 ];
 
 // Mock Data for the new UI
-const mockUser = {
-    nickname: '열공하는햄스터',
-    level: 5,
-    avatar: `https://ui-avatars.com/api/?name=열공하는햄스터&background=7B68EE&color=fff`,
-};
 const mockUserStats = {
     posts: 23,
     comments: 157,
@@ -77,6 +72,91 @@ const mockActivityFeed = [
     { id: 10, type: 'quest', text: "'게시글 좋아요 누르기' 퀘스트를 완료했습니다!" },
 ];
 
+// Mock Data for Modal Details
+const mockPostsDetails = [
+    {
+        title: 'JPA N+1 문제, 이렇게 해결했어요.',
+        content: 'JPA를 사용하다 보면 N+1 문제를 자주 마주치게 되는데요, Fetch Join과 Entity Graph를 활용한 해결 방법을 공유합니다.',
+        date: '2025.01.12',
+        time: '14:23',
+        likes: 24,
+        comments: 8
+    },
+    {
+        title: 'Spring Boot 최적화 팁 5가지',
+        content: '실무에서 바로 적용 가능한 Spring Boot 성능 최적화 방법들을 정리해봤습니다.',
+        date: '2025.01.10',
+        time: '09:15',
+        likes: 18,
+        comments: 5
+    },
+    {
+        title: 'REST API 설계 Best Practice',
+        content: 'RESTful API를 설계할 때 고려해야 할 핵심 원칙들과 실전 예제를 소개합니다.',
+        date: '2025.01.08',
+        time: '16:42',
+        likes: 31,
+        comments: 12
+    },
+];
+
+const mockCommentsDetails = [
+    {
+        title: 'React 19 useOptimistic 훅 사용 후기',
+        content: '정말 유용한 정보 감사합니다! 저도 프로젝트에 바로 적용해봤는데 사용자 경험이 훨씬 좋아졌어요.',
+        date: '2025.01.13',
+        time: '11:20'
+    },
+    {
+        title: 'CS 스터디 주 3회 모집합니다',
+        content: '관심 있습니다! 참여 방법 좀 알려주실 수 있을까요?',
+        date: '2025.01.12',
+        time: '18:35'
+    },
+    {
+        title: '알고리즘 문제 풀이 도와주실 분',
+        content: '이 문제는 동적 프로그래밍으로 접근하면 될 것 같아요. DP 테이블을 이렇게 설계해보세요...',
+        date: '2025.01.11',
+        time: '22:10'
+    },
+];
+
+const mockLikesDetails = [
+    {
+        title: '내가 작성한 "JPA N+1 문제 해결"',
+        content: '개발왕김코딩님 외 23명이 좋아합니다.',
+        date: '2025.01.13',
+        likes: 24
+    },
+    {
+        title: '내가 작성한 "Spring Boot 최적화"',
+        content: '리액트고수님 외 17명이 좋아합니다.',
+        date: '2025.01.12',
+        likes: 18
+    },
+];
+
+const mockQuestsDetails = [
+    {
+        title: '질문에 답변하기',
+        content: '다른 사용자의 질문에 답변을 남겨 도움을 주었습니다.',
+        date: '2025.01.13',
+        time: '14:30'
+    },
+    {
+        title: '출석 체크하기',
+        content: '오늘도 햄캠에 출석했습니다!',
+        date: '2025.01.13',
+        time: '09:00'
+    },
+    {
+        title: '프로필 사진 변경하기',
+        content: '프로필을 새롭게 꾸몄습니다.',
+        date: '2025.01.11',
+        time: '15:45'
+    },
+];
+
 const SummaryItem = ({ title, author, onClick }) => (
     <div className="summary-item" onClick={onClick}>
         <span className="summary-item-title">{title}</span>
@@ -98,18 +178,23 @@ const ActivityItem = ({ type, text }) => {
     );
 };
 
-const StatCard = ({ icon, value, label }) => (
-    <div className="stat-card">
+const StatCard = ({ icon, value, label, onClick }) => (
+    <button className="stat-card" onClick={onClick}>
         <div className="stat-card-icon">{icon}</div>
         <div className="stat-card-value">{value}</div>
         <div className="stat-card-label">{label}</div>
-    </div>
+    </button>
 );
 
 const Community = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [activeMenu, setActiveMenu] = useState('홈');
+    const [modalState, setModalState] = useState({
+        isOpen: false,
+        type: null,
+        data: []
+    });
 
     useEffect(() => {
         const currentMenuItem = menu.find(item => location.pathname.startsWith(item.path));
@@ -119,6 +204,22 @@ const Community = () => {
     const handleMenuClick = (path, label) => {
         setActiveMenu(label);
         navigate(path);
+    };
+
+    const openModal = (type, data) => {
+        setModalState({
+            isOpen: true,
+            type,
+            data
+        });
+    };
+
+    const closeModal = () => {
+        setModalState({
+            isOpen: false,
+            type: null,
+            data: []
+        });
     };
 
     return (
@@ -145,10 +246,30 @@ const Community = () => {
                             {/* My Activity Summary */}
                             <div className="activity-summary-panel clay-panel">
                                 <div className="stat-card-list">
-                                    <StatCard icon={<FiEdit />} value={mockUserStats.posts} label="게시글" />
-                                    <StatCard icon={<FiMessageCircle />} value={mockUserStats.comments} label="댓글" />
-                                    <StatCard icon={<FiThumbsUp />} value={mockUserStats.likesReceived} label="받은 좋아요" />
-                                    <StatCard icon={<FiAward />} value={mockUserStats.questsCompleted} label="퀘스트 완료" />
+                                    <StatCard
+                                        icon={<FiEdit />}
+                                        value={mockUserStats.posts}
+                                        label="게시글"
+                                        onClick={() => openModal('posts', mockPostsDetails)}
+                                    />
+                                    <StatCard
+                                        icon={<FiMessageCircle />}
+                                        value={mockUserStats.comments}
+                                        label="댓글"
+                                        onClick={() => openModal('comments', mockCommentsDetails)}
+                                    />
+                                    <StatCard
+                                        icon={<FiThumbsUp />}
+                                        value={mockUserStats.likesReceived}
+                                        label="받은 좋아요"
+                                        onClick={() => openModal('likes', mockLikesDetails)}
+                                    />
+                                    <StatCard
+                                        icon={<FiAward />}
+                                        value={mockUserStats.questsCompleted}
+                                        label="퀘스트 완료"
+                                        onClick={() => openModal('quests', mockQuestsDetails)}
+                                    />
                                 </div>
                             </div>
 
@@ -224,6 +345,14 @@ const Community = () => {
                     </div>
                 </main>
             </div>
+
+            {/* Activity Detail Modal */}
+            <ActivityDetailModal
+                isOpen={modalState.isOpen}
+                onClose={closeModal}
+                type={modalState.type}
+                data={modalState.data}
+            />
         </div>
     );
 };

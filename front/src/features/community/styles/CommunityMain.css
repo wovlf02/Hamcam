@@ -113,16 +113,155 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
+    gap: 16px; /* 카드 간 간격 추가 */
 }
 
 .stat-card {
     text-align: center;
+    border-radius: 16px;
+    padding: 20px 16px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+    flex: 1; /* 모든 카드 동일한 너비 */
+    min-width: 0; /* flex 자식이 올바르게 축소되도록 */
+}
+
+/* 게시글 카드 - 보라색 파스텔 */
+.stat-card:nth-child(1) {
+    background: linear-gradient(135deg, rgba(123, 104, 238, 0.15), rgba(123, 104, 238, 0.08));
+    box-shadow:
+        0 4px 12px rgba(123, 104, 238, 0.15),
+        0 0 0 1px rgba(123, 104, 238, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.stat-card:nth-child(1):hover {
+    background: linear-gradient(135deg, rgba(123, 104, 238, 0.25), rgba(123, 104, 238, 0.15));
+    box-shadow:
+        0 12px 32px rgba(123, 104, 238, 0.25),
+        0 0 0 1px rgba(123, 104, 238, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.stat-card:nth-child(1) .stat-card-icon {
+    color: #7B68EE;
+}
+
+/* 댓글 카드 - 청록색 파스텔 */
+.stat-card:nth-child(2) {
+    background: linear-gradient(135deg, rgba(32, 178, 170, 0.15), rgba(32, 178, 170, 0.08));
+    box-shadow:
+        0 4px 12px rgba(32, 178, 170, 0.15),
+        0 0 0 1px rgba(32, 178, 170, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.stat-card:nth-child(2):hover {
+    background: linear-gradient(135deg, rgba(32, 178, 170, 0.25), rgba(32, 178, 170, 0.15));
+    box-shadow:
+        0 12px 32px rgba(32, 178, 170, 0.25),
+        0 0 0 1px rgba(32, 178, 170, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.stat-card:nth-child(2) .stat-card-icon {
+    color: #20B2AA;
+}
+
+/* 좋아요 카드 - 코랄 파스텔 */
+.stat-card:nth-child(3) {
+    background: linear-gradient(135deg, rgba(255, 160, 122, 0.15), rgba(255, 160, 122, 0.08));
+    box-shadow:
+        0 4px 12px rgba(255, 160, 122, 0.15),
+        0 0 0 1px rgba(255, 160, 122, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.stat-card:nth-child(3):hover {
+    background: linear-gradient(135deg, rgba(255, 160, 122, 0.25), rgba(255, 160, 122, 0.15));
+    box-shadow:
+        0 12px 32px rgba(255, 160, 122, 0.25),
+        0 0 0 1px rgba(255, 160, 122, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.stat-card:nth-child(3) .stat-card-icon {
+    color: #FFA07A;
+}
+
+/* 퀘스트 카드 - 골드 파스텔 */
+.stat-card:nth-child(4) {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.08));
+    box-shadow:
+        0 4px 12px rgba(255, 215, 0, 0.15),
+        0 0 0 1px rgba(255, 215, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.stat-card:nth-child(4):hover {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.15));
+    box-shadow:
+        0 12px 32px rgba(255, 215, 0, 0.25),
+        0 0 0 1px rgba(255, 215, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.stat-card:nth-child(4) .stat-card-icon {
+    color: #FFD700;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+.stat-card:nth-child(1)::before {
+    background: linear-gradient(90deg, #7B68EE, #9F8FFF);
+}
+
+.stat-card:nth-child(2)::before {
+    background: linear-gradient(90deg, #20B2AA, #5FD8D0);
+}
+
+.stat-card:nth-child(3)::before {
+    background: linear-gradient(90deg, #FFA07A, #FFB89A);
+}
+
+.stat-card:nth-child(4)::before {
+    background: linear-gradient(90deg, #FFD700, #FFE55C);
+}
+
+.stat-card:hover {
+    transform: translateY(-8px) scale(1.03);
+}
+
+.stat-card:hover::before {
+    transform: scaleX(1);
+}
+
+.stat-card:active {
+    transform: translateY(-4px) scale(0.98);
+    transition: all 0.1s ease;
 }
 
 .stat-card-icon {
     font-size: 1.8rem;
-    color: var(--primary-color);
     margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-card-icon {
+    transform: scale(1.1) rotate(5deg);
 }
 
 .stat-card-value {
@@ -134,6 +273,7 @@
 .stat-card-label {
     font-size: 0.9rem;
     color: var(--text-color-light);
+    font-weight: 500;
 }
 
 .summary-panel {
