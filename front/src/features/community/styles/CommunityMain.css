@@ -15,23 +15,19 @@
     --font-family: 'Inter', sans-serif;
 }
 
-/* --- Claymorphism Effect --- */
-.clay-panel {
+/* --- Clean Panel Style --- */
+.clay-panel { /* Renamed to .clean-panel conceptually, but keeping class name for now */
     background: var(--panel-bg-color);
     border-radius: var(--border-radius-large);
-    box-shadow: 
-        -8px -8px 16px rgba(255, 255, 255, 0.8),
-        8px 8px 16px rgba(210, 220, 230, 0.6),
-        inset -2px -2px 4px rgba(210, 220, 230, 0.5),
-        inset 2px 2px 4px rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* A subtle, clean shadow */
     padding: 24px;
     transition: all 0.3s ease;
 }
-
 /* --- Base Layout --- */
 .community-page-container {
     font-family: var(--font-family);
     height: 100%;
+    background-color: #F0F8FF; /* Pastel background for the main container */
 }
 
 .community-top-nav {
