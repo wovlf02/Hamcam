@@ -1,161 +1,134 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
-    /* Modern Google SaaS Palette */
-    --primary-blue: #4285F4; /* Google Blue */
-    --primary-blue-light: #E8F0FE;
-    --primary-blue-dark: #1A73E8;
-    --primary-blue-gradient-start: #4285F4;
-    --primary-blue-gradient-end: #286DE0;
-
-    --secondary-green: #34A853;
-    --secondary-green-light: #E6F4EA;
-    --secondary-red: #EA4335;
-    --secondary-red-light: #FADFE1;
-    --secondary-yellow: #FBBC05;
-    --secondary-yellow-light: #FFF7E6;
-
-    /* Neutrals */
-    --text-primary: #202124; /* Dark Gray */
-    --text-secondary: #5F6368; /* Medium Gray */
-    --text-light: #9AA0A6; /* Light Gray */
-    --text-white: #FFFFFF;
-
-    --bg-light: #F8F9FA; /* Very Light Gray */
-    --bg-medium: #E8EAED; /* Light Gray */
-    --bg-dark: #DADCE0; /* Medium Light Gray */
-    --bg-white: #FFFFFF;
-
-    --border-light: #DADCE0;
-    --border-medium: #BDC1C6;
-
-    /* Shadows for Claymorphism */
-    --shadow-clay-light: 3px 3px 6px rgba(0, 0, 0, 0.08), -3px -3px 6px rgba(255, 255, 255, 0.7);
-    --shadow-clay-medium: 6px 6px 12px rgba(0, 0, 0, 0.1), -6px -6px 12px rgba(255, 255, 255, 0.6);
-    --shadow-clay-dark: 8px 8px 16px rgba(0, 0, 0, 0.12), -8px -8px 16px rgba(255, 255, 255, 0.5);
-
-    /* General Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-
-    /* Inner Shadows for Claymorphism */
-    --shadow-clay-inset-light: inset 2px 2px 5px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.4);
-    --shadow-clay-inset-medium: inset 3px 3px 7px rgba(0, 0, 0, 0.08), inset -3px -3px 7px rgba(255, 255, 255, 0.5);
-
-    /* Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.2);
-    --glass-border: rgba(255, 255, 255, 0.3);
+    --primary-accent: #6D5BFF;
+    --text-primary: #1A1A2E;
+    --text-secondary: #5C5C7A;
+    --border-color: rgba(200, 200, 220, 0.4);
+    --bg-light: #F8F9FA;
 }
 
-/* 기본 폰트 및 전환 효과 */
-.side-menu, .side-menu-button, .side-submenu-button {
-    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-}
-
-/* 사이드 메뉴 전체 */
 .side-menu {
-    /* height: 100vh; */ /* Keep height */
-    background-color: var(--bg-white); /* Set background to match logo's white background */
-    /* border-right: 1px solid var(--border-light); */ /* Removed border */
+    width: 260px;
+    height: calc(100vh - 48px);
+    margin: 24px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
     padding: 24px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    /* box-shadow: var(--shadow-clay-medium); */ /* Removed shadow */
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
 }
 
-/* 로고 */
+@supports (backdrop-filter: blur(20px)) {
+    .side-menu {
+        backdrop-filter: blur(20px) saturate(180%);
+    }
+}
+
 .side-menu-logo {
     display: flex;
     justify-content: center;
+    align-items: center;
     margin-bottom: 32px;
-    background-color: transparent; /* Ensure no background is inherited */
 }
 
 .side-menu-logo img {
-    max-width: 100%;
-    height: auto;
-    display: block;
     width: 150px;
+    height: auto;
 }
 
-/* 메인 네비게이션 영역 */
 .nav-main {
     flex-grow: 1;
 }
 
-/* 메뉴 리스트 */
-.side-menu-list {
+.side-menu-list, .side-submenu-list {
     list-style: none;
-    padding-left: 0;
+    padding: 0;
+    margin: 0;
 }
 
 .side-menu-list-item {
-    margin-bottom: 8px; /* 간격 조정 */
-    list-style: none; /* Remove bullet point */
+    margin-bottom: 8px;
 }
 
-/* 메뉴 버튼 (공통 스타일) */
-.side-menu-button, .side-submenu-button {
+.side-menu-button {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 14px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
     background: none;
     border: none;
-    font-size: 16px;
-    color: var(--text-secondary);
     cursor: pointer;
-    padding: 12px 24px; /* 패딩 증가 */
-    font-weight: 500;
     text-align: left;
-    width: 100%;
-    border-radius: 24px; /* 둥근 모서리 (Pill shape) */
+    transition: all 0.2s ease-in-out;
 }
 
-/* 메뉴 버튼 호버 */
-.side-menu-button:hover, .side-submenu-button:hover {
-    background-color: var(--bg-medium); /* Use consistent light background */
+.side-menu-button:hover {
+    background: rgba(255, 255, 255, 0.5);
     color: var(--text-primary);
-    box-shadow: var(--shadow-clay-light);
+    transform: translateX(5px);
 }
 
-/* 활성 메뉴 버튼 */
 .side-menu-button.active {
-    background-color: var(--primary-blue-light);
-    color: var(--primary-blue);
-    font-weight: 700;
-    box-shadow: var(--shadow-clay-inset-light);
+    background: var(--primary-accent);
+    color: white;
+    box-shadow: 0 4px 12px rgba(109, 91, 255, 0.3);
 }
 
-/* 서브메뉴 버튼 */
+.side-menu-icon {
+    font-size: 1.4rem;
+}
+
+.side-submenu-list {
+    padding-left: 20px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
 .side-submenu-button {
     font-size: 15px;
     padding: 10px 16px;
+    color: var(--text-secondary);
+    border-radius: 12px;
 }
 
-/* 활성 서브메뉴 버튼 */
+.side-submenu-button:hover {
+    background-color: rgba(230, 235, 255, 0.6);
+}
+
 .side-submenu-button.active {
-    background-color: var(--primary-blue-light); /* Set background to match main active button */
-    color: var(--primary-blue);
+    color: var(--primary-accent);
     font-weight: 700;
+    background-color: transparent;
 }
 
-/* 하단 네비게이션 영역 */
 .nav-bottom {
     padding-top: 20px;
-    border-top: 1px solid var(--border-light);
+    border-top: 1px solid var(--border-color);
 }
 
-/* 사용자 프로필 */
 .side-user-profile {
     display: flex;
-    align-items: center; /* 가로 정렬 */
+    align-items: center;
     padding: 12px;
     margin-bottom: 12px;
-    border-radius: 24px;
+    border-radius: 16px;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .side-user-profile:hover {
-    background-color: var(--bg-light);
-    box-shadow: var(--shadow-clay-light);
+    background-color: rgba(230, 235, 255, 0.6);
 }
 
 .side-user-image {
@@ -163,16 +136,12 @@
     height: 40px;
     object-fit: cover;
     border-radius: 50%;
-    margin-right: 12px; /* 이미지와 닉네임 간격 */
+    margin-right: 12px;
+    border: 2px solid var(--border-color);
 }
 
 .side-user-nickname {
     font-weight: 600;
     font-size: 15px;
     color: var(--text-primary);
-}
-
-/* 마이페이지 버튼 영역 */
-.side-menu-bottom .side-menu-button {
-    /* 기존 버튼 스타일 상속 */
 }

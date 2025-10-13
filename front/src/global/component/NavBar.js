@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/Navbar.css';
 import api from '../../api/api';
-import base_profile from '../../assets/icons/base_profile.png'; // ✅ 이미지 import로 수정
+import base_profile from '../../assets/icons/base_profile.png';
 import { API_BASE_URL_8080 } from '../../api/apiUrl';
 import hamcamLogo from '../../assets/icons/logo.png';
+import {
+    FiHome, FiPlayCircle, FiFileText, FiBarChart2, FiMessageSquare, FiUser
+} from 'react-icons/fi';
 
 const SideMenu = ({ menuItems, handleNavigation, selectedTab, selectedSubTab, user }) => {
     return (
@@ -22,7 +25,8 @@ const SideMenu = ({ menuItems, handleNavigation, selectedTab, selectedSubTab, us
                                     onClick={() => handleNavigation(item.name, item.path)}
                                     className={`side-menu-button${selectedTab === item.name && selectedSubTab === '' ? ' active' : ''}`}
                                 >
-                                    {item.name}
+                                    {item.icon}
+                                    <span>{item.name}</span>
                                 </button>
                             </li>
                             {item.name === '커뮤니티' && selectedTab === '커뮤니티' && (
@@ -48,7 +52,6 @@ const SideMenu = ({ menuItems, handleNavigation, selectedTab, selectedSubTab, us
             </div>
 
             <div className="nav-bottom">
-                {/* ✅ 사용자 프로필 */}
                 {user && (
                     <div className="side-user-profile">
                         <img
@@ -56,18 +59,17 @@ const SideMenu = ({ menuItems, handleNavigation, selectedTab, selectedSubTab, us
                             alt="프로필"
                             className="side-user-image"
                         />
-
                         <div className="side-user-nickname">{user.nickname}</div>
                     </div>
                 )}
 
-                {/* ✅ 마이페이지 버튼 */}
                 <div className="side-menu-bottom">
                     <button
                         className={`side-menu-button${selectedTab === '마이페이지' ? ' active' : ''}`}
                         onClick={() => handleNavigation('마이페이지', '/mypage')}
                     >
-                        마이페이지
+                        <FiUser className="side-menu-icon" />
+                        <span>마이페이지</span>
                     </button>
                 </div>
             </div>
@@ -86,13 +88,14 @@ const NavBar = () => {
     const hideSidebarPaths = ['/unit-evaluation/start'];
 
     const menuItems = [
-        { name: '대시보드', path: '/dashboard' },
-        { name: '공부 시작', path: '/StudyStart' },
-        { name: '단원 평가', path: '/evaluation' },
-        { name: '통계', path: '/statistics' },
+        { name: '대시보드', path: '/dashboard', icon: <FiHome className="side-menu-icon" /> },
+        { name: '공부 시작', path: '/StudyStart', icon: <FiPlayCircle className="side-menu-icon" /> },
+        { name: '단원 평가', path: '/evaluation', icon: <FiFileText className="side-menu-icon" /> },
+        { name: '통계', path: '/statistics', icon: <FiBarChart2 className="side-menu-icon" /> },
         {
             name: '커뮤니티',
             path: '/community',
+            icon: <FiMessageSquare className="side-menu-icon" />,
             subItems: [
                 { name: '공지사항', path: '/community/notice' },
                 { name: '채팅', path: '/community/chat' },
