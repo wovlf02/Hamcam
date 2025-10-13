@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import '../../styles/ChatRoomList.css';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaUsers } from 'react-icons/fa';
 import api from '../../../../api/api';
 import base_profile from '../../../../assets/icons/base_profile.png';
+import moment from 'moment';
 
 const getProfileUrl = (url) => {
     if (!url || url === "" || url === "프로필 사진이 없습니다") return base_profile;
@@ -113,6 +114,23 @@ const ChatRoomList = ({ selectedRoomId, setSelectedRoomId, onOpenCreateModal, on
         return msg;
     };
 
+    const formatLastMessageTime = (dateString) => {
+        if (!dateString) return '';
+        const date = moment(dateString);
+        const today = moment().startOf('day');
+        const yesterday = moment().subtract(1, 'day').startOf('day');
+
+        if (date.isSame(today, 'd')) {
+            return date.format('HH:mm');
+        } else if (date.isSame(yesterday, 'd')) {
+            return '어제';
+        } else if (date.isAfter(moment().subtract(7, 'days'))) {
+            return date.format('ddd');
+        } else {
+            return date.format('MM/DD');
+        }
+    };
+
     const filteredRooms = chatRooms.filter(room =>
         getRoomProfileAndName(room).name.toLowerCase().includes(roomSearch.toLowerCase())
     );
@@ -121,7 +139,7 @@ const ChatRoomList = ({ selectedRoomId, setSelectedRoomId, onOpenCreateModal, on
         <div className="chat-room-list-panel modern">
             <div className="chat-room-header-row top">
                 <h4>Messages</h4>
-                <button className="chat-create-btn" onClick={onOpenCreateModal}>
+                <button className="chat-create-btn" onClick={onOpenCreateModal} title="새 채팅방 만들기">
                     <FaPlus />
                 </button>
             </div>
@@ -129,61 +147,68 @@ const ChatRoomList = ({ selectedRoomId, setSelectedRoomId, onOpenCreateModal, on
                 <input
                     type="text"
                     className="chat-room-search-input"
-                    placeholder="채팅방/대화상대 검색"
+                    placeholder="🔍 채팅방/대화상대 검색"
                     value={roomSearch}
                     onChange={(e) => setRoomSearch(e.target.value)}
                 />
             </div>
-            {filteredRooms.length === 0 ? (
-                <div className="friend-empty">채팅방이 없습니다.</div>
-            ) : (
-                filteredRooms.map(room => {
-                    const { name, profile, count } = getRoomProfileAndName(room);
-                    return (
-                        <div
-                            key={room.roomId}
-                            className={`chat-room-item modern-card ${room.roomId === selectedRoomId ? 'selected' : ''}`}
-                            onClick={() => handleRoomClick(room.roomId)}
-                        >
-                            <img
-                                src={profile}
-                                alt={name}
-                                className="modern-profile"
-                                onError={(e) => { e.target.src = base_profile; }}
-                            />
-                            <div className="modern-info">
-                                <div className="modern-top">
-                                    <span className="modern-name">
-                                        {name}
-                                        <span className="modern-count">({count}명)</span>
-                                    </span>
-                                    <span className="modern-time">
-                                        {room.lastMessageAt ? room.lastMessageAt.slice(11, 16) : ''}
-                                    </span>
-                                    <button
-                                        className="modern-delete-btn"
-                                        title="채팅방 삭제"
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            handleDeleteRoom(room.roomId);
-                                        }}
-                                    >
-                                        <FaTrash />
-                                    </button>
+            <div className="chat-room-list-container">
+                {filteredRooms.length === 0 ? (
+                    <div className="friend-empty">채팅방이 없습니다.</div>
+                ) : (
+                    filteredRooms.map(room => {
+                        const { name, profile, count } = getRoomProfileAndName(room);
+                        return (
+                            <div
+                                key={room.roomId}
+                                className={`chat-room-item modern-card ${room.roomId === selectedRoomId ? 'selected' : ''}`}
+                                onClick={() => handleRoomClick(room.roomId)}
+                            >
+                                <img
+                                    src={profile}
+                                    alt={name}
+                                    className="modern-profile"
+                                    onError={(e) => { e.target.src = base_profile; }}
+                                />
+                                <div className="modern-info">
+                                    <div className="modern-top">
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, minWidth: 0 }}>
+                                            <span className="modern-name">{name}</span>
+                                            {count > 2 && (
+                                                <span className="chat-room-participants">
+                                                    <FaUsers size={10} />
+                                                    {count}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <span className="modern-time">
+                                            {formatLastMessageTime(room.lastMessageAt)}
+                                        </span>
+                                    </div>
+                                    <div className="modern-bottom">
+                                        <span className="modern-preview">
+                                            {getPreviewMessage(room.lastMessage)}
+                                        </span>
+                                        {room.unreadCount > 0 && (
+                                            <span className="modern-badge">{room.unreadCount}</span>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="modern-bottom">
-                                    <span className="modern-message">
-                                        {getPreviewMessage(room.lastMessage)}
-                                    </span>
-                                    {room.unreadCount > 0 && (
-                                        <span className="modern-badge">{room.unreadCount}</span>
-                                    )}
-                                </div>
+                                <button
+                                    className="chat-delete-btn"
+                                    title="채팅방 삭제"
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        handleDeleteRoom(room.roomId);
+                                    }}
+                                >
+                                    <FaTrash size={13} />
+                                </button>
                             </div>
-                        </div>
-                    );
-                })
-            )}
+                        );
+                    })
+                )}
+            </div>
         </div>
     );
 };
