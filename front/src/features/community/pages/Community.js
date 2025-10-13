@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../styles/CommunityMain.css'; // Import the new CSS file
+import '../styles/CommunityMain.css'; // Using the same CSS file
 import api from '../../../api/api';
 import {
-    FiBell, FiMessageSquare, FiGrid, FiUsers, FiSearch, FiPlus, FiHome, FiAward, FiCheckSquare, FiCoffee
+    FiBell, FiMessageSquare, FiGrid, FiUsers, FiHome, FiAward, FiChevronRight, FiEdit, FiMessageCircle, FiStar, FiThumbsUp
 } from 'react-icons/fi';
-import PostList from '../components/community/PostList'; // Assuming PostList is reusable
 
 const menu = [
     { label: '홈', icon: <FiHome />, path: '/community' },
@@ -19,43 +18,79 @@ const menu = [
 const mockUser = {
     nickname: '열공하는햄스터',
     level: 5,
-    xp: 850,
-    maxXp: 1000,
     avatar: `https://ui-avatars.com/api/?name=열공하는햄스터&background=7B68EE&color=fff`,
 };
-
+const mockUserStats = {
+    posts: 23,
+    comments: 157,
+    likesReceived: 42,
+    questsCompleted: 12,
+};
 const mockQuests = [
     { id: 1, text: '질문에 답변하기 (1/1)', completed: true },
     { id: 2, text: '스터디룸 30분 참여 (0/1)', completed: false },
-    { id: 3, text: '게시글에 응원 남기기 (3/5)', completed: false },
+];
+const mockNotices = [
+    { id: 1, title: 'Hamcam 서비스 점검 안내 (03:00~04:00)' },
+    { id: 2, title: '커뮤니티 이용규칙 업데이트' },
+    { id: 3, title: '10월 마일리지 지급 안내' },
+];
+const mockPosts = [
+    { id: 1, title: 'JPA N+1 문제, 이렇게 해결했어요.', author: '개발왕김코딩' },
+    { id: 2, title: 'React 19 useOptimistic 훅 사용 후기', author: '리액트고수' },
+    { id: 3, title: 'CS 스터디 주 3회 모집합니다 (온라인)', author: '스터디장' },
+    { id: 4, title: '알고리즘 문제 풀이 도와주실 분', author: '알고리즘꿈나무' },
+    { id: 5, title: '자바스크립트 클로저 질문있습니다!', author: '자바스크립트초보' },
+];
+const mockOnlineFriends = [
+    { id: 1, nickname: '에이스', avatar: `https://ui-avatars.com/api/?name=에이스&background=random` },
+    { id: 2, nickname: '벨', avatar: `https://ui-avatars.com/api/?name=벨&background=random` },
+    { id: 3, nickname: '캐시', avatar: `https://ui-avatars.com/api/?name=캐시&background=random` },
+];
+const mockActivityFeed = [
+    { id: 1, type: 'post', text: "'JPA N+1 문제..' 글을 작성했습니다." },
+    { id: 2, type: 'comment', text: "'React 19 훅..' 글에 댓글을 남겼습니다." },
+    { id: 3, type: 'quest', text: "'질문에 답변하기' 퀘스트를 완료했습니다!" },
+    { id: 4, type: 'post', text: "'알고리즘 문제 풀이..' 글을 작성했습니다." },
 ];
 
-const mockCommunityGoal = {
-    title: '함께 키우는 Hamcam 나무',
-    current: 1234,
-    total: 2000,
-    unit: '시간',
+const SummaryItem = ({ title, author, onClick }) => (
+    <div className="summary-item" onClick={onClick}>
+        <span className="summary-item-title">{title}</span>
+        {author && <span className="summary-item-author">{author}</span>}
+    </div>
+);
+
+const ActivityItem = ({ type, text }) => {
+    const iconMap = {
+        post: <FiEdit />,
+        comment: <FiMessageCircle />,
+        quest: <FiStar />,
+    };
+    return (
+        <div className="activity-item">
+            <span className="activity-item-icon">{iconMap[type]}</span>
+            <span className="activity-item-text">{text}</span>
+        </div>
+    );
 };
+
+const StatCard = ({ icon, value, label }) => (
+    <div className="stat-card">
+        <div className="stat-card-icon">{icon}</div>
+        <div className="stat-card-value">{value}</div>
+        <div className="stat-card-label">{label}</div>
+    </div>
+);
 
 const Community = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [activeMenu, setActiveMenu] = useState('홈');
-    const [activeFeedTab, setActiveFeedTab] = useState('Latest');
-    const [posts, setPosts] = useState([]); // To hold posts for the feed
 
     useEffect(() => {
-        // Determine active menu from path
         const currentMenuItem = menu.find(item => location.pathname.startsWith(item.path));
         setActiveMenu(currentMenuItem ? currentMenuItem.label : '홈');
-
-        // Mock fetch posts
-        setPosts([
-            { postId: 1, category: 'QUESTION', title: 'JPA N+1 문제, 이렇게 해결했어요.', author: '개발왕김코딩', createdAt: '2024-10-24', viewCount: 102, likeCount: 29, commentCount: 5 },
-            { postId: 2, category: 'INFO', title: 'React 19 useOptimistic 훅 사용 후기', author: '리액트고수', createdAt: '2024-10-23', viewCount: 340, likeCount: 21, commentCount: 12 },
-            { postId: 3, category: 'STUDY', title: 'CS 스터디 주 3회 모집합니다 (온라인)', author: '스터디장', createdAt: '2024-10-22', viewCount: 150, likeCount: 15, commentCount: 8 },
-        ]);
-
     }, [location.pathname]);
 
     const handleMenuClick = (path, label) => {
@@ -80,42 +115,82 @@ const Community = () => {
             </nav>
 
             <div className="community-body-layout">
-                {/* Main Content Feed */}
+                {/* Main Content Area */}
                 <main className="main-content-feed">
-                    <div className="main-content-header">
-                        <div className="search-bar">
-                            <input type="text" placeholder="궁금한 것을 검색해보세요..." />
+                    {/* My Activity Summary */}
+                    <div className="activity-summary-panel clay-panel">
+                        <div className="stat-card-list">
+                            <StatCard icon={<FiEdit />} value={mockUserStats.posts} label="게시글" />
+                            <StatCard icon={<FiMessageCircle />} value={mockUserStats.comments} label="댓글" />
+                            <StatCard icon={<FiThumbsUp />} value={mockUserStats.likesReceived} label="받은 좋아요" />
+                            <StatCard icon={<FiAward />} value={mockUserStats.questsCompleted} label="퀘스트 완료" />
                         </div>
-                        <button className="new-post-btn" onClick={() => navigate('/community/post/write')}>
-                            <FiPlus /> 새 게시글
-                        </button>
                     </div>
 
-                    <div className="feed-container">
-                        <div className="feed-tabs">
-                            <span className={`feed-tab ${activeFeedTab === 'Latest' ? 'active' : ''}`} onClick={() => setActiveFeedTab('Latest')}>최신글</span>
-                            <span className={`feed-tab ${activeFeedTab === 'Popular' ? 'active' : ''}`} onClick={() => setActiveFeedTab('Popular')}>인기글</span>
-                            <span className={`feed-tab ${activeFeedTab === 'Unanswered' ? 'active' : ''}`} onClick={() => setActiveFeedTab('Unanswered')}>미해결 질문</span>
+                    {/* Notices Summary */}
+                    <div className="summary-panel clay-panel">
+                        <header className="summary-header">
+                            <h2>주요 공지사항</h2>
+                            <button className="more-btn" onClick={() => navigate('/community/notice')}>
+                                더보기 <FiChevronRight />
+                            </button>
+                        </header>
+                        <div className="summary-list">
+                            {mockNotices.slice(0, 5).map(notice => (
+                                <SummaryItem key={notice.id} title={notice.title} onClick={() => navigate(`/community/notice/${notice.id}`)} />
+                            ))}
                         </div>
-                        <div className="post-feed-container">
-                            <PostList posts={posts} />
+                    </div>
+
+                    {/* Posts Summary */}
+                    <div className="summary-panel clay-panel">
+                        <header className="summary-header">
+                            <h2>최신 게시글</h2>
+                            <button className="more-btn" onClick={() => navigate('/community/post')}>
+                                더보기 <FiChevronRight />
+                            </button>
+                        </header>
+                        <div className="summary-list">
+                            {mockPosts.slice(0, 5).map(post => (
+                                <SummaryItem key={post.id} title={post.title} author={post.author} onClick={() => navigate(`/community/post/${post.id}`)} />
+                            ))}
                         </div>
                     </div>
                 </main>
 
-                {/* Right Gamification Panel */}
+                {/* Right Sidebar */}
                 <aside className="right-gamification-panel">
-                    {/* Player Card */}
+                    {/* My Activity */}
                     <div className="player-card clay-panel">
                         <img src={mockUser.avatar} alt="User Avatar" className="player-avatar" />
                         <div className="player-name">{mockUser.nickname}</div>
                         <div className="player-level">Lv. {mockUser.level}</div>
-                        <div className="xp-bar-container">
-                            <div className="xp-bar" style={{ width: `${(mockUser.xp / mockUser.maxXp) * 100}%` }}></div>
+                    </div>
+
+                    {/* My Activity Feed */}
+                    <div className="activity-feed-panel clay-panel">
+                        <h3>내 활동 피드</h3>
+                        <div className="activity-feed-list">
+                            {mockActivityFeed.map(activity => (
+                                <ActivityItem key={activity.id} type={activity.type} text={activity.text} />
+                            ))}
                         </div>
                     </div>
 
-                    {/* Quests Module */}
+                    {/* Online Friends */}
+                    <div className="online-friends-panel clay-panel">
+                        <h3><FiUsers /> 접속 중인 친구</h3>
+                        <div className="online-friends-list">
+                            {mockOnlineFriends.map(friend => (
+                                <div key={friend.id} className="online-friend-item">
+                                    <img src={friend.avatar} alt={friend.nickname} className="online-friend-avatar" />
+                                    <span>{friend.nickname}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Daily Quests */}
                     <div className="quests-module clay-panel">
                         <h3><FiAward /> 일일 퀘스트</h3>
                         <ul className="quest-list">
@@ -123,17 +198,6 @@ const Community = () => {
                                 <li key={q.id} className={`quest-item ${q.completed ? 'completed' : ''}`}>{q.text}</li>
                             ))}
                         </ul>
-                    </div>
-
-                    {/* Community Goal Module */}
-                    <div className="community-goal-module clay-panel">
-                        <h3><FiCoffee/> {mockCommunityGoal.title}</h3>
-                        <div className="community-goal-tree">
-                            <img src="/tree-icon.svg" alt="Community Tree" className="tree-image" />
-                            <div className="progress-text">
-                                총 <strong>{mockCommunityGoal.current.toLocaleString()}</strong> / {mockCommunityGoal.total.toLocaleString()} {mockCommunityGoal.unit} 달성!
-                            </div>
-                        </div>
                     </div>
                 </aside>
             </div>
