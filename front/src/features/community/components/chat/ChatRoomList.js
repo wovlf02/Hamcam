@@ -1,9 +1,103 @@
 import React, { useEffect, useState } from 'react';
 import '../../styles/ChatRoomList.css';
 import { FaPlus, FaTrash, FaUsers } from 'react-icons/fa';
-import api from '../../../../api/api';
 import base_profile from '../../../../assets/icons/base_profile.png';
 import moment from 'moment';
+
+// Mock 데이터
+const MOCK_USER_ID = 1;
+
+const MOCK_CHAT_ROOMS = [
+    {
+        roomId: 1,
+        roomName: '프로젝트 팀 채팅',
+        roomType: 'GROUP',
+        profileImageUrl: base_profile,
+        participantCount: 5,
+        unreadCount: 3,
+        lastMessage: '회의 시간이 2시로 확정됐습니다!',
+        lastMessageAt: '2025-01-13T14:30:00',
+        participants: [
+            { user_id: 1, nickname: '나', profile_image_url: base_profile },
+            { user_id: 2, nickname: '김철수', profile_image_url: base_profile },
+            { user_id: 3, nickname: '이영희', profile_image_url: base_profile },
+            { user_id: 4, nickname: '박민수', profile_image_url: base_profile },
+            { user_id: 5, nickname: '정지은', profile_image_url: base_profile }
+        ]
+    },
+    {
+        roomId: 2,
+        roomName: '알고리즘 스터디',
+        roomType: 'GROUP',
+        profileImageUrl: base_profile,
+        participantCount: 8,
+        unreadCount: 12,
+        lastMessage: '오늘 문제 정말 어려웠어요 ㅠㅠ',
+        lastMessageAt: '2025-01-13T13:45:00',
+        participants: [
+            { user_id: 1, nickname: '나', profile_image_url: base_profile },
+            { user_id: 6, nickname: '최유진', profile_image_url: base_profile },
+            { user_id: 7, nickname: '강민호', profile_image_url: base_profile }
+        ]
+    },
+    {
+        roomId: 3,
+        roomName: '이영희',
+        roomType: 'DIRECT',
+        profileImageUrl: base_profile,
+        participantCount: 2,
+        unreadCount: 0,
+        lastMessage: '내일 커피 한잔 할래?',
+        lastMessageAt: '2025-01-13T11:20:00',
+        participants: [
+            { user_id: 1, nickname: '나', profile_image_url: base_profile },
+            { user_id: 3, nickname: '이영희', profile_image_url: base_profile }
+        ]
+    },
+    {
+        roomId: 4,
+        roomName: '김철수',
+        roomType: 'DIRECT',
+        profileImageUrl: base_profile,
+        participantCount: 2,
+        unreadCount: 1,
+        lastMessage: '자료 확인했어!',
+        lastMessageAt: '2025-01-13T10:15:00',
+        participants: [
+            { user_id: 1, nickname: '나', profile_image_url: base_profile },
+            { user_id: 2, nickname: '김철수', profile_image_url: base_profile }
+        ]
+    },
+    {
+        roomId: 5,
+        roomName: 'CS 스터디',
+        roomType: 'GROUP',
+        profileImageUrl: base_profile,
+        participantCount: 6,
+        unreadCount: 0,
+        lastMessage: '다음주 주제는 네트워크입니다',
+        lastMessageAt: '2025-01-12T18:30:00',
+        participants: [
+            { user_id: 1, nickname: '나', profile_image_url: base_profile },
+            { user_id: 8, nickname: '송지훈', profile_image_url: base_profile },
+            { user_id: 9, nickname: '윤서아', profile_image_url: base_profile }
+        ]
+    },
+    {
+        roomId: 6,
+        roomName: '박민수',
+        roomType: 'DIRECT',
+        profileImageUrl: base_profile,
+        participantCount: 2,
+        unreadCount: 0,
+        lastMessage: '오케이!',
+        lastMessageAt: '2025-01-12T16:00:00',
+        participants: [
+            { user_id: 1, nickname: '나', profile_image_url: base_profile },
+            { user_id: 4, nickname: '박민수', profile_image_url: base_profile }
+        ]
+    }
+];
 
 const getProfileUrl = (url) => {
     if (!url || url === "" || url === "프로필 사진이 없습니다") return base_profile;
@@ -17,21 +111,34 @@ const getProfileUrl = (url) => {
 };
 
 const ChatRoomList = ({ selectedRoomId, setSelectedRoomId, onOpenCreateModal, onSelectRoom }) => {
-    const [chatRooms, setChatRooms] = useState([]);
+    const [chatRooms, setChatRooms] = useState(MOCK_CHAT_ROOMS); // Mock 데이터 사용
     const [roomSearch, setRoomSearch] = useState('');
-    const [myUserId, setMyUserId] = useState(null);
+    const [myUserId] = useState(MOCK_USER_ID); // Mock 사용자 ID
 
     useEffect(() => {
+        // Mock 데이터로 초기화
+        setChatRooms(MOCK_CHAT_ROOMS);
+        if (MOCK_CHAT_ROOMS.length > 0 && !selectedRoomId) {
+            const defaultRoomId = MOCK_CHAT_ROOMS[0].roomId;
+            setSelectedRoomId(defaultRoomId);
+            if (onSelectRoom) onSelectRoom(defaultRoomId);
+        }
+
+        // TODO: 실제 API 호출은 주석 처리
+        /*
         api.get('/users/me', { withCredentials: true }).then(res => {
             setMyUserId(res.data?.data?.user_id);
         });
+        */
     }, []);
 
     useEffect(() => {
-        fetchChatRooms();
+        // fetchChatRooms(); // Mock 데이터 사용으로 주석 처리
     }, []);
 
     const fetchChatRooms = async () => {
+        // TODO: 실제 API 호출은 주석 처리
+        /*
         try {
             const res = await api.get('/chat/rooms/my');
             const rooms = res.data?.data || [];
@@ -55,10 +162,13 @@ const ChatRoomList = ({ selectedRoomId, setSelectedRoomId, onOpenCreateModal, on
         } catch (err) {
             setChatRooms([]);
         }
+        */
     };
 
     const handleRoomClick = (roomId) => {
         if (onSelectRoom) onSelectRoom(roomId);
+
+        // 채팅방 클릭 시 읽음 처리
         setChatRooms(prevRooms =>
             prevRooms.map(room =>
                 room.roomId === roomId
@@ -66,17 +176,40 @@ const ChatRoomList = ({ selectedRoomId, setSelectedRoomId, onOpenCreateModal, on
                     : room
             )
         );
+
+        // TODO: 실제 읽음 처리 API 호출
+        /*
+        try {
+            await api.post('/chat/messages/read', { room_id: roomId });
+        } catch (err) {
+            console.error('읽음 처리 실패:', err);
+        }
+        */
     };
 
     const handleDeleteRoom = async (roomId) => {
         if (!window.confirm('정말 이 채팅방을 삭제하시겠습니까?')) return;
+
+        // Mock 데이터에서 삭제
+        setChatRooms(prev => prev.filter(room => room.roomId !== roomId));
+        if (selectedRoomId === roomId) {
+            const remainingRooms = chatRooms.filter(room => room.roomId !== roomId);
+            if (remainingRooms.length > 0) {
+                setSelectedRoomId(remainingRooms[0].roomId);
+                if (onSelectRoom) onSelectRoom(remainingRooms[0].roomId);
+            } else {
+                setSelectedRoomId(null);
+            }
+        }
+
+        // TODO: 실제 API 호출은 주석 처리
+        /*
         try {
             await api.delete(`/chat/rooms/${roomId}`);
-            setChatRooms(prev => prev.filter(room => room.roomId !== roomId));
-            if (selectedRoomId === roomId) setSelectedRoomId(null);
         } catch (err) {
             alert('채팅방 삭제 실패');
         }
+        */
     };
 
     const getRoomProfileAndName = (room) => {
