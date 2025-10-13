@@ -16,7 +16,7 @@ const menu = [
     { label: '친구', icon: <FiUsers />, path: '/community/friend' },
 ];
 
-const categories = ['전체', '질문', '정보공유', '스터디', '익명', '일반', '공지사항'];
+const categories = ['전체', '일반', '질문', '정보공유', '스터디', '익명'];
 
 const CATEGORY_ENUM = {
     '질문': 'QUESTION',
@@ -24,7 +24,6 @@ const CATEGORY_ENUM = {
     '스터디': 'STUDY',
     '익명': 'ANONYMOUS',
     '일반': 'GENERAL',
-    '공지사항': 'NOTICE',
 };
 
 const searchOptions = [
@@ -32,6 +31,13 @@ const searchOptions = [
     { value: 'content', label: '내용' },
     { value: 'title_content', label: '제목+내용' },
     { value: 'author', label: '작성자' },
+];
+
+const sortOptions = [
+    { value: 'latest', label: '최신순' },
+    { value: 'views', label: '조회수' },
+    { value: 'likes', label: '좋아요' },
+    { value: 'comments', label: '댓글수' },
 ];
 
 const POSTS_PER_PAGE = 10;
@@ -48,12 +54,99 @@ const Post = () => {
     const [selectedCategory, setSelectedCategory] = useState('전체');
     const [searchType, setSearchType] = useState('title');
     const [searchTerm, setSearchTerm] = useState('');
+    const [sortType, setSortType] = useState('latest');
     const [page, setPage] = useState(1);
     const [activeMenu, setActiveMenu] = useState('게시판');
+
+    // 🔹 Mock 게시글 데이터 생성
+    const generateMockPosts = () => {
+        const categories = ['GENERAL', 'QUESTION', 'INFO', 'STUDY', 'ANONYMOUS'];
+        const categoryLabels = {
+            'GENERAL': '일반',
+            'QUESTION': '질문',
+            'INFO': '정보공유',
+            'STUDY': '스터디',
+            'ANONYMOUS': '익명'
+        };
+
+        const titles = [
+            'React 19 useOptimistic 훅 사용 후기',
+            'JPA N+1 문제 해결 방법 공유합니다',
+            'TypeScript 제네릭 완벽 정리',
+            'Spring Boot 3.0 마이그레이션 가이드',
+            '알고리즘 스터디 주 3회 모집합니다',
+            'Next.js 13 App Router 실전 경험담',
+            'CS 면접 준비 어떻게 하셨나요?',
+            'Docker Compose로 개발 환경 구축하기',
+            '코딩테스트 준비 로드맵 공유',
+            'Git 브랜치 전략 고민중입니다',
+            'Tailwind CSS vs Styled-components',
+            'MSA 아키텍처 설계 경험담',
+            'Redis 캐싱 전략 정리',
+            'GraphQL vs REST API 비교',
+            'AWS Lambda 성능 최적화 팁',
+            'Kubernetes 입문 가이드',
+            'MongoDB 인덱싱 최적화',
+            'React Query 실전 사용법',
+            'Webpack에서 Vite로 마이그레이션',
+            'CI/CD 파이프라인 구축 경험',
+            '클린 코드 작성 습관 만들기',
+            'TDD 실천 방법론',
+            '프론트엔드 성능 최적화 체크리스트',
+            '백엔드 API 설계 원칙',
+            '데이터베이스 정규화 실전 예제',
+            'OAuth 2.0 인증 구현하기',
+            'WebSocket 실시간 채팅 구현',
+            'Elasticsearch 검색 엔진 도입기',
+            'gRPC vs REST API 성능 비교',
+            'Kafka 메시지 큐 활용 사례'
+        ];
+        const authors = [
+            '개발왕김코딩', '리액트고수', '스터디장', '알고리즘꿈나무',
+            '백엔드마스터', '프론트엔드닌자', 'DB전문가', '인프라엔지니어',
+            '풀스택개발자', '자바스크립트러버', '타입스크립트찬양자', '스프링부트러버'
+        ];
+
+        const mockData = [];
+        const now = new Date();
+
+        for (let i = 0; i < 30; i++) {
+            const createdDate = new Date(now - Math.random() * 30 * 24 * 60 * 60 * 1000); // 최근 30일 내
+            const categoryKey = categories[Math.floor(Math.random() * categories.length)];
+            mockData.push({
+                postId: i + 1,
+                title: titles[i],
+                content: `${titles[i]}에 대한 상세한 내용입니다. 이 게시글은 실전 경험을 바탕으로 작성되었습니다.`,
+                category: categoryKey,
+                categoryLabel: categoryLabels[categoryKey],
+                viewCount: Math.floor(Math.random() * 500) + 10,
+                createdAt: createdDate.toISOString(),
+                author: authors[Math.floor(Math.random() * authors.length)],
+                likeCount: Math.floor(Math.random() * 100),
+                commentCount: Math.floor(Math.random() * 50)
+            });
+        }
+
+        return mockData;
+    };
 
     // 🔹 게시글 목록
     const fetchPosts = async () => {
         try {
+            // Mock 데이터 사용
+            const mockPosts = generateMockPosts();
+
+            // 카테고리 필터링
+            let filtered = mockPosts;
+            if (selectedCategory !== '전체') {
+                const categoryKey = CATEGORY_ENUM[selectedCategory];
+                filtered = mockPosts.filter(post => post.category === categoryKey);
+            }
+
+            setPosts(filtered);
+
+            // 실제 API 호출 (주석 처리)
+            /*
             const requestData = {
                 page: 0,
                 size: 100,
@@ -67,7 +160,7 @@ const Post = () => {
             const mappedPosts = (res.data.posts || []).map((post) => ({
                 postId: post.post_id,
                 title: post.title,
-                content: post.content, // 필터링용으로만 사용
+                content: post.content,
                 category: post.category,
                 viewCount: post.view_count,
                 createdAt: post.created_at,
@@ -77,6 +170,7 @@ const Post = () => {
             }));
 
             setPosts(mappedPosts);
+            */
         } catch (err) {
             console.error('❌ 게시글 목록 조회 실패:', err);
         }
@@ -149,9 +243,25 @@ const Post = () => {
         return target.toLowerCase().includes(term);
     });
 
+    // 🔹 정렬
+    const sortedPosts = [...filteredPosts].sort((a, b) => {
+        switch (sortType) {
+            case 'latest':
+                return new Date(b.createdAt) - new Date(a.createdAt);
+            case 'views':
+                return b.viewCount - a.viewCount;
+            case 'likes':
+                return b.likeCount - a.likeCount;
+            case 'comments':
+                return b.commentCount - a.commentCount;
+            default:
+                return 0;
+        }
+    });
+
     // 🔹 페이지네이션
-    const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
-    const paginatedPosts = filteredPosts.slice(
+    const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
+    const paginatedPosts = sortedPosts.slice(
         (page - 1) * POSTS_PER_PAGE,
         page * POSTS_PER_PAGE
     );
@@ -164,6 +274,11 @@ const Post = () => {
 
     const handleSearchTypeChange = (e) => {
         setSearchType(e.target.value);
+        setPage(1);
+    };
+
+    const handleSortTypeChange = (e) => {
+        setSortType(e.target.value);
         setPage(1);
     };
 
@@ -209,7 +324,7 @@ const Post = () => {
                 ))}
             </nav>
 
-            {/* Breadcrumb & 글쓰기 버튼 */}
+            {/* Breadcrumb만 표시 */}
             <div className="post-page-header">
                 <div className="post-breadcrumb">
                     <FiHome className="post-breadcrumb-icon" />
@@ -217,30 +332,63 @@ const Post = () => {
                     <FiChevronRight />
                     게시판
                 </div>
-                <button className="post-write-btn" onClick={() => navigate('/write')}>
-                    <FiEdit />
-                    글쓰기
-                </button>
             </div>
 
             {/* 메인 레이아웃 */}
             <div className="post-page-body">
                 {/* 왼쪽: 게시판 */}
                 <div className="post-main-content">
-                    {/* 카테고리 탭 */}
-                    <div className="post-category-tabs">
-                        {categories.map((cat) => (
-                            <button
-                                key={cat}
-                                className={`post-category-tab ${selectedCategory === cat ? 'active' : ''}`}
-                                onClick={() => {
-                                    setSelectedCategory(cat);
-                                    setPage(1);
-                                }}
+                    {/* 상단: 카테고리 탭 + 정렬 + 검색 + 글쓰기 버튼 */}
+                    <div className="post-top-bar">
+                        <div className="post-category-tabs">
+                            {categories.map((cat) => (
+                                <button
+                                    key={cat}
+                                    className={`post-category-tab ${selectedCategory === cat ? 'active' : ''}`}
+                                    onClick={() => {
+                                        setSelectedCategory(cat);
+                                        setPage(1);
+                                    }}
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="post-search-section">
+                            <select
+                                className="post-sort-select"
+                                value={sortType}
+                                onChange={handleSortTypeChange}
                             >
-                                {cat}
+                                {sortOptions.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <select
+                                className="post-search-select"
+                                value={searchType}
+                                onChange={handleSearchTypeChange}
+                            >
+                                {searchOptions.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <input
+                                type="text"
+                                className="post-search-input"
+                                placeholder={`${searchOptions.find((opt) => opt.value === searchType)?.label}으로 검색`}
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                            />
+                            <button className="post-write-btn" onClick={() => navigate('/write')}>
+                                <FiEdit />
+                                글쓰기
                             </button>
-                        ))}
+                        </div>
                     </div>
 
                     {/* 게시글 리스트 */}
@@ -253,7 +401,7 @@ const Post = () => {
                             >
                                 <div className="post-card-header">
                                     <span className={`post-card-category ${post.category}`}>
-                                        {post.category}
+                                        {post.categoryLabel || post.category}
                                     </span>
                                     <div className="post-card-meta">
                                         <span className="post-card-meta-item">
@@ -284,7 +432,7 @@ const Post = () => {
                         ))}
                     </div>
 
-                    {/* 하단: 페이지네이션 + 검색 */}
+                    {/* 하단: 페이지네이션만 */}
                     <div className="post-bottom-section">
                         <div className="post-pagination">
                             {pageNumbers.map((num) => (
@@ -296,26 +444,6 @@ const Post = () => {
                                     {num}
                                 </button>
                             ))}
-                        </div>
-                        <div className="post-search-section">
-                            <select
-                                className="post-search-select"
-                                value={searchType}
-                                onChange={handleSearchTypeChange}
-                            >
-                                {searchOptions.map((opt) => (
-                                    <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                    </option>
-                                ))}
-                            </select>
-                            <input
-                                type="text"
-                                className="post-search-input"
-                                placeholder={`${searchOptions.find((opt) => opt.value === searchType)?.label}으로 검색`}
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                            />
                         </div>
                     </div>
                 </div>
