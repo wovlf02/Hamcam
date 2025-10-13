@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import PostList from '../components/community/PostList';
 import '../styles/Post.css';
+import '../styles/PostNew.css';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api/api';
+import {
+    FiHome, FiChevronRight, FiEdit, FiClock, FiEye, FiThumbsUp, FiMessageCircle,
+    FiTrendingUp, FiBookOpen, FiHash
+} from 'react-icons/fi';
 
 const categories = ['전체', '질문', '정보공유', '스터디', '익명', '일반', '공지사항'];
 
@@ -152,22 +156,47 @@ const Post = () => {
         setPage(1);
     };
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diff = now - date;
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+
+        if (hours < 1) return '방금 전';
+        if (hours < 24) return `${hours}시간 전`;
+
+        return date.toLocaleDateString('ko-KR', {
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
     return (
-        <div className="postpage-root">
-            <div className="postpage-header">
-                <div className="postpage-breadcrumb">커뮤니티 &gt; 게시판</div>
-                <button className="postpage-write-btn" onClick={() => navigate('/write')}>
-                    ✏️ 글쓰기
+        <div className="post-page-container">
+            {/* 상단 헤더 */}
+            <div className="post-page-header">
+                <div className="post-breadcrumb">
+                    <FiHome className="post-breadcrumb-icon" />
+                    커뮤니티
+                    <FiChevronRight />
+                    게시판
+                </div>
+                <button className="post-write-btn" onClick={() => navigate('/write')}>
+                    <FiEdit />
+                    글쓰기
                 </button>
             </div>
-            <div className="postpage-main">
+
+            {/* 메인 레이아웃 */}
+            <div className="post-page-body">
                 {/* 왼쪽: 게시판 */}
-                <div className="postpage-left">
-                    <div className="postpage-tabs">
+                <div className="post-main-content">
+                    {/* 카테고리 탭 */}
+                    <div className="post-category-tabs">
                         {categories.map((cat) => (
                             <button
                                 key={cat}
-                                className={`postpage-tab${selectedCategory === cat ? ' selected' : ''}`}
+                                className={`post-category-tab ${selectedCategory === cat ? 'active' : ''}`}
                                 onClick={() => {
                                     setSelectedCategory(cat);
                                     setPage(1);
@@ -177,20 +206,62 @@ const Post = () => {
                             </button>
                         ))}
                     </div>
-                    <PostList posts={paginatedPosts} />
-                    <div className="postpage-bottom-row">
+
+                    {/* 게시글 리스트 */}
+                    <div className="post-list-container">
+                        {paginatedPosts.map((post) => (
+                            <div
+                                key={post.postId}
+                                className="post-card"
+                                onClick={() => navigate(`/community/post/${post.postId}`)}
+                            >
+                                <div className="post-card-header">
+                                    <span className={`post-card-category ${post.category}`}>
+                                        {post.category}
+                                    </span>
+                                    <div className="post-card-meta">
+                                        <span className="post-card-meta-item">
+                                            <FiClock size={14} />
+                                            {formatDate(post.createdAt)}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="post-card-title">{post.title}</div>
+                                <div className="post-card-meta">
+                                    <span className="post-card-author">{post.author}</span>
+                                </div>
+                                <div className="post-card-stats">
+                                    <span className="post-card-stat">
+                                        <FiEye className="post-card-stat-icon" size={16} />
+                                        {post.viewCount}
+                                    </span>
+                                    <span className="post-card-stat">
+                                        <FiThumbsUp className="post-card-stat-icon" size={16} />
+                                        {post.likeCount}
+                                    </span>
+                                    <span className="post-card-stat">
+                                        <FiMessageCircle className="post-card-stat-icon" size={16} />
+                                        {post.commentCount}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* 하단: 페이지네이션 + 검색 */}
+                    <div className="post-bottom-section">
                         <div className="post-pagination">
                             {pageNumbers.map((num) => (
                                 <button
                                     key={num}
-                                    className={`post-pagination-btn${page === num ? ' active' : ''}`}
+                                    className={`post-pagination-btn ${page === num ? 'active' : ''}`}
                                     onClick={() => setPage(num)}
                                 >
                                     {num}
                                 </button>
                             ))}
                         </div>
-                        <div className="post-search-bar">
+                        <div className="post-search-section">
                             <select
                                 className="post-search-select"
                                 value={searchType}
@@ -205,7 +276,7 @@ const Post = () => {
                             <input
                                 type="text"
                                 className="post-search-input"
-                                placeholder={`${searchOptions.find((opt) => opt.value === searchType).label}으로 검색`}
+                                placeholder={`${searchOptions.find((opt) => opt.value === searchType)?.label}으로 검색`}
                                 value={searchTerm}
                                 onChange={handleSearchChange}
                             />
@@ -213,85 +284,85 @@ const Post = () => {
                     </div>
                 </div>
 
-                {/* 오른쪽: 인기 게시글, 스터디, 태그 */}
-                <div className="postpage-right">
-                    <div className="postpage-box">
-                        <div className="postpage-box-title">
-                            <span>🔥</span> 인기 게시글
-                        </div>
-                        <ul className="postpage-popular-list">
+                {/* 오른쪽: 사이드바 */}
+                <aside className="post-sidebar">
+                    {/* 인기 게시글 */}
+                    <div className="post-sidebar-box">
+                        <h3 className="post-sidebar-title">
+                            <FiTrendingUp className="post-sidebar-title-icon" />
+                            인기 게시글
+                        </h3>
+                        <ul className="popular-post-list">
                             {popularPosts.map((p) => (
                                 <li
                                     key={p.postId}
-                                    style={{ cursor: 'pointer' }}
+                                    className="popular-post-item"
                                     onClick={() => navigate(`/community/post/${p.postId}`)}
                                 >
-                                    <div className="postpage-popular-title">{p.title}</div>
-                                    <div className="postpage-popular-meta">
+                                    <div className="popular-post-title">{p.title}</div>
+                                    <div className="popular-post-meta">
                                         <span>{p.authorNickname}</span>
-                                        <span>좋아요 {p.likeCount}</span>
+                                        <span className="popular-post-likes">
+                                            <FiThumbsUp size={12} /> {p.likeCount}
+                                        </span>
                                     </div>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                    <div className="postpage-box">
-                        <div className="postpage-box-title" style={{ color: '#7c3aed' }}>
-                            💡 진행 중인 스터디
-                        </div>
-                        <div className="postpage-study-list">
+
+                    {/* 진행 중인 스터디 */}
+                    <div className="post-sidebar-box">
+                        <h3 className="post-sidebar-title">
+                            <FiBookOpen className="post-sidebar-title-icon" />
+                            진행 중인 스터디
+                        </h3>
+                        <div className="study-list">
                             {studyList.map((s) => (
                                 <div
-                                    className="postpage-study-item"
+                                    className="study-item"
                                     key={s.studyId}
-                                    style={{ background: s.color, cursor: 'pointer' }}
                                     onClick={() => navigate(`/study/${s.study_id}`)}
                                 >
-                                    <div className="postpage-study-name">{s.name}</div>
-                                    <span className="postpage-study-tag" style={{ background: s.tagColor }}>
-                                        {s.tag}
-                                    </span>
-                                    <div className="postpage-study-info">{s.info}</div>
+                                    <div className="study-item-header">
+                                        <div className="study-item-name">{s.name}</div>
+                                        <span className="study-item-tag">{s.tag}</span>
+                                    </div>
+                                    <div className="study-item-info">{s.info}</div>
                                 </div>
                             ))}
                         </div>
                         <button
-                            style={{
-                                marginTop: 12,
-                                background: '#fff',
-                                color: '#2563eb',
-                                border: '1.5px solid #2563eb',
-                                borderRadius: 8,
-                                padding: '7px 16px',
-                                fontWeight: 600,
-                                fontSize: '1rem',
-                                cursor: 'pointer',
-                            }}
+                            className="study-view-all-btn"
                             onClick={() => navigate('/study')}
                         >
                             전체 스터디 보기
                         </button>
                     </div>
-                    <div className="postpage-box">
-                        <div className="postpage-box-title">🏷️ 인기 태그</div>
-                        <div className="postpage-tag-list">
+
+                    {/* 인기 태그 */}
+                    <div className="post-sidebar-box">
+                        <h3 className="post-sidebar-title">
+                            <FiHash className="post-sidebar-title-icon" />
+                            인기 태그
+                        </h3>
+                        <div className="tag-list">
                             {popularTags.length === 0 ? (
-                                <span style={{ color: '#aaa' }}>태그가 없습니다.</span>
+                                <div className="tag-empty">태그가 없습니다.</div>
                             ) : (
                                 popularTags.map((tag) => (
                                     <span
-                                        className="postpage-tag"
+                                        className="tag-item"
                                         key={tag}
-                                        style={{ cursor: 'pointer' }}
                                         onClick={() => handleTagClick(tag)}
                                     >
-                                        {tag}
+                                        #{tag}
                                     </span>
                                 ))
                             )}
                         </div>
                     </div>
-                </div>
+                </aside>
             </div>
         </div>
     );
