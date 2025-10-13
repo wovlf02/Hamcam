@@ -6,7 +6,7 @@
 .post-page-container {
     font-family: 'Inter', sans-serif;
     height: 100%;
-    background: linear-gradient(135deg, #F0F8FF 0%, #FFF5F7 100%);
+    background-color: #F0F8FF; /* 홈 탭과 동일한 배경색으로 변경 */
     border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     padding: 24px;
