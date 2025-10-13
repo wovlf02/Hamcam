@@ -183,7 +183,10 @@ const Community = () => {
                         <div className="online-friends-list">
                             {mockOnlineFriends.map(friend => (
                                 <div key={friend.id} className="online-friend-item">
-                                    <img src={friend.avatar} alt={friend.nickname} className="online-friend-avatar" />
+                                    <div className="online-friend-avatar-container">
+                                        <img src={friend.avatar} alt={friend.nickname} className="online-friend-avatar" />
+                                        <div className="online-status-dot"></div>
+                                    </div>
                                     <span>{friend.nickname}</span>
                                 </div>
                             ))}

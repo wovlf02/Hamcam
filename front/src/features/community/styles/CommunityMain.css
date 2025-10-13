@@ -264,3 +264,19 @@
 .activity-item-text {
     color: var(--text-color);
 }
+
+.online-friend-avatar-container {
+    position: relative;
+    display: inline-block;
+}
+
+.online-status-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    background-color: #4CAF50; /* Green color */
+    border-radius: 50%;
+    border: 2px solid white;
+}
