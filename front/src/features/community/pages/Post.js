@@ -4,7 +4,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../../api/api';
 import {
     FiHome, FiChevronRight, FiEdit, FiClock, FiEye, FiThumbsUp, FiMessageCircle,
-    FiTrendingUp, FiBookOpen, FiHash, FiBell, FiMessageSquare, FiGrid, FiUsers
+    FiTrendingUp, FiBookOpen, FiHash, FiBell, FiMessageSquare, FiGrid, FiUsers,
+    FiChevronLeft, FiChevronsLeft, FiChevronsRight
 } from 'react-icons/fi';
 
 const menu = [
@@ -40,6 +41,7 @@ const sortOptions = [
 ];
 
 const POSTS_PER_PAGE = 10;
+const PAGES_PER_GROUP = 10;
 
 const Post = () => {
     const navigate = useNavigate();
@@ -69,6 +71,7 @@ const Post = () => {
         };
 
         const titles = [
+            // 기존 30개
             'React 19 useOptimistic 훅 사용 후기',
             'JPA N+1 문제 해결 방법 공유합니다',
             'TypeScript 제네릭 완벽 정리',
@@ -98,19 +101,127 @@ const Post = () => {
             'WebSocket 실시간 채팅 구현',
             'Elasticsearch 검색 엔진 도입기',
             'gRPC vs REST API 성능 비교',
-            'Kafka 메시지 큐 활용 사례'
+            'Kafka 메시지 큐 활용 사례',
+            // 추가 100개
+            'Vue 3 Composition API 마스터하기',
+            'Nginx 리버스 프록시 설정 가이드',
+            'PostgreSQL 성능 튜닝 실전',
+            'Python FastAPI 백엔드 구축',
+            'Flutter 크로스 플랫폼 앱 개발',
+            'Terraform으로 인프라 관리하기',
+            'Jest 단위 테스트 작성법',
+            'GitHub Actions 자동화 구축',
+            'CSS Grid vs Flexbox 완벽 비교',
+            'Node.js 메모리 누수 디버깅',
+            'React Native 모바일 앱 최적화',
+            'Svelte 프레임워크 시작하기',
+            'Angular 의존성 주입 패턴',
+            'Express.js 미들웨어 설계',
+            'Socket.io 실시간 통신 구현',
+            'Sass/SCSS 활용 전략',
+            'Babel 트랜스파일러 설정',
+            'ESLint 코드 품질 관리',
+            'Prettier 코드 포맷팅 자동화',
+            'Husky Git Hooks 활용법',
+            'Webpack 번들 최적화 기법',
+            'Rollup 모듈 번들러 사용기',
+            'Parcel 제로 설정 번들러',
+            'Snowpack 빌드 도구 리뷰',
+            'Turborepo 모노레포 관리',
+            'NX 워크스페이스 구축하기',
+            'Lerna 멀티 패키지 관리',
+            'Yarn Workspaces 설정법',
+            'pnpm 패키지 매니저 비교',
+            'npm 7 신규 기능 정리',
+            'Deno 런타임 사용 후기',
+            'Bun 자바스크립트 런타임',
+            'Rust로 웹 어셈블리 개발',
+            'Go 언어 백엔드 서비스',
+            'Kotlin 스프링 부트 개발',
+            'Scala 함수형 프로그래밍',
+            'Clojure 리스프 언어 입문',
+            'Elixir Phoenix 프레임워크',
+            'Ruby on Rails 현대적 활용',
+            'Django REST Framework 설계',
+            'Laravel PHP 웹 개발',
+            'ASP.NET Core 마이그레이션',
+            'Blazor 웹 어셈블리 앱',
+            'SwiftUI iOS 앱 개발',
+            'Jetpack Compose Android UI',
+            'Unity 게임 개발 입문',
+            'Unreal Engine C++ 프로그래밍',
+            'Godot 게임 엔진 사용기',
+            'Phaser.js 2D 게임 개발',
+            'Three.js 3D 웹 그래픽스',
+            'WebGL 셰이더 프로그래밍',
+            'D3.js 데이터 시각화',
+            'Chart.js 차트 라이브러리',
+            'Highcharts 인터랙티브 차트',
+            'Plotly 대시보드 구축',
+            'TensorFlow.js 머신러닝',
+            'PyTorch 딥러닝 모델링',
+            'Scikit-learn ML 알고리즘',
+            'Pandas 데이터 분석',
+            'NumPy 수치 연산',
+            'Matplotlib 시각화',
+            'Seaborn 통계 그래프',
+            'Jupyter Notebook 활용',
+            'Apache Spark 빅데이터',
+            'Hadoop 분산 처리',
+            'Airflow 워크플로우 관리',
+            'Luigi 파이프라인 구축',
+            'Celery 비동기 작업 큐',
+            'RabbitMQ 메시지 브로커',
+            'ActiveMQ 메시징 시스템',
+            'Apache Pulsar 스트리밍',
+            'Flink 실시간 데이터 처리',
+            'Storm 분산 실시간 연산',
+            'Cassandra NoSQL 데이터베이스',
+            'CouchDB 문서 지향 DB',
+            'Neo4j 그래프 데이터베이스',
+            'DynamoDB 서버리스 DB',
+            'Firebase Firestore 활용',
+            'Supabase 백엔드 서비스',
+            'Hasura GraphQL 엔진',
+            'Apollo GraphQL 서버',
+            'Prisma ORM 사용법',
+            'TypeORM 엔티티 관리',
+            'Sequelize Node.js ORM',
+            'Mongoose MongoDB ODM',
+            'SQLAlchemy Python ORM',
+            'Hibernate JPA 구현',
+            'MyBatis SQL 매핑',
+            'JOOQ 타입 안전 쿼리',
+            'Liquibase DB 마이그레이션',
+            'Flyway 스키마 버전 관리',
+            'Alembic 데이터베이스 마이그레이션',
+            'Knex.js 쿼리 빌더',
+            'Drizzle ORM TypeScript',
+            'MikroORM 엔티티 매니저',
+            'Waterline Sails.js ORM',
+            'Bookshelf.js 관계형 ORM',
+            'Objection.js SQL 쿼리',
+            'Massive.js PostgreSQL 전용',
+            'pg-promise PostgreSQL 클라이언트',
+            'node-postgres 드라이버',
+            'mysql2 Node.js MySQL',
+            'better-sqlite3 SQLite',
+            'Dexie.js IndexedDB 래퍼'
         ];
+
         const authors = [
             '개발왕김코딩', '리액트고수', '스터디장', '알고리즘꿈나무',
             '백엔드마스터', '프론트엔드닌자', 'DB전문가', '인프라엔지니어',
-            '풀스택개발자', '자바스크립트러버', '타입스크립트찬양자', '스프링부트러버'
+            '풀스택개발자', '자바스크립트러버', '타입스크립트찬양자', '스프링부트러버',
+            '파이썬마스터', '고수준개발자', '코드장인', '시니어개발자',
+            '주니어개발러', '테크리더', '아키텍트', '데브옵스엔지니어'
         ];
 
         const mockData = [];
         const now = new Date();
 
-        for (let i = 0; i < 30; i++) {
-            const createdDate = new Date(now - Math.random() * 30 * 24 * 60 * 60 * 1000); // 최근 30일 내
+        for (let i = 0; i < 130; i++) {
+            const createdDate = new Date(now - Math.random() * 90 * 24 * 60 * 60 * 1000); // 최근 90일 내
             const categoryKey = categories[Math.floor(Math.random() * categories.length)];
             mockData.push({
                 postId: i + 1,
@@ -118,11 +229,11 @@ const Post = () => {
                 content: `${titles[i]}에 대한 상세한 내용입니다. 이 게시글은 실전 경험을 바탕으로 작성되었습니다.`,
                 category: categoryKey,
                 categoryLabel: categoryLabels[categoryKey],
-                viewCount: Math.floor(Math.random() * 500) + 10,
+                viewCount: Math.floor(Math.random() * 1000) + 10,
                 createdAt: createdDate.toISOString(),
                 author: authors[Math.floor(Math.random() * authors.length)],
-                likeCount: Math.floor(Math.random() * 100),
-                commentCount: Math.floor(Math.random() * 50)
+                likeCount: Math.floor(Math.random() * 150),
+                commentCount: Math.floor(Math.random() * 80)
             });
         }
 
@@ -258,13 +369,28 @@ const Post = () => {
         }
     });
 
-    // 🔹 페이지네이션
+    // 🔹 페이지네이션 계산
     const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
+    const totalPosts = sortedPosts.length;
     const paginatedPosts = sortedPosts.slice(
         (page - 1) * POSTS_PER_PAGE,
         page * POSTS_PER_PAGE
     );
-    const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+    // 페이지 그룹 계산 (10개씩)
+    const currentGroup = Math.ceil(page / PAGES_PER_GROUP);
+    const startPage = (currentGroup - 1) * PAGES_PER_GROUP + 1;
+    const endPage = Math.min(startPage + PAGES_PER_GROUP - 1, totalPages);
+    const pageNumbers = Array.from(
+        { length: endPage - startPage + 1 },
+        (_, i) => startPage + i
+    );
+
+    // 페이지네이션 핸들러
+    const handleFirstPage = () => setPage(1);
+    const handleLastPage = () => setPage(totalPages);
+    const handlePrevGroup = () => setPage(Math.max(1, startPage - PAGES_PER_GROUP));
+    const handleNextGroup = () => setPage(Math.min(totalPages, endPage + 1));
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
@@ -431,18 +557,74 @@ const Post = () => {
                         ))}
                     </div>
 
-                    {/* 하단: 페이지네이션만 */}
+                    {/* 하단: 페이지네이션 */}
                     <div className="post-bottom-section">
-                        <div className="post-pagination">
-                            {pageNumbers.map((num) => (
+                        <div className="post-pagination-container">
+                            <div className="post-pagination">
+                                {/* 맨 앞으로 */}
                                 <button
-                                    key={num}
-                                    className={`post-pagination-btn ${page === num ? 'active' : ''}`}
-                                    onClick={() => setPage(num)}
+                                    className="post-pagination-btn pagination-nav"
+                                    onClick={handleFirstPage}
+                                    disabled={page === 1}
+                                    title="첫 페이지"
                                 >
-                                    {num}
+                                    <FiChevronsLeft />
                                 </button>
-                            ))}
+
+                                {/* 이전 10페이지 */}
+                                <button
+                                    className="post-pagination-btn pagination-nav"
+                                    onClick={handlePrevGroup}
+                                    disabled={currentGroup === 1}
+                                    title="이전 10페이지"
+                                >
+                                    <FiChevronLeft />
+                                    <FiChevronLeft className="chevron-double" />
+                                </button>
+
+                                {/* 페이지 번호들 (10개씩) */}
+                                {pageNumbers.map((num) => (
+                                    <button
+                                        key={num}
+                                        className={`post-pagination-btn ${page === num ? 'active' : ''}`}
+                                        onClick={() => setPage(num)}
+                                    >
+                                        {num}
+                                    </button>
+                                ))}
+
+                                {/* 다음 10페이지 */}
+                                <button
+                                    className="post-pagination-btn pagination-nav"
+                                    onClick={handleNextGroup}
+                                    disabled={endPage >= totalPages}
+                                    title="다음 10페이지"
+                                >
+                                    <FiChevronRight />
+                                    <FiChevronRight className="chevron-double" />
+                                </button>
+
+                                {/* 맨 뒤로 */}
+                                <button
+                                    className="post-pagination-btn pagination-nav"
+                                    onClick={handleLastPage}
+                                    disabled={page === totalPages}
+                                    title="마지막 페이지"
+                                >
+                                    <FiChevronsRight />
+                                </button>
+                            </div>
+
+                            {/* 페이지 정보 */}
+                            <div className="post-pagination-info">
+                                <span className="pagination-info-text">
+                                    전체 <strong>{totalPages}</strong>페이지
+                                </span>
+                                <span className="pagination-divider">|</span>
+                                <span className="pagination-info-text">
+                                    총 <strong>{totalPosts}</strong>개 게시글
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

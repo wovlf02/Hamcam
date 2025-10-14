@@ -424,7 +424,7 @@
     justify-content: center;
     align-items: center;
     margin-top: 16px;
-    padding: 16px;
+    padding: 16px 20px;
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
     border-radius: 16px;
@@ -433,9 +433,20 @@
     min-height: 60px;
 }
 
+.post-pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 16px;
+}
+
 .post-pagination {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
 }
 
 .post-pagination-btn {
@@ -449,9 +460,13 @@
     cursor: pointer;
     transition: all 0.3s ease;
     min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
 }
 
-.post-pagination-btn:hover {
+.post-pagination-btn:hover:not(:disabled) {
     background: rgba(123, 104, 238, 0.1);
     border-color: #7B68EE;
     transform: translateY(-2px);
@@ -462,6 +477,54 @@
     color: white;
     border-color: transparent;
     box-shadow: 0 4px 12px rgba(123, 104, 238, 0.25);
+}
+
+.post-pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: rgba(123, 104, 238, 0.1);
+    color: #9CA3AF;
+}
+
+.post-pagination-btn.pagination-nav {
+    min-width: 36px;
+    padding: 8px 12px;
+    position: relative;
+}
+
+/* 더블 화살표 효과 */
+.post-pagination-btn .chevron-double {
+    position: absolute;
+    margin-left: -4px;
+}
+
+/* 페이지네이션 정보 */
+.post-pagination-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, rgba(123, 104, 238, 0.05), rgba(32, 178, 170, 0.05));
+    border-radius: 12px;
+    border: 2px solid rgba(123, 104, 238, 0.15);
+}
+
+.pagination-info-text {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.pagination-info-text strong {
+    color: #7B68EE;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.pagination-divider {
+    color: rgba(123, 104, 238, 0.3);
+    font-weight: 300;
 }
 
 /* 오른쪽 사이드바 */
@@ -680,6 +743,16 @@
     .post-search-input {
         min-width: 200px;
     }
+
+    .post-pagination-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .post-pagination-info {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 @media (max-width: 1050px) {
@@ -702,6 +775,28 @@
     .post-bottom-section {
         flex-direction: column;
         gap: 16px;
+        padding: 12px;
+    }
+
+    .post-pagination-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .post-pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .post-pagination-btn {
+        min-width: 32px;
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .post-pagination-btn.pagination-nav {
+        min-width: 32px;
+        padding: 6px 8px;
     }
 
     .post-search-section {
@@ -714,8 +809,7 @@
         flex: 1;
     }
 
-    .post-pagination {
-        width: 100%;
-        justify-content: center;
+    .post-pagination-info {
+        font-size: 0.85rem;
     }
 }
