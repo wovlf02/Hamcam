@@ -24,6 +24,10 @@
     --bg-dark: #DADCE0; /* Medium Light Gray */
     --bg-white: #FFFFFF;
 
+    /* Panel Background - Pastel Tone */
+    --panel-bg-color: #FFF9F0; /* Light Peach Pastel */
+    --border-radius-large: 20px;
+
     --border-light: #DADCE0;
     --border-medium: #BDC1C6;
 
@@ -48,10 +52,19 @@
 
 .dashboard-container {
     padding: 32px;
-    background: #F0F8FF; /* Alice Blue - same as community page */
+    background: #F0F8FF; /* Alice Blue */
     min-height: 100vh;
     font-family: 'Roboto', sans-serif;
     color: var(--text-primary);
+}
+
+/* Dashboard specific clay-panel - override global */
+.dashboard-container.clay-panel {
+    background: #FFF9F0; /* Light Peach Pastel for dashboard */
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    transition: all 0.3s ease;
 }
 
 .dashboard-main-title {

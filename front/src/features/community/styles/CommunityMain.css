@@ -3,7 +3,7 @@
 
 :root {
     --background-color: #F4F7FC;
-    --panel-bg-color: #FFFFFF;
+    --panel-bg-color: #FFF9F0; /* Light Peach Pastel - changed from white */
     --primary-color: #7B68EE;
     --secondary-color: #FFA07A;
     --accent-color: #20B2AA;
@@ -31,6 +31,15 @@
     display: flex;
     flex-direction: column;
     overflow: hidden; /* 컨테이너 밖으로 넘치지 않도록 */
+}
+
+/* Community specific clay-panel - override global */
+.community-page-container.clay-panel {
+    background: #E8F5E9; /* Light Green Pastel for community */
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    transition: all 0.3s ease;
 }
 
 .community-top-nav {
