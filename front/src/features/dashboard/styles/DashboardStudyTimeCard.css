@@ -116,3 +116,19 @@
     min-width: 35px; /* Ensure enough space for 100% */
     text-align: right;
 }
+
+.dashboard-study-time-save-btn {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.dashboard-study-time-save-btn:hover {
+    background-color: var(--primary-blue-dark);
+}

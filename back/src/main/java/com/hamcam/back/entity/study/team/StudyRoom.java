@@ -44,6 +44,9 @@ public abstract class StudyRoom {
     @Column(nullable = false)
     protected boolean isActive = true;
 
+    @Column(nullable = false)
+    protected int maxParticipants;
+
     /** ✅ 방장 정보 (Not Null) */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_id", nullable = false)
@@ -60,13 +63,15 @@ public abstract class StudyRoom {
      * @param inviteCode  초대 코드
      * @param roomType    방 타입 (FOCUS 또는 QUIZ)
      * @param host        방장 (User)
+     * @param maxParticipants 최대 참여자 수
      */
-    protected StudyRoom(String title, String password, String inviteCode, RoomType roomType, User host) {
+    protected StudyRoom(String title, String password, String inviteCode, RoomType roomType, User host, int maxParticipants) {
         this.title = title;
         this.password = password;
         this.inviteCode = inviteCode;
         this.roomType = roomType;
         this.host = host;
+        this.maxParticipants = maxParticipants;
     }
 
     /** ✅ 방 비활성화 */

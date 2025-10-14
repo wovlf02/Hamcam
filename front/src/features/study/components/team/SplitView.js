@@ -1,0 +1,107 @@
+import React, { memo } from 'react';
+import ControlHeader from './ControlHeader';
+import RoomCard from './RoomCard';
+import Pagination from './Pagination';
+
+const RoomColumn = ({ 
+    title,
+    rooms,
+    realTimeParticipants,
+    onJoinRoom,
+    // Control Props
+    searchTerm, setSearchTerm,
+    sortOrder, setSortOrder,
+    onShowCreateModal,
+    // Pagination Props
+    currentPage, totalPages, onPageChange
+}) => {
+    return (
+        <div className="room-column">
+            <h2>{title}</h2>
+            <ControlHeader 
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                sortOrder={sortOrder}
+                setSortOrder={setSortOrder}
+                onShowCreateModal={onShowCreateModal}
+                isSplitView={true}
+            />
+            {rooms.length > 0 ? (
+                <ul className="room-list">
+                    {rooms.map(room => (
+                        <RoomCard
+                            key={room.room_id}
+                            room={room}
+                            onJoin={onJoinRoom}
+                            realTimeCount={realTimeParticipants[room.room_id]}
+                        />
+                    ))}
+                </ul>
+            ) : (
+                <div className="empty-state">
+                    <p className="empty-icon">📭</p>
+                    <p className="empty-message">해당 종류의 학습방이 없습니다.</p>
+                </div>
+            )}
+            <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+            />
+        </div>
+    );
+};
+const SplitView = ({ 
+    focusRooms, 
+    quizRooms,
+    realTimeParticipants,
+    onJoinRoom,
+    onShowCreateModal,
+    // Focus Room Props
+    focusSearch, setFocusSearch,
+    focusSort, setFocusSort,
+    focusCurrentPage, focusTotalPages, onFocusPageChange,
+    // Quiz Room Props
+    quizSearch, setQuizSearch,
+    quizSort, setQuizSort,
+    quizCurrentPage, quizTotalPages, onQuizPageChange
+}) => {
+    return (
+        <div className="split-view-container">
+                        <div className="room-section-wrapper">
+                            <RoomColumn
+                                title="시간 경쟁방 (Focus Rooms)"
+                                rooms={focusRooms}
+                                realTimeParticipants={realTimeParticipants}
+                                onJoinRoom={onJoinRoom}
+                                searchTerm={focusSearch}
+                                setSearchTerm={setFocusSearch}
+                                sortOrder={focusSort}
+                                setSortOrder={setFocusSort}
+                                onShowCreateModal={() => onShowCreateModal('FOCUS')}
+                                currentPage={focusCurrentPage}
+                                totalPages={focusTotalPages}
+                                onPageChange={onFocusPageChange}
+                            />
+                        </div>
+                        <div className="split-view-separator"></div>
+                        <div className="room-section-wrapper">
+                            <RoomColumn
+                                title="문제 풀이방 (Quiz Rooms)"
+                                rooms={quizRooms}
+                                realTimeParticipants={realTimeParticipants}
+                                onJoinRoom={onJoinRoom}
+                                searchTerm={quizSearch}
+                                setSearchTerm={setQuizSearch}
+                                sortOrder={quizSort}
+                                setSortOrder={setQuizSort}
+                                onShowCreateModal={() => onShowCreateModal('QUIZ')}
+                                currentPage={quizCurrentPage}
+                                totalPages={quizTotalPages}
+                                onPageChange={onQuizPageChange}
+                            />
+                        </div>        </div>
+    );
+};
+
+export default memo(SplitView);

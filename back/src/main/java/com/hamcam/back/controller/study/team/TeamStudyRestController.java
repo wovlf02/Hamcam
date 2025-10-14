@@ -1,10 +1,8 @@
 package com.hamcam.back.controller.study.team;
 
-import com.hamcam.back.dto.livekit.response.LivekitTokenResponse;
 import com.hamcam.back.dto.study.team.rest.request.*;
 import com.hamcam.back.dto.study.team.rest.response.*;
 import com.hamcam.back.service.study.team.rest.TeamStudyRestService;
-import com.hamcam.back.service.livekit.LivekitService;
 import com.hamcam.back.util.SessionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Slf4j
-// @RestController  // LiveKit 비활성화
-// @RequestMapping("/api/study/team")
+@RestController
+@RequestMapping("/api/study/team")
 @RequiredArgsConstructor
 public class TeamStudyRestController {
 
     private final TeamStudyRestService teamStudyRestService;
-    private final LivekitService liveKitService;
 
     /** ✅ 팀방 생성 */
     @PostMapping("/create")
@@ -45,6 +42,13 @@ public class TeamStudyRestController {
     public ResponseEntity<Void> deleteRoom(@PathVariable Long roomId, HttpServletRequest request) {
         Long userId = extractUserId(request);
         teamStudyRestService.deleteRoom(roomId, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    /** ✅ 최종 학습 결과 기록 (Node.js 서버가 호출) */
+    @PostMapping("/record")
+    public ResponseEntity<Void> recordStudyResult(@RequestBody StudyRecordRequest request) {
+        teamStudyRestService.recordStudyResult(request);
         return ResponseEntity.ok().build();
     }
 

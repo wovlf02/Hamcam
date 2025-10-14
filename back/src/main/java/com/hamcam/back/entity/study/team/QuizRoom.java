@@ -45,9 +45,10 @@ public class QuizRoom extends StudyRoom {
                     Integer grade,
                     Integer month,
                     String difficulty,
-                    User host) {
+                    User host,
+                    int maxParticipants) {
         // ✅ RoomType.QUIZ 명시적으로 전달
-        super(title, password, inviteCode, RoomType.QUIZ, host);
+        super(title, password, inviteCode, RoomType.QUIZ, host, maxParticipants);
         this.problemId = problemId;
         this.subject = subject;
         this.grade = grade;

@@ -1,394 +1,576 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useParams, useNavigate} from 'react-router-dom';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import api from '../../../api/api';
 import '../styles/FocusRoom.css';
-import {Stomp} from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
-import {connectToLiveKit} from '../../rtc/utils/livekit';
+import io from 'socket.io-client';
 import * as faceapi from 'face-api.js';
 import ModelLoader from '../../../utils/ModelLoader';
+import { API_BASE_URL_8080 } from '../../../api/apiUrl';
+import base_profile from '../../../assets/icons/base_profile.png';
 
-const FocusRoom = () => {
-    const {roomId} = useParams();
-    const navigate = useNavigate();
-    const roomName = `focus-${roomId}`;
-
-    const [focusedSeconds, setFocusedSeconds] = useState(0);
-    const [ranking, setRanking] = useState([]);
-    const [winnerId, setWinnerId] = useState(null);
-    const [confirmed, setConfirmed] = useState(false);
-    const [userId, setUserId] = useState(null);
+const useP2PRoom = (roomId) => {
+    const socketRef = useRef();
+    const peersRef = useRef(new Map());
+    const [localStream, setLocalStream] = useState(null);
     const [participants, setParticipants] = useState([]);
-    const [chatList, setChatList] = useState([]);
-    const [chatMsg, setChatMsg] = useState('');
-    const [modelsLoaded, setModelsLoaded] = useState(false);
-    const [faceDetected, setFaceDetected] = useState(false);
-    const [camOn, setCamOn] = useState(true);
     const [chatMessages, setChatMessages] = useState([]);
-    const [chatInput, setChatInput] = useState('');
+    const [focusTimes, setFocusTimes] = useState({});
+    const [isCameraOn, setIsCameraOn] = useState(true);
+    const [isMicOn, setIsMicOn] = useState(true);
+    const [mutedRemoteUsers, setMutedRemoteUsers] = useState(new Map());
+    const [pendingPeers, setPendingPeers] = useState([]);
 
-    const myVideoRef = useRef(null);
-    const myStreamRef = useRef(null);
-    const chatRef = useRef(null);
-    const stompRef = useRef(null);
-    const intervalRef = useRef(null);
-    const faceIntervalRef = useRef(null);
-    const roomRef = useRef(null);
+    const toggleRemoteAudio = useCallback((socketId) => {
+        setMutedRemoteUsers(prev => {
+            const newMutedState = !prev.get(socketId);
+            const newMap = new Map(prev);
+            newMap.set(socketId, newMutedState);
 
-    const medalColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
+            const participant = participants.find(p => p.socketId === socketId);
+            if (participant && participant.stream) {
+                participant.stream.getAudioTracks().forEach(track => {
+                    track.enabled = !newMutedState;
+                });
+            }
+            return newMap;
+        });
+    }, [participants]);
 
-    const formatTime = (seconds) => {
-        const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        const s = seconds % 60;
-        if (seconds < 60) return `${s}초`;
-        else if (seconds < 3600) return `${m}분 ${s}초`;
-        else return `${h}시간 ${m}분 ${s}초`;
-    };
+    useEffect(() => {
+        const socket = io('http://localhost:4000', { withCredentials: true });
+        socketRef.current = socket;
 
-    const enterRoom = async () => {
-        try {
-            await api.post('/study/team/enter', null, {params: {roomId}});
-        } catch {
-            alert('입장 실패');
-            navigate('/study/team');
-        }
-    };
+        socket.emit('join-room', { roomId });
 
-    const fetchUserInfo = async () => {
-        const res = await api.get('/users/me');
-        const identity = res.data.data.user_id;
-        setUserId(identity);
-        setParticipants([{identity, nickname: `나 (${identity})`}]);
-        await connectLiveKitSession(identity);
-        await startMyCam();
-    };
+        socket.on('all-users', (users) => {
+            console.log(`[all-users] Received ${users.length} existing users`);
 
-    const startMyCam = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({video: true});
-            if (myVideoRef.current) myVideoRef.current.srcObject = stream;
-            myStreamRef.current = stream;
-            setCamOn(true);
-        } catch {
-            setCamOn(false);
-        }
-    };
-
-    const stopMyCam = () => {
-        myStreamRef.current?.getTracks().forEach((t) => t.stop());
-        if (myVideoRef.current) myVideoRef.current.srcObject = null;
-        setCamOn(false);
-        setFaceDetected(false);
-    };
-
-    const toggleMyCam = async () => {
-        if (camOn) stopMyCam();
-        else await startMyCam();
-    };
-
-    const connectLiveKitSession = async (identity) => {
-        const res = await api.post('/livekit/token', { roomId: Number(roomId), roomType: 'focus', ttl: 60 });
-        const {token, ws_url} = res.data;
-        const room = await connectToLiveKit(identity, roomName, ws_url, token, 'video-container');
-        roomRef.current = room;
-
-        room.on('participantConnected', (participant) => {
-            setParticipants((prev) => {
-                const exists = prev.some((p) => p.identity === participant.identity);
-                return exists ? prev : [...prev, {
-                    identity: participant.identity,
-                    nickname: `참가자 ${participant.identity}`
-                }];
-            });
-
-            participant.on('trackSubscribed', (track) => {
-                if (track.kind === 'video') {
-                    const id = `video-${participant.identity}`;
-                    let el = document.getElementById(id);
-                    if (!el) {
-                        el = document.createElement('video');
-                        el.id = id;
-                        el.autoplay = true;
-                        el.playsInline = true;
-                        el.className = 'remote-video';
-                        document.getElementById('video-container')?.appendChild(el);
-                    }
-                    if (!el.srcObject) el.srcObject = new MediaStream([track.mediaStreamTrack]);
+            // 기존 유저들의 누적 시간을 focusTimes에 초기화
+            const initialTimes = {};
+            users.forEach(user => {
+                if (user.focusedSeconds !== undefined) {
+                    initialTimes[user.user_id] = user.focusedSeconds;
+                    console.log(`[all-users] ${user.nickname}의 누적 시간: ${user.focusedSeconds}초`);
                 }
             });
+            setFocusTimes(prev => ({ ...prev, ...initialTimes }));
+
+            if (localStream) {
+                users.forEach(user => createPeer(user.socketId, socket.id));
+            } else {
+                setPendingPeers(prev => [...prev, ...users.map(u => u.socketId)]);
+            }
+            setParticipants(users);
         });
 
-        room.on('participantDisconnected', (participant) => {
-            setParticipants((prev) => prev.filter((p) => p.identity !== participant.identity));
-            const el = document.getElementById(`video-${participant.identity}`);
-            if (el) {
-                el.srcObject = null;
-                el.remove();
+        socket.on('user-joined', (user) => {
+            console.log(`[user-joined] New user: ${user.socketId}`);
+            setParticipants(prev => [...prev, user]);
+
+            // 새로 입장한 유저의 초기 시간을 focusTimes에 설정
+            if (user.focusedSeconds !== undefined) {
+                setFocusTimes(prev => ({ ...prev, [user.user_id]: user.focusedSeconds }));
+                console.log(`[user-joined] ${user.nickname}의 초기 시간: ${user.focusedSeconds}초`);
+            }
+
+            if (localStream) {
+                createPeer(user.socketId, socket.id);
+            } else {
+                setPendingPeers(prev => [...prev, user.socketId]);
             }
         });
-    };
 
-    const fetchChatHistory = async () => {
-        try {
-            const res = await api.get(`/focus/chat/${roomId}`);
-            setChatList(res.data || []);
-        } catch {
-        }
-    };
+        socket.on('signal', async ({ fromSocketId, sdp, candidate }) => {
+            const peer = peersRef.current.get(fromSocketId);
+            if (!peer) {
+                console.warn("Peer not found for signal from", fromSocketId);
+                return;
+            }
+            if (sdp) {
+                try {
+                    const remoteDesc = new RTCSessionDescription(sdp);
+                    if (remoteDesc.type === 'answer' && peer.signalingState !== 'have-local-offer') {
+                        console.warn("Received answer in unexpected signaling state:", peer.signalingState);
+                        return;
+                    }
 
-    // ✅ 채팅 WebSocket 수신 처리
-    const connectWebSocket = () => {
-        const sock = new SockJS('/ws');
-        const client = Stomp.over(sock);
-        stompRef.current = client;
+                    await peer.setRemoteDescription(remoteDesc);
 
-        client.connect({}, () => {
-            client.subscribe(`/sub/focus/room/${roomId}`, (msg) => {
-                const data = JSON.parse(msg.body);
-                console.log("채팅 데이터: ", data);
+                    if (sdp.type === 'offer') {
+                        if (localStream) {
+                            localStream.getTracks().forEach(track => {
+                                const sender = peer.getSenders().find(s => s.track === track);
+                                if (!sender) {
+                                    peer.addTrack(track, localStream);
+                                }
+                            });
+                        }
 
-                // 🔹 채팅 메시지 처리
-                if (data.sender_id && data.content) {
-                    setChatMessages((prev) => {
-                        const isDup = prev.some(
-                            m =>
-                                m.sentAt === data.sent_at &&
-                                m.senderId === data.sender_id &&
-                                m.content === data.content
-                        );
-                        return isDup ? prev : [...prev, data];
-                    });
-
-                    setTimeout(() => {
-                        chatRef.current?.scrollTo({
-                            top: chatRef.current.scrollHeight,
-                            behavior: 'smooth',
-                        });
-                    }, 100);
-                    return;
+                        const answer = await peer.createAnswer();
+                        await peer.setLocalDescription(answer);
+                        socketRef.current.emit('signal', { targetSocketId: fromSocketId, sdp: answer });
+                    }
+                } catch (error) {
+                    console.error("Error setting remote description or creating answer:", error);
                 }
+            } else if (candidate) {
+                try {
+                    await peer.addIceCandidate(new RTCIceCandidate(candidate));
+                } catch (error) {
+                    console.error("Error adding ICE candidate:", error);
+                }
+            }
+        });
 
-                // 🔹 기타 메시지 (랭킹 등)
-                if (data.ranking) setRanking(data.ranking);
-                if (data.participants) setParticipants(data.participants);
-            });
-
-            client.subscribe(`/sub/focus/room/${roomId}/winner`, (msg) => {
-                setWinnerId(Number(msg.body));
+        socket.on('user-left', (socketId) => {
+            console.log(`[user-left] User disconnected: ${socketId}`);
+            peersRef.current.get(socketId)?.close();
+            peersRef.current.delete(socketId);
+            setParticipants(prev => prev.filter(p => p.socketId !== socketId));
+            setFocusTimes(prev => {
+                const newTimes = { ...prev };
+                const user = participants.find(p => p.socketId === socketId);
+                if (user) delete newTimes[user.user_id];
+                return newTimes;
             });
         });
-    };
 
-    const loadModels = async () => {
-        try {
-            console.log('FocusRoom 모델 로딩 시작...');
-            await ModelLoader.loadModels();
-            setModelsLoaded(true);
-            console.log('FocusRoom 모델 로딩 완료!');
-        } catch (error) {
-            console.error('FocusRoom 모델 로드 오류:', error);
-            
-            // 사용자에게 친화적인 오류 메시지
-            const errorMessage = error.message.includes('Load failed') 
-                ? '모델 파일을 불러올 수 없습니다. 페이지를 새로고침해주세요.'
-                : `모델 로딩 실패: ${error.message}`;
-                
-            alert(errorMessage);
+        socket.on('new-message', (message) => {
+            console.log('[new-message] 받은 메시지 데이터:', message);
+            console.log('[new-message] profileImageUrl:', message.profileImageUrl);
+            setChatMessages(prev => [...prev, message]);
+        });
+
+        socket.on('focus-time-update', ({ userId, time }) => {
+            console.log(`[focus-time-update] User ${userId}: ${time}s`);
+            setFocusTimes(prev => ({ ...prev, [userId]: time }));
+        });
+
+        return () => {
+            console.log('[cleanup] Disconnecting socket and closing peers');
+            localStream?.getTracks().forEach(track => track.stop());
+            peersRef.current.forEach(peer => peer.close());
+            peersRef.current.clear();
+            socket.disconnect();
+        };
+    }, [roomId]);
+
+    // localStream이 준비되면 pending peers 처리
+    useEffect(() => {
+        if (localStream) {
+            console.log(`[useEffect localStream] localStream available. Adding tracks to ${peersRef.current.size} peers.`);
+            peersRef.current.forEach(peer => {
+                localStream.getTracks().forEach(track => {
+                    const sender = peer.getSenders().find(s => s.track === track);
+                    if (!sender) {
+                        peer.addTrack(track, localStream);
+                    }
+                });
+            });
+
+            if (pendingPeers.length > 0) {
+                console.log(`[useEffect localStream] Processing ${pendingPeers.length} pending peers`);
+                pendingPeers.forEach(socketId => {
+                    createPeer(socketId, socketRef.current.id);
+                });
+                setPendingPeers([]);
+            }
         }
+    }, [localStream, pendingPeers]);
+
+    const createPeer = (targetSocketIdParam, initiatorSocketId) => {
+        const peer = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }] });
+
+        console.log(`[createPeer] Called for ${targetSocketIdParam}. localStream available: ${!!localStream}`);
+
+        peer.onicecandidate = e => e.candidate && socketRef.current.emit('signal', { targetSocketId: targetSocketIdParam, candidate: e.candidate });
+
+        peer.ontrack = e => {
+            console.log("ONTRACK event received from", targetSocketIdParam);
+            console.log("Stream received:", e.streams[0]);
+            setParticipants(prev => prev.map(p =>
+                p.socketId === targetSocketIdParam ? { ...p, stream: e.streams[0] } : p
+            ));
+        };
+
+        peer.onnegotiationneeded = async () => {
+            try {
+                if (peer.signalingState === 'stable') {
+                    console.log(`[${targetSocketIdParam}] Negotiation needed, creating offer`);
+                    const offer = await peer.createOffer();
+                    await peer.setLocalDescription(offer);
+                    socketRef.current.emit('signal', { targetSocketId: targetSocketIdParam, sdp: peer.localDescription });
+                } else {
+                    console.warn(`[${targetSocketIdParam}] Negotiation needed, but peer not in stable state:`, peer.signalingState);
+                }
+            } catch (error) {
+                console.error(`[${targetSocketIdParam}] Error during negotiationneeded:`, error);
+            }
+        };
+
+        peersRef.current.set(targetSocketIdParam, peer);
     };
 
-    const sendMessage = (e) => {
+    const startLocalStream = useCallback(async () => {
+        try {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('카메라/마이크를 사용할 수 없습니다. HTTPS 또는 localhost 환경에서 접속해주세요.');
+            }
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            console.log('[startLocalStream] Stream obtained');
+            setLocalStream(stream);
+            setIsCameraOn(stream.getVideoTracks().some(track => track.enabled));
+            setIsMicOn(stream.getAudioTracks().some(track => track.enabled));
+            return stream;
+        } catch (error) {
+            console.error('[startLocalStream] Error:', error);
+            alert('카메라/마이크 접근에 실패했습니다.');
+            throw error;
+        }
+    }, []);
+
+    const toggleCamera = useCallback(() => {
+        if (localStream) {
+            const videoTracks = localStream.getVideoTracks();
+            if (videoTracks.length > 0) {
+                const newState = !videoTracks[0].enabled;
+                videoTracks.forEach(track => (track.enabled = newState));
+                setIsCameraOn(newState);
+                console.log(`[toggleCamera] Camera ${newState ? 'ON' : 'OFF'}`);
+            }
+        }
+    }, [localStream]);
+
+    const toggleMicrophone = useCallback(() => {
+        if (localStream) {
+            const audioTracks = localStream.getAudioTracks();
+            if (audioTracks.length > 0) {
+                const newState = !audioTracks[0].enabled;
+                audioTracks.forEach(track => (track.enabled = newState));
+                setIsMicOn(newState);
+                console.log(`[toggleMicrophone] Microphone ${newState ? 'ON' : 'OFF'}`);
+            }
+        }
+    }, [localStream]);
+
+    const sendMessage = useCallback((message) => {
+        if (socketRef.current) {
+            socketRef.current.emit('send-message', { roomId, message });
+        }
+    }, [roomId]);
+
+    return {
+        participants,
+        chatMessages,
+        startLocalStream,
+        sendMessage,
+        localStream,
+        socketId: socketRef.current?.id,
+        focusTimes,
+        socketRef,
+        isCameraOn,
+        isMicOn,
+        toggleCamera,
+        toggleMicrophone,
+        mutedRemoteUsers,
+        toggleRemoteAudio
+    };
+};
+
+const formatTime = (seconds) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (h > 0) return `${h}시 ${m}분 ${s}초`;
+    if (m > 0) return `${m}분 ${s}초`;
+    return `${s}초`;
+};
+
+const FocusRoom = () => {
+    const { roomId } = useParams();
+    const { participants, chatMessages, startLocalStream, sendMessage, localStream, socketId, focusTimes, socketRef, isCameraOn, isMicOn, toggleCamera, toggleMicrophone, mutedRemoteUsers, toggleRemoteAudio } = useP2PRoom(roomId);
+
+    const [userId, setUserId] = useState(null);
+    const [nickname, setNickname] = useState('');
+    const [modelsLoaded, setModelsLoaded] = useState(false);
+    const [faceDetected, setFaceDetected] = useState(false);
+    const [chatInput, setChatInput] = useState('');
+    const [myFocusTime, setMyFocusTime] = useState(0);
+
+    const myVideoRef = useRef(null);
+    const chatRef = useRef(null);
+    const remoteVideoRefs = useRef(new Map()); // 원격 비디오 요소 참조 저장
+
+    // 음소거 토글 핸들러
+    const handleToggleMute = useCallback((socketId) => {
+        const videoElement = remoteVideoRefs.current.get(socketId);
+        if (videoElement) {
+            videoElement.muted = !videoElement.muted;
+            toggleRemoteAudio(socketId);
+            console.log(`[Mute Toggle] ${socketId} 음소거: ${videoElement.muted}`);
+        }
+    }, [toggleRemoteAudio]);
+
+    useEffect(() => {
+        const loadInitialData = async () => {
+            try {
+                const userRes = await api.get('/users/me');
+                setUserId(userRes.data.data.user_id);
+                setNickname(userRes.data.data.nickname);
+                await ModelLoader.loadModels();
+                setModelsLoaded(true);
+                await startLocalStream();
+            } catch (error) {
+                console.error('FocusRoom 초기 로딩 오류:', error);
+                alert(`초기 로딩 실패: ${error.message}`);
+            }
+        };
+        loadInitialData();
+    }, [startLocalStream]);
+
+    useEffect(() => {
+        if (myVideoRef.current && localStream) {
+            if (isCameraOn) {
+                myVideoRef.current.srcObject = localStream;
+            } else {
+                myVideoRef.current.srcObject = null;
+            }
+        }
+    }, [isCameraOn, localStream]);
+
+    // 캠이 꺼지면 얼굴 인식 상태를 즉시 리셋
+    useEffect(() => {
+        if (!isCameraOn) {
+            setFaceDetected(false);
+            console.log('FocusRoom: 캠 꺼짐 - 얼굴 인식 상태를 false로 리셋');
+        }
+    }, [isCameraOn]);
+
+    useEffect(() => {
+        const detectFace = async () => {
+            if (!myVideoRef.current) return;
+            try {
+                const detections = await faceapi.detectAllFaces(myVideoRef.current);
+                setFaceDetected(detections.length > 0);
+            } catch (error) {
+                console.error('FocusRoom 얼굴 감지 오류:', error);
+            }
+        };
+
+        if (modelsLoaded && isCameraOn) {
+            const interval = setInterval(detectFace, 700);
+            return () => clearInterval(interval);
+        }
+    }, [modelsLoaded, isCameraOn]);
+
+    useEffect(() => {
+        if (!userId || !socketRef.current) return;
+
+        const interval = setInterval(() => {
+            // 캠이 켜져있고 얼굴이 감지되어야만 시간 증가
+            if (isCameraOn && faceDetected) {
+                console.log(`FocusRoom: 캠 켜짐 + 얼굴 감지됨, 시간 증가 중... 현재: ${myFocusTime}초`);
+
+                // 로컬 시간 상태 증가
+                setMyFocusTime(prev => {
+                    const newTime = prev + 1;
+                    console.log(`FocusRoom: 새로운 시간 ${newTime}초를 서버로 전송`);
+
+                    // 서버로 새로운 시간 전송
+                    socketRef.current.emit('focus-time-update', { userId, time: newTime });
+                    return newTime;
+                });
+            } else {
+                if (!isCameraOn) {
+                    console.log('FocusRoom: 캠이 꺼져있어 시간이 멈춰있습니다.');
+                } else if (!faceDetected) {
+                    console.log('FocusRoom: 얼굴이 감지되지 않아 시간이 멈춰있습니다.');
+                }
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [isCameraOn, faceDetected, userId, socketRef, myFocusTime]);
+
+    useEffect(() => {
+        if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }, [chatMessages]);
+
+    const handleSendMessage = (e) => {
         e.preventDefault();
         if (!chatInput.trim()) return;
-
-        stompRef.current.send('/app/focus/chat/send', {}, JSON.stringify({
-            room_id: Number(roomId),
-            content: chatInput
-        }));
+        sendMessage(chatInput);
         setChatInput('');
     };
 
-    const isMe = (chat) => String(chat.sender_id) === String(userId);
-
-    const showRanking = ranking.length > 0 ? ranking : [{
-        user_id: userId,
-        nickname: '나',
-        focusedSeconds: focusedSeconds || 0
-    }];
-
-    useEffect(() => {
-        enterRoom();
-        fetchUserInfo();
-        connectWebSocket();
-        fetchChatHistory();
-        loadModels();
-
-        return () => {
-            clearInterval(intervalRef.current);
-            clearInterval(faceIntervalRef.current);
-            stompRef.current?.disconnect();
-            roomRef.current?.disconnect();
-            stopMyCam();
-        };
-    }, []);
-
-    useEffect(() => {
-        if (!modelsLoaded) return;
-        const detect = async () => {
-            if (!myVideoRef.current || !camOn) return setFaceDetected(false);
-            const detections = await faceapi.detectAllFaces(myVideoRef.current);
-            setFaceDetected(detections.length > 0);
-        };
-        if (camOn) {
-            faceIntervalRef.current = setInterval(detect, 700);
+    const rankedParticipants = useMemo(() => {
+        const all = [...participants];
+        if (userId && !all.some(p => p.user_id === userId)) {
+            all.push({ user_id: userId, nickname });
         }
-        return () => clearInterval(faceIntervalRef.current);
-    }, [modelsLoaded, camOn]);
-
-    useEffect(() => {
-        if (!stompRef.current) return;
-        clearInterval(intervalRef.current);
-        if (faceDetected) {
-            intervalRef.current = setInterval(() => {
-                stompRef.current.send('/app/focus/update-time', {}, JSON.stringify({
-                    room_id: Number(roomId),
-                    focusedSeconds: 1
-                }));
-                setFocusedSeconds((prev) => prev + 1);
-            }, 1000);
-        }
-        return () => clearInterval(intervalRef.current);
-    }, [faceDetected]);
-
-    useEffect(() => {
-        chatRef.current?.scrollTo({
-            top: chatRef.current.scrollHeight,
-            behavior: 'smooth',
+        return all.sort((a, b) => {
+            // 내 시간은 로컬 상태를 사용하고, 다른 사람은 서버 데이터 사용
+            const aTime = a.user_id === userId ? myFocusTime : (focusTimes[a.user_id] || 0);
+            const bTime = b.user_id === userId ? myFocusTime : (focusTimes[b.user_id] || 0);
+            return bTime - aTime;
         });
-    }, [chatList]);
+    }, [participants, focusTimes, userId, nickname, myFocusTime]);
+
+    const maxFocusTime = useMemo(() => {
+        const allTimes = [...Object.values(focusTimes)];
+        if (userId) {
+            // 내 시간도 최대값 계산에 포함
+            allTimes.push(myFocusTime);
+        }
+        return Math.max(1, ...allTimes);
+    }, [focusTimes, myFocusTime, userId]);
 
     return (
         <div className="focus-room-container">
-            <h1>📚 공부 집중방</h1>
-            <div className="main-content">
-                <div id="video-container" className="video-grid">
-                    <div className="video-wrapper"
-                         style={{border: faceDetected ? '2px solid #38bdf8' : '2px solid #f87171'}}>
-                        <video ref={myVideoRef} autoPlay muted playsInline style={{
-                            width: 240, height: 180, borderRadius: 12, background: camOn ? "#000" : "#222"
-                        }}/>
-                        <p>내 캠 (얼굴 {faceDetected ? '인식됨' : '미인식'})</p>
-                        <div className="controls">
-                            <button onClick={toggleMyCam}>{camOn ? "🎥 끄기" : "🎥 켜기"}</button>
+            <h1 className="focus-room-title">📚 시간 경쟁방</h1>
+            <div className="focus-room-main-content">
+                <div className="focus-room-left-panel">
+                    <div className="video-grid">
+                        {/* Local Participant */}
+                        <div className={`video-wrapper ${faceDetected ? 'face-detected' : ''}`}>
+                            {isCameraOn ? (
+                                <video ref={myVideoRef} autoPlay muted playsInline />
+                            ) : (
+                                <div className="camera-off-placeholder">카메라 꺼짐</div>
+                            )}
+                            <div className="video-info">
+                                <p>나</p>
+                            </div>
+                            <div className="video-controls">
+                                <button onClick={toggleCamera}>{isCameraOn ? '캠 끄기' : '캠 켜기'}</button>
+                                <button onClick={toggleMicrophone}>{isMicOn ? '마이크 끄기' : '마이크 켜기'}</button>
+                            </div>
                         </div>
+                        {/* Remote Participants */}
+                        {participants.filter(p => p.socketId !== socketId).map(p => (
+                            <div key={p.socketId} className="video-wrapper">
+                                {p.stream ? (
+                                    <video
+                                        autoPlay
+                                        playsInline
+                                        ref={video => {
+                                            if (video) {
+                                                // 비디오 요소 참조를 Map에 저장
+                                                remoteVideoRefs.current.set(p.socketId, video);
+
+                                                if (video.srcObject !== p.stream) {
+                                                    video.srcObject = p.stream;
+                                                    console.log(`[Video] Stream attached to ${p.nickname}`);
+                                                }
+
+                                                // 기존 음소거 상태 적용
+                                                if (mutedRemoteUsers.has(p.socketId)) {
+                                                    video.muted = mutedRemoteUsers.get(p.socketId);
+                                                }
+                                            }
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="camera-off-placeholder">연결중...</div>
+                                )}
+                                <div className="video-info">
+                                    <p>{p.nickname}</p>
+                                </div>
+                                <div className="video-controls">
+                                    <button onClick={() => handleToggleMute(p.socketId)}>
+                                        {mutedRemoteUsers.get(p.socketId) ? '음소거 해제' : '음소거'}
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                    {participants.filter(u => u.identity !== userId).map(user => (
-                        <div key={user.identity} className="video-wrapper">
-                            <video id={`video-${user.identity}`} autoPlay playsInline/>
-                            <p>{user.nickname}</p>
-                        </div>
-                    ))}
                 </div>
 
-                <div className="side-section">
-                    <div className="ranking-section">
-                        <h3>📊 공부시간 랭킹 <span
-                            style={{fontSize: 13, color: '#888'}}>{new Date().toISOString().split('T')[0]} 기준</span>
-                        </h3>
-                        <div className="ranking-list">
-                            {showRanking
-                                .sort((a, b) => (b.focusedSeconds || 0) - (a.focusedSeconds || 0))
-                                .slice(0, 5)
-                                .map((user, index) => {
-                                    const seconds = user.focusedSeconds || 0;
-                                    const percent = Math.min((seconds / (showRanking[0]?.focusedSeconds || 1)) * 100, 100);
-                                    const me = String(user.userId ?? user.identity) === String(userId);
-                                    return (
-                                        <div key={user.user_id ?? user.identity} style={{marginBottom: 12}}>
-                                            <div style={{display: 'flex', alignItems: 'center', marginBottom: 4}}>
-                                                <div style={{
-                                                    fontWeight: 700, fontSize: 15,
-                                                    color: medalColors[index] || '#555', marginRight: 8,
-                                                    width: 20, textAlign: 'center'
-                                                }}>{index + 1}</div>
-                                                <div style={{flex: 1, fontWeight: me ? 700 : 500}}>
-                                                    {user.nickname || user.identity}
-                                                </div>
-                                                <div style={{fontSize: 13, color: '#666'}}>{formatTime(seconds)}</div>
-                                            </div>
-                                            <div style={{
-                                                height: 8,
-                                                background: '#e5e7eb',
-                                                borderRadius: 4,
-                                                overflow: 'hidden'
-                                            }}>
-                                                <div style={{
-                                                    width: `${percent}%`,
-                                                    height: '100%',
-                                                    background: medalColors[index] || '#93c5fd'
-                                                }}/>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                        </div>
-                    </div>
+                <div className="focus-room-right-panel">
+                    <div className="focus-room-ranking">
+                        <div className="ranking-header"><h3>✨ 실시간 집중 랭킹</h3></div>
+                        <ul className="ranking-list">
+                            {rankedParticipants.map((p, index) => {
+                                // 내 시간은 로컬 상태를 사용하고, 다른 사람은 서버 데이터 사용
+                                const userTime = p.user_id === userId ? myFocusTime : (focusTimes[p.user_id] || 0);
+                                const progress = (userTime / maxFocusTime) * 100;
 
-                    <div className="chat-section">
-                        <div className="chat-log" ref={chatRef}>
-                            {chatMessages.map((chat, index) => {
-                                const isMine = isMe(chat);
-                                const timestamp = new Date(chat.sent_at || chat.timestamp).toLocaleTimeString('ko-KR', {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                });
+                                // 메달 이모지 결정
+                                let medalEmoji = '';
+                                if (index === 0) medalEmoji = '🥇';
+                                else if (index === 1) medalEmoji = '🥈';
+                                else if (index === 2) medalEmoji = '🥉';
 
                                 return (
-                                    <div key={index} className={`chat-message ${isMine ? 'mine' : 'other'}`}>
-                                        {isMine ? (
-                                            <div className="chat-bubble-right">
-                                                <div className="chat-time">{timestamp}</div>
-                                                <div className="chat-content">{chat.content}</div>
+                                    <li key={p.user_id} className="ranking-item">
+                                        <div className="ranking-main-info">
+                                            <div className="ranking-user-info">
+                                                <span className="rank">{index + 1}</span>
+                                                {medalEmoji && <span className="medal">{medalEmoji}</span>}
+                                                <span className="nickname">{p.nickname}</span>
                                             </div>
-                                        ) : (
-                                            <div className="chat-bubble-left">
-                                                <img
-                                                    src={chat.profile_url || '/icons/default-profile.png'}
-                                                    alt="profile"
-                                                    className="chat-profile-img"
-                                                />
-                                                <div className="chat-info">
-                                                    <div className="chat-nickname">{chat.nickname}</div>
-                                                    <div className="chat-content">{chat.content}</div>
-                                                    <div className="chat-time">{timestamp}</div>
-                                                </div>
+                                            <span className="time">{formatTime(userTime)}</span>
+                                        </div>
+                                        <div className="progress-bar-bg">
+                                            <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
+                                        </div>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                    <div className="focus-room-chat">
+                        <div className="chat-header"><h3>💬 채팅</h3></div>
+                        <div className="chat-log" ref={chatRef}>
+                            {chatMessages.map((chat, index) => {
+                                // 시간 포맷팅 (HH:MM 형식)
+                                const formatTime = (timestamp) => {
+                                    if (!timestamp) {
+                                        const now = new Date();
+                                        return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                                    }
+                                    const date = new Date(timestamp);
+                                    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                                };
+
+                                // 프로필 이미지 또는 이니셜 표시
+                                const initial = chat.nickname ? chat.nickname.charAt(0).toUpperCase() : '?';
+                                const hasProfileImage = chat.profileImageUrl && chat.profileImageUrl.trim() !== '';
+                                // 네비게이션 바처럼 완전한 이미지 경로 생성
+                                const profileImageSrc = hasProfileImage
+                                    ? `${API_BASE_URL_8080}${chat.profileImageUrl}`
+                                    : base_profile;
+
+                                return (
+                                    <div key={index} className={`chat-message ${chat.userId === userId ? 'mine' : 'other'}`}>
+                                        {/* 프로필 이미지 */}
+                                        <div className="chat-profile-img">
+                                            {hasProfileImage ? (
+                                                <img src={profileImageSrc} alt={chat.nickname} />
+                                            ) : (
+                                                <span className="chat-profile-initial">{initial}</span>
+                                            )}
+                                        </div>
+
+                                        {/* 메시지 컨텐츠 */}
+                                        <div className="chat-content-wrapper">
+                                            {/* 닉네임 - 모든 메시지에 표시 */}
+                                            <span className="chat-nickname">{chat.nickname}</span>
+
+                                            {/* 메시지 버블과 시간 */}
+                                            <div className="chat-bubble-time-wrapper">
+                                                <div className="chat-bubble">{chat.message}</div>
+                                                <span className="chat-time">{formatTime(chat.timestamp || chat.time)}</span>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
                                 );
                             })}
                         </div>
-                        <form onSubmit={sendMessage} className="chat-input"
-                              style={{display: 'flex', gap: 4, marginTop: 8}}>
-                            <input
-                                type="text"
-                                value={chatInput}
-                                onChange={(e) => setChatInput(e.target.value)}
-                                placeholder="메시지를 입력하세요..."
-                                style={{flex: 1, padding: 8, borderRadius: 6, border: '1px solid #ccc'}}
-                            />
-                            <button type="submit" style={{
-                                padding: '8px 16px', borderRadius: 6,
-                                border: 'none', background: '#38bdf8', color: '#fff'
-                            }}>전송
-                            </button>
+                        <form onSubmit={handleSendMessage} className="chat-input">
+                            <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="메시지를 입력하세요..." />
+                            <button type="submit">전송</button>
                         </form>
-                        {!faceDetected && modelsLoaded && camOn && (
-                            <div style={{color: '#f87171', marginTop: 12, fontWeight: 500}}>
-                                얼굴이 인식되지 않으면 집중시간이 증가하지 않습니다!
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>

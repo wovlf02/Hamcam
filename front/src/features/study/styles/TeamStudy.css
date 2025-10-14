@@ -1,127 +1,354 @@
+/* === Root Variables: New Design System === */
+:root {
+    --c-primary: #8AB4F8;
+    --c-primary-dark: #669DF6;
+    --c-primary-light: #E8F0FE;
+    --c-accent-green: #81C995;
+    --c-accent-purple: #C58AF9;
+    --c-text-primary: #202124;
+    --c-text-secondary: #5F6368;
+    --c-surface: #F8F9FA;
+    --c-surface-container: #FFFFFF;
+    --c-border: #DADCE0;
+    --c-clay-shadow-light: rgba(0, 0, 0, 0.1);
+    --c-clay-shadow-dark: rgba(255, 255, 255, 0.9);
+    --c-pastel-light-green: #E6FAE6; /* New pastel color for wrappers */
+    --font-main: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* === Main Container: Google SaaS Style === */
 .team-study-container {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    width: 100%; /* Ensure it takes full width */
+    background-color: var(--primary-blue-100, #D9E5FC); /* Match StudyStart page background */
+    padding: 24px 32px;
+    font-family: var(--font-main);
+    color: var(--c-text-primary);
+    min-height: 100vh;
 }
 
-h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-/* TAB BUTTONS */
-.tab-buttons {
-    margin-bottom: 16px;
+/* === Page Header (for centering) === */
+.page-header {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
 }
-.tab-buttons button {
+
+.team-study-container h1 {
+    font-size: 2.5rem; /* Match StudyStart title size */
+    font-weight: 700;
+    margin-bottom: 16px; /* Adjusted margin */
+    color: var(--primary-blue-700, #3B6ACF); /* Match StudyStart title color */
+}
+
+/* === View Mode Toggle === */
+.view-mode-toggle {
+    display: flex;
+    justify-content: center; /* Center buttons within the toggle */
+    margin-bottom: 24px;
+    background-color: var(--c-surface-container, #FFFFFF); /* Changed to white for contrast */
+    border-radius: 8px;
+    padding: 4px;
+    width: fit-content;
+    border: 1px solid var(--c-border);
+}
+
+.view-mode-toggle button {
     padding: 8px 16px;
-    background-color: #f1f1f1;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-.tab-buttons button.active {
-    background-color: #4CAF50;
-    color: white;
-}
-
-/* SEARCH BAR */
-.search-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.search-bar input {
-    flex: 1 1 60%;
-    min-width: 200px;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.search-bar button {
-    padding: 10px 16px;
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: 500;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    flex-shrink: 0;
+    background-color: transparent;
+    color: var(--c-text-secondary);
+    transition: all 0.3s ease;
 }
 
-.search-bar button.search {
-    background-color: #6c757d;
+.view-mode-toggle button.active {
+    background-color: var(--c-surface-container);
+    color: var(--c-primary-dark);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* === Control Header === */
+.control-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 12px;
+    background-color: var(--c-surface-container);
+    border: 1px solid var(--c-border);
+    border-radius: 12px;
+}
+
+.control-header .search-bar {
+    flex-grow: 1;
+    display: flex;
+}
+
+.control-header .search-bar input {
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 15px;
+    border: 1px solid var(--c-border);
+    border-radius: 8px 0 0 8px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.control-header .search-bar input:focus {
+    border-color: var(--c-primary);
+}
+
+.control-header .search-bar button {
+    padding: 0 16px;
+    border: 1px solid var(--c-border);
+    border-left: none;
+    background-color: var(--c-surface);
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+}
+
+.control-header .filter-sort {
+    display: flex;
+    gap: 8px; /* Add gap between dropdowns */
+}
+
+.control-header .filter-sort select {
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    background-color: white;
+}
+
+.control-header .create-room-btn {
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    background-color: var(--primary-blue-700, #3B6ACF); /* Changed for better contrast */
     color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.control-header .create-room-btn:hover {
+    background-color: var(--primary-blue-500, #4A85F6); /* Adjusted hover color */
 }
 
-.search-bar button.search:hover {
-    background-color: #5a6268;
+
+/* === View Layouts: Combined & Split === */
+.split-view-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* Accommodate separator */
+    gap: 24px; /* Add gap between sections */
+    align-items: start; /* Align items to the top */
 }
 
-.search-bar button:not(.search) {
-    background-color: #007bff;
-    color: white;
-}
-.search-bar button:not(.search):hover {
-    background-color: #0056b3;
+.room-section-wrapper {
+    background-color: rgba(255, 255, 255, 0.7); /* Subtle translucent white for a hint of glassmorphism */
+    border: 1px solid var(--c-border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Softer, more prominent shadow for elevated feel */
 }
 
-/* ROOM LIST */
-.study-room-list {
+.split-view-separator {
+    width: 1px;
+    background-color: var(--c-border);
+    margin: 0 16px; /* Spacing around the separator */
+    height: 100%;
+    align-self: stretch; /* Ensure it stretches vertically */
+}
+
+.room-column h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--c-border);
+}
+
+.room-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
     list-style: none;
     padding: 0;
 }
 
-.study-room-item {
+/* === Room Card: Claymorphism === */
+.room-card {
+    background: var(--c-surface-container);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--c-border);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    /* Claymorphism Effect */
+    box-shadow: 4px 4px 8px var(--c-clay-shadow-light),
+                -4px -4px 8px var(--c-clay-shadow-dark);
+}
+
+.room-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 6px 6px 12px var(--c-clay-shadow-light),
+                -6px -6px 12px var(--c-clay-shadow-dark);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.card-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    flex-grow: 1;
+    line-height: 1.4;
+}
+
+.card-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.card-badge.quiz {
+    background-color: var(--c-accent-green);
+    color: white;
+}
+
+.card-badge.focus {
+    background-color: var(--c-accent-purple);
+    color: white;
+}
+
+.card-body {
+    font-size: 14px;
+    color: var(--c-text-secondary);
+    margin-bottom: 16px;
+}
+
+.card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    background-color: #fafafa;
+    font-size: 13px;
+    color: var(--c-text-secondary);
 }
 
-.room-info h2 {
-    margin: 0;
-    font-size: 18px;
+.card-footer .participants,
+.card-footer .lock-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.room-info p {
-    margin: 5px 0 0;
-    color: #666;
-}
-
-.join-button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    font-size: 14px;
-    background-color: #28a745;
+/* 🔹 실시간 접속자 수 배지 스타일 */
+.real-time-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #81C995, #66B885);
     color: white;
-    border: none;
-    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 8px;
+    margin-left: 4px;
+    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 2px 4px rgba(129, 201, 149, 0.3);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.85;
+        transform: scale(1.05);
+    }
+}
+
+/* === Pagination === */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 32px;
+    padding: 8px;
+    list-style: none;
+}
+
+.pagination li {
+    margin: 0 4px;
+}
+
+.pagination button {
+    padding: 8px 12px;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    background-color: var(--c-surface-container);
     cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
 }
 
-.join-button:hover {
-    background-color: #218838;
+.pagination button:hover {
+    background-color: var(--c-primary-light);
+    border-color: var(--c-primary);
 }
 
-/* MODAL */
-.modal {
+.pagination button.active {
+    background-color: var(--c-primary);
+    color: white;
+    border-color: var(--c-primary);
+}
+
+.pagination button:disabled {
+    color: var(--c-border);
+    cursor: not-allowed;
+}
+
+
+/* === Empty State === */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: var(--c-surface-container);
+    border: 1px dashed var(--c-border);
+    border-radius: 16px;
+    color: var(--c-text-secondary);
+    grid-column: 1 / -1; /* Span all columns in grid */
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    opacity: 0.7;
+}
+
+.empty-message {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* === Modal (Re-styled) === */
+.team-study-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(32, 33, 36, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -129,98 +356,103 @@ h1 {
 }
 
 .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
+    background: var(--c-surface-container);
+    padding: 28px 32px;
+    border-radius: 16px;
     width: 90%;
-    max-width: 350px;
-    text-align: center;
+    max-width: 420px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.modal-content h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: var(--c-text-primary);
+}
+
+.modal-content .form-group {
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.modal-content label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--c-text-secondary);
 }
 
 .modal-content input,
 .modal-content select {
     width: 100%;
-    margin-bottom: 10px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 12px 16px;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+.modal-content input:focus,
+.modal-content select:focus {
+    outline: none;
+    border-color: var(--c-primary);
 }
 
-.modal-content button {
-    margin: 5px;
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.modal-buttons button {
     padding: 10px 20px;
+    border-radius: 8px;
     border: none;
-    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.modal-content button:first-child {
-    background-color: #28a745;
+.modal-buttons .btn-cancel {
+    background-color: var(--c-surface);
+    color: var(--c-text-secondary);
+    border: 1px solid var(--c-border);
+}
+.modal-buttons .btn-cancel:hover {
+    background-color: #f1f3f4;
+}
+
+.modal-buttons .btn-create {
+    background-color: var(--c-primary);
     color: white;
 }
-.modal-content button:last-child {
-    background-color: #dc3545;
-    color: white;
+.modal-buttons .btn-create:hover {
+    background-color: var(--c-primary-dark);
 }
 
-/* EMPTY STATE */
-.empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #888;
-    font-size: 1.1rem;
+
+/* === Responsive Design === */
+@media (max-width: 992px) {
+    .split-view-container {
+        grid-template-columns: 1fr; /* Stack columns on smaller screens */
+    }
+    .room-list {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
 }
 
-.empty-icon {
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
-
-.empty-message {
-    margin: 0;
-}
-
-/* RESPONSIVE DESIGN */
 @media (max-width: 768px) {
-    .search-bar {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .study-room-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .join-button {
-        align-self: flex-end;
-    }
-
-    .tab-buttons {
-        flex-direction: column;
-        gap: 6px;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 20px;
-    }
-
-    .search-bar input {
-        font-size: 14px;
-    }
-
-    .search-bar button {
-        font-size: 14px;
-        padding: 8px 14px;
-    }
-
-    .modal-content {
+    .team-study-container {
         padding: 16px;
     }
-
-    .join-button {
-        width: 100%;
+    .control-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .room-list {
+        grid-template-columns: 1fr; /* Single column list */
     }
 }

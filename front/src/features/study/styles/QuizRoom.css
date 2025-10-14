@@ -1,10 +1,9 @@
 /* ===== Wrapper ===== */
 .quizroom-wrapper {
-    padding-left: 13vw;
+    padding-left: 2vw;
     padding-top: 2rem;
     padding-right: 2vw;
     background-color: #f9fafb;
-    width: 100vw;
     height: 100vh;
     box-sizing: border-box;
 }
@@ -41,11 +40,15 @@
 
 /* ===== 비율 배분 ===== */
 .quizroom-problem-section {
-    flex: 1.3;
+    flex: 1;
 }
 .quizroom-video-section {
-    flex: 1.5;
+    flex: 1;
     overflow: hidden;
+}
+
+.quizroom-chat-section {
+    flex: 1;
 }
 
 /* ===== 타이틀 ===== */
@@ -132,10 +135,10 @@
 /* ===== 캠 그리드 ===== */
 .quizroom-video-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     width: 100%;
-    height: 100%;
+    /* height: 100%; */
     overflow-y: auto;
     align-items: start;
     padding-right: 0.5px;
@@ -164,6 +167,18 @@
     object-fit: cover;
     display: block;
     background: #000;
+    border-radius: 12px 12px 0 0;
+}
+
+.camera-off-placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: #333;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
     border-radius: 12px 12px 0 0;
 }
 

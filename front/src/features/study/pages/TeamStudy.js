@@ -1,240 +1,275 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api/api';
-import '../styles/TeamStudy.css';
+import '../styles/TeamStudy.css'; // Main stylesheet
+import useDebounce from '../hooks/useDebounce';
+import { connectSocket } from '../../../socket'; // Socket.IO 연결 함수 import
+
+// Import new components
+import ViewModeToggle from '../components/team/ViewModeToggle';
+import CombinedView from '../components/team/CombinedView';
+import SplitView from '../components/team/SplitView';
+
+// A re-styled and simplified modal
+const CreateRoomModal = ({ show, onClose, onCreate, preselectedRoomType }) => {
+    const [title, setTitle] = useState('');
+    const [roomType, setRoomType] = useState(preselectedRoomType || 'QUIZ'); // Initialize with preselectedRoomType
+    const [maxParticipants, setMaxParticipants] = useState(10); // New state for max participants
+    const [password, setPassword] = useState('');
+
+    useEffect(() => {
+        if (preselectedRoomType) {
+            setRoomType(preselectedRoomType);
+        } else {
+            setRoomType('QUIZ'); // Default when no preselection
+        }
+    }, [preselectedRoomType]);
+
+    if (!show) return null;
+
+    const handleCreate = () => {
+        if (!title.trim()) {
+            alert('학습방 이름을 입력해주세요.');
+            return;
+        }
+        onCreate({ title, room_type: roomType, max_participants: maxParticipants, password }); // Pass max_participants
+        onClose();
+    };
+
+    return (
+        <div className="team-study-modal">
+            <div className="modal-content">
+                <h2>새 학습방 만들기</h2>
+                <div className="form-group">
+                    <label>학습방 이름</label>
+                    <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="예: 함께하는 알고리즘 스터디" />
+                </div>
+                <div className="form-group">
+                    <label>학습방 종류</label>
+                    <select value={roomType} onChange={(e) => setRoomType(e.target.value)} disabled={!!preselectedRoomType}> // Disable if preselected
+                        <option value="QUIZ">문제풀이방</option>
+                        <option value="FOCUS">시간경쟁방</option>
+                    </select>
+                </div>
+                <div className="form-group">
+                    <label>최대 참여자 수</label>
+                    <input
+                        type="number"
+                        value={maxParticipants}
+                        onChange={(e) => setMaxParticipants(parseInt(e.target.value))}
+                        min="1"
+                        placeholder="예: 10"
+                    />
+                </div>
+                <div className="form-group">
+                    <label>비밀번호 (선택)</label>
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="미입력 시 공개방으로 개설" />
+                </div>
+                <div className="modal-buttons">
+                    <button className="btn-cancel" onClick={onClose}>취소</button>
+                    <button className="btn-create" onClick={handleCreate}>생성</button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const TeamStudy = () => {
-    const [tab, setTab] = useState('ALL');
-    const [filterType, setFilterType] = useState('ALL');
-    const [searchTerm, setSearchTerm] = useState('');
-    const [studyRooms, setStudyRooms] = useState([]);
-    const [filteredRooms, setFilteredRooms] = useState([]);
+    const [viewMode, setViewMode] = useState('combined'); // 'combined' or 'split'
+    const [allRooms, setAllRooms] = useState([]);
+    const [realTimeParticipants, setRealTimeParticipants] = useState({}); // 🔹 실시간 접속자 수 state
     const [showModal, setShowModal] = useState(false);
-
-    const [newRoomTitle, setNewRoomTitle] = useState('');
-    const [roomType, setRoomType] = useState('QUIZ');
-    const [maxParticipants, setMaxParticipants] = useState(10);
-    const [password, setPassword] = useState('');
-    const [targetTime, setTargetTime] = useState(60);
-
+    const [preselectedRoomType, setPreselectedRoomType] = useState(null); // New state
     const navigate = useNavigate();
 
+    // State for Combined View
+    const [combinedSearch, setCombinedSearch] = useState('');
+    const debouncedCombinedSearch = useDebounce(combinedSearch, 500);
+    const [combinedFilter, setCombinedFilter] = useState('ALL');
+    const [combinedSort, setCombinedSort] = useState('latest');
+    const [combinedPage, setCombinedPage] = useState(1);
+
+    // State for Split View
+    const [focusSearch, setFocusSearch] = useState('');
+    const debouncedFocusSearch = useDebounce(focusSearch, 500);
+    const [focusSort, setFocusSort] = useState('latest');
+    const [focusPage, setFocusPage] = useState(1);
+
+    const [quizSearch, setQuizSearch] = useState('');
+    const debouncedQuizSearch = useDebounce(quizSearch, 500);
+    const [quizSort, setQuizSort] = useState('latest');
+    const [quizPage, setQuizPage] = useState(1);
+
+    const ITEMS_PER_PAGE = 10;
+
+    // Fetch all rooms once on component mount
     useEffect(() => {
-        fetchRooms();
-    }, [tab, filterType]);
-
-    useEffect(() => {
-        handleSearch();
-    }, [searchTerm]);
-
-    const fetchRooms = async () => {
-        try {
-            let res;
-
-            if (tab === 'ALL') {
-                if (filterType === 'ALL') {
-                    res = await api.get('/study/team/all');
-                } else {
-                    res = await api.get(`/study/team/type?roomType=${filterType}`);
-                }
-            } else if (tab === 'MY') {
-                if (filterType === 'ALL') {
-                    res = await api.post('/study/team/my');
-                } else {
-                    res = await api.get(`/study/team/my/type?roomType=${filterType}`);
-                }
+        const fetchRooms = async () => {
+            try {
+                const res = await api.get('/study/team/all');
+                setAllRooms(res?.data || []);
+            } catch (error) {
+                console.error('팀방 목록 불러오기 실패:', error);
             }
+        };
+        fetchRooms();
+    }, []);
 
-            const roomList = res?.data || [];
-            console.log('[응답 목록] roomList:', roomList);
-            roomList.forEach(room => console.log(`[응답 roomId=${room.room_id}] roomType:`, room.room_type));
+    // 🔹 Socket.IO 기반 실시간 접속자 수 업데이트
+    useEffect(() => {
+        const socket = connectSocket();
 
-            setStudyRooms(roomList);
-            filterRooms(roomList, searchTerm, 'ALL');
-        } catch (error) {
-            console.error('팀방 목록 불러오기 실패:', error);
-        }
+        // 초기 접속자 수 불러오기 (HTTP 요청 1회만)
+        const SIGNALING_SERVER_URL = 'http://localhost:4000';
+        const fetchInitialCounts = async () => {
+            try {
+                const response = await fetch(`${SIGNALING_SERVER_URL}/room-counts`);
+                if (response.ok) {
+                    const counts = await response.json();
+                    setRealTimeParticipants(counts);
+                    console.log('📊 초기 접속자 수 로드:', counts);
+                }
+            } catch (error) {
+                console.error('초기 접속자 수 조회 실패:', error);
+            }
+        };
+        fetchInitialCounts();
+
+        // 🚀 실시간 업데이트 리스너 등록
+        const handleRoomCountUpdate = ({ roomId, count }) => {
+            setRealTimeParticipants(prev => ({
+                ...prev,
+                [roomId]: count
+            }));
+            console.log(`🔄 [${roomId}] 접속자 수 실시간 업데이트: ${count}명`);
+        };
+
+        socket.on('room-count-update', handleRoomCountUpdate);
+
+        // cleanup
+        return () => {
+            socket.off('room-count-update', handleRoomCountUpdate);
+        };
+    }, []);
+
+    // Memoized logic for filtering and sorting rooms
+    const getProcessedRooms = (rooms, searchTerm, sortOrder) => {
+        return rooms
+            .filter(room => room.title.toLowerCase().includes(searchTerm.toLowerCase()))
+            .sort((a, b) => {
+                if (sortOrder === 'popular') {
+                    return (b.max_participants || 0) - (a.max_participants || 0); // Example popularity metric
+                }
+                return new Date(b.created_at) - new Date(a.created_at); // Default to latest
+            });
     };
 
+    // Combined View Data
+    const combinedFilteredRooms = useMemo(() => {
+        const rooms = allRooms.filter(room => combinedFilter === 'ALL' || room.room_type === combinedFilter);
+        return getProcessedRooms(rooms, debouncedCombinedSearch, combinedSort);
+    }, [allRooms, combinedFilter, debouncedCombinedSearch, combinedSort]);
 
-    const filterRooms = (rooms, search, _) => {
-        let filtered = rooms;
+    // Split View Data
+    const focusRooms = useMemo(() => getProcessedRooms(allRooms.filter(r => r.room_type === 'FOCUS'), debouncedFocusSearch, focusSort), [allRooms, debouncedFocusSearch, focusSort]);
+    const quizRooms = useMemo(() => getProcessedRooms(allRooms.filter(r => r.room_type === 'QUIZ'), debouncedQuizSearch, quizSort), [allRooms, debouncedQuizSearch, quizSort]);
 
-        if (search.trim()) {
-            filtered = filtered.filter(room =>
-                room.title.toLowerCase().includes(search.toLowerCase())
-            );
-        }
+    // Pagination Logic
+    const paginate = (items, page) => items.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
-        console.log('[렌더링] 필터링된 room 리스트:', filtered);
-        setFilteredRooms(filtered);
-    };
+    const combinedPaginated = paginate(combinedFilteredRooms, combinedPage);
+    const focusPaginated = paginate(focusRooms, focusPage);
+    const quizPaginated = paginate(quizRooms, quizPage);
 
-    const handleSearch = () => {
-        filterRooms(studyRooms, searchTerm, 'ALL');
-    };
-
-    const handleJoinRoom = async (roomId) => {
-        const room = studyRooms.find(r => r.room_id === roomId);
+    // Event Handlers
+    const handleJoinRoom = (roomId) => {
+        const room = allRooms.find(r => r.room_id === roomId);
         if (!room) return;
-
-        console.log(`[참여 시도] roomId=${roomId}, roomType=${room.roomType}`);
 
         if (room.password) {
             const inputPassword = prompt('비밀번호를 입력하세요:');
-            if (!inputPassword || inputPassword !== room.password) {
+            if (inputPassword !== room.password) {
                 alert('비밀번호가 일치하지 않습니다.');
                 return;
             }
         }
-
-        const route = room.room_type === 'FOCUS'
-            ? `/team-study/focus/${roomId}`    // ✅ 수정
-            : `/team-study/quiz/${roomId}`;    // ✅ 수정
-
+        const route = room.room_type === 'FOCUS' ? `/team-study/focus/${roomId}` : `/team-study/quiz/${roomId}`;
         navigate(route);
     };
 
-    const handleCreateRoom = async () => {
-        if (!newRoomTitle.trim()) {
-            alert('방 제목을 입력해주세요.');
-            return;
-        }
-
+    const handleCreateRoom = async (roomDetails) => {
         try {
-            const createRequest = {
-                title: newRoomTitle,
-                room_type: roomType,
-                password: password || null,
-                target_time: roomType === 'FOCUS' ? targetTime : 0,
-                problem_id: null,
-                subject: null,
-                grade: 0,
-                month: 0,
-                difficulty: null
-            };
-
-            console.log('[생성 요청] roomType:', roomType);
-            console.log('[생성 요청] createRequest:', createRequest);
-
-            const res = await api.post('/study/team/create', createRequest);
-            const newRoomId = res.data;
-
-            alert('학습방이 생성되었습니다!');
-            setShowModal(false);
-            resetForm();
-            fetchRooms();
+            const res = await api.post('/study/team/create', roomDetails);
+            alert('학습방이 성공적으로 생성되었습니다!');
+            const newRoom = { ...roomDetails, room_id: res.data, created_at: new Date().toISOString() };
+            setAllRooms(prev => [newRoom, ...prev]);
         } catch (error) {
             console.error('팀방 생성 실패:', error);
             alert('학습방 생성에 실패했습니다.');
         }
     };
 
-    const resetForm = () => {
-        setNewRoomTitle('');
-        setRoomType('QUIZ');
-        setPassword('');
-        setMaxParticipants(10);
-        setTargetTime(60);
+    const handleShowCreateModal = (type = null) => {
+        setPreselectedRoomType(type);
+        setShowModal(true);
     };
 
     return (
         <div className="team-study-container">
-            <h1>팀 학습 참여하기</h1>
-
-            <div className="tab-buttons">
-                <button className={tab === 'ALL' ? 'active' : ''} onClick={() => setTab('ALL')}>전체 팀방</button>
-                <button className={tab === 'MY' ? 'active' : ''} onClick={() => setTab('MY')}>참여 중인 팀</button>
+            <div className="page-header">
+                <h1>팀 학습 참여하기</h1>
+                <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} />
             </div>
 
-            <div className="filter-buttons">
-                <button className={filterType === 'ALL' ? 'active' : ''} onClick={() => setFilterType('ALL')}>전체</button>
-                <button className={filterType === 'QUIZ' ? 'active' : ''} onClick={() => setFilterType('QUIZ')}>문제풀이방</button>
-                <button className={filterType === 'FOCUS' ? 'active' : ''} onClick={() => setFilterType('FOCUS')}>공부방</button>
-            </div>
-
-            <div className="search-bar">
-                <input
-                    type="text"
-                    placeholder="학습방 검색하기"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+            {viewMode === 'combined' ? (
+                <CombinedView 
+                    rooms={combinedPaginated}
+                    realTimeParticipants={realTimeParticipants}
+                    onJoinRoom={handleJoinRoom}
+                    searchTerm={combinedSearch}
+                    setSearchTerm={setCombinedSearch}
+                    filterType={combinedFilter}
+                    setFilterType={setCombinedFilter}
+                    sortOrder={combinedSort}
+                    setSortOrder={setCombinedSort}
+                    onShowCreateModal={() => handleShowCreateModal(null)}
+                    currentPage={combinedPage}
+                    totalPages={Math.ceil(combinedFilteredRooms.length / ITEMS_PER_PAGE)}
+                    onPageChange={setCombinedPage}
                 />
-                <button className="search" onClick={handleSearch}>검색</button>
-                <button onClick={() => setShowModal(true)}>+ 새 학습방 만들기</button>
-            </div>
-
-            <ul className="study-room-list">
-                {filteredRooms.length === 0 ? (
-                    <li className="empty-state">
-                        <p className="empty-icon">📭</p>
-                        <p className="empty-message">조건에 맞는 학습방이 없습니다.</p>
-                    </li>
-                ) : (
-                    filteredRooms.map((room) => (
-                        <li key={room.room_id} className="study-room-item">
-                            <div className="room-info">
-                                <h2>{room.title}</h2>
-                                <p>참여자 수: {room.max_participants ?? '-'}</p>
-                                <p>유형: {room.room_type === 'FOCUS' ? '공부방' : '문제풀이방'}</p>
-                                {room.password && <p>🔒 비밀번호 설정됨</p>}
-                            </div>
-                            <button className="join-button" onClick={() => handleJoinRoom(room.room_id)}>참여하기</button>
-                        </li>
-                    ))
-                )}
-            </ul>
-
-            {showModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <h2>새 학습방 만들기</h2>
-
-                        <input
-                            type="text"
-                            placeholder="학습방 이름"
-                            value={newRoomTitle}
-                            onChange={(e) => setNewRoomTitle(e.target.value)}
-                        />
-
-                        <select value={roomType} onChange={(e) => setRoomType(e.target.value)}>
-                            <option value="QUIZ">문제풀이방</option>
-                            <option value="FOCUS">공부방</option>
-                        </select>
-
-                        {roomType === 'FOCUS' && (
-                            <>
-                                <label>목표 시간 (분)</label>
-                                <input
-                                    type="number"
-                                    value={targetTime}
-                                    onChange={(e) => setTargetTime(parseInt(e.target.value))}
-                                    placeholder="예: 60"
-                                />
-                            </>
-                        )}
-
-                        <label>최대 참여자 수</label>
-                        <input
-                            type="number"
-                            value={maxParticipants}
-                            onChange={(e) => setMaxParticipants(parseInt(e.target.value))}
-                        />
-
-                        <label>비밀번호 (선택)</label>
-                        <input
-                            type="text"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-
-                        <button onClick={handleCreateRoom}>생성</button>
-                        <button onClick={() => setShowModal(false)}>취소</button>
-                    </div>
-                </div>
+            ) : (
+                <SplitView 
+                    focusRooms={focusPaginated}
+                    quizRooms={quizPaginated}
+                    realTimeParticipants={realTimeParticipants}
+                    onJoinRoom={handleJoinRoom}
+                    onShowCreateModal={handleShowCreateModal}
+                    focusSearch={focusSearch}
+                    setFocusSearch={setFocusSearch}
+                    focusSort={focusSort}
+                    setFocusSort={setFocusSort}
+                    focusCurrentPage={focusPage}
+                    focusTotalPages={Math.ceil(focusRooms.length / ITEMS_PER_PAGE)}
+                    onFocusPageChange={setFocusPage}
+                    quizSearch={quizSearch}
+                    setQuizSearch={setQuizSearch}
+                    quizSort={quizSort}
+                    setQuizSort={setQuizSort}
+                    quizCurrentPage={quizPage}
+                    quizTotalPages={Math.ceil(quizRooms.length / ITEMS_PER_PAGE)}
+                    onQuizPageChange={setQuizPage}
+                />
             )}
+
+            <CreateRoomModal 
+                show={showModal}
+                onClose={() => setShowModal(false)}
+                onCreate={handleCreateRoom}
+                preselectedRoomType={preselectedRoomType} // Pass preselectedRoomType
+            />
         </div>
     );
 };
 
 export default TeamStudy;
+
