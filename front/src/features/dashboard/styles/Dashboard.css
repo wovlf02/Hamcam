@@ -1,4 +1,3 @@
-
 :root {
     /* Modern Google SaaS Palette */
     --primary-blue: #4285F4; /* Google Blue */
@@ -49,7 +48,7 @@
 
 .dashboard-container {
     padding: 32px;
-    background: linear-gradient(135deg, #e0f2f7, #c8e6c9); /* Soft, modern gradient */
+    background: #F0F8FF; /* Alice Blue - same as community page */
     min-height: 100vh;
     font-family: 'Roboto', sans-serif;
     color: var(--text-primary);
@@ -144,9 +143,13 @@
     height: 100%;
 }
 
-
-
-
+.clay-panel { /* Renamed to .clean-panel conceptually, but keeping class name for now */
+    background: var(--panel-bg-color);
+    border-radius: var(--border-radius-large);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* A subtle, clean shadow */
+    padding: 24px;
+    transition: all 0.3s ease;
+}
 
 .dashboard-notice-growth-panel {
     display: flex;

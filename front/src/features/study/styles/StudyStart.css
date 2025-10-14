@@ -14,13 +14,24 @@
     --gray-300: #DADBDE;
     --gray-100: #F0F2F5;
     --white: #FFFFFF;
+    --panel-bg-color: #FFFFFF;
+    --border-radius-large: 20px;
     --clay-shadow-outer: 5px 5px 10px rgba(0, 0, 0, 0.05), -5px -5px 10px rgba(255, 255, 255, 0.5);
     --clay-shadow-hover: 8px 8px 15px rgba(0, 0, 0, 0.08), -8px -8px 15px rgba(255, 255, 255, 0.7);
 }
 
+/* Clay Panel Style */
+.clay-panel {
+    background: var(--panel-bg-color);
+    border-radius: var(--border-radius-large);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+
 .study-start-container {
     padding: 40px 40px; /* Adjusted padding: reduced top padding */
-    background: var(--primary-blue-100); /* Light blue palette background */
+    background: #F0F8FF; /* Alice Blue - same as community page */
     min-height: 100%;
     width: 100%;
     display: flex;

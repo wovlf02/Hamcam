@@ -128,7 +128,7 @@ function Dashboard() {
     };
 
     return (
-        <div className="dashboard-container">
+        <div className="dashboard-container clay-panel">
             <h2 className="dashboard-main-title">학습 대시보드</h2>
 
             <div className="dashboard-board-grid">

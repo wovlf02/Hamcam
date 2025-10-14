@@ -6,7 +6,7 @@ const StudyStart = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="study-start-container">
+        <div className="study-start-container clay-panel">
             <h1 className="study-start-title">학습 모드 선택</h1>
             <div className="study-start-card-row">
                 {/* 개인 학습 카드 */}
