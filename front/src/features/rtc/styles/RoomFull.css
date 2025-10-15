@@ -1,0 +1,37 @@
+/* RoomFull.css */
+
+.room-full-container {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.room-full-container h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #202124;
+    margin-bottom: 16px;
+}
+
+.room-full-container p {
+    font-size: 1.1rem;
+    color: #5F6368;
+    margin-bottom: 32px;
+}
+
+.room-full-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.room-full-btn:hover {
+    background-color: #1e40af;
+    transform: translateY(-2px);
+}
+

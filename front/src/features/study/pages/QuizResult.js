@@ -39,7 +39,6 @@ const QuizResult = () => {
             </div>
             <button
                 className="unit-eval-main-btn"
-                style={{marginTop: 32}}
                 onClick={() => navigate('/dashboard')}
             >
                 대시보드로 돌아가기

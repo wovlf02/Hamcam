@@ -1,0 +1,93 @@
+/* PlanMenu.css */
+
+.plan-menu-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #FFF8DC; /* Cornsilk Pastel - unified with evaluation section */
+}
+
+.plan-menu-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px #2563eb22;
+    padding: 56px 48px 48px 48px;
+    min-width: 370px;
+    max-width: 460px;
+    text-align: center;
+}
+
+.plan-menu-title {
+    margin-bottom: 38px;
+    font-weight: 800;
+    font-size: 2.1rem;
+    color: #222;
+    letter-spacing: -0.01em;
+}
+
+.plan-menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+}
+
+.plan-menu-btn-primary {
+    padding: 18px 0;
+    font-size: 1.18rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 12px #2563eb22;
+    transition: background 0.13s, box-shadow 0.13s;
+    letter-spacing: 0.02em;
+}
+
+.plan-menu-btn-primary:hover {
+    background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%);
+    box-shadow: 0 4px 16px #2563eb33;
+}
+
+.plan-menu-btn-secondary {
+    padding: 18px 0;
+    font-size: 1.18rem;
+    font-weight: 700;
+    background: #fff;
+    color: #2563eb;
+    border: 2.5px solid #2563eb;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 12px #2563eb11;
+    transition: background 0.13s, box-shadow 0.13s, color 0.13s;
+    letter-spacing: 0.02em;
+}
+
+.plan-menu-btn-secondary:hover {
+    background: #2563eb;
+    color: #fff;
+    box-shadow: 0 4px 16px #2563eb33;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .plan-menu-card {
+        min-width: 90%;
+        padding: 40px 32px 32px 32px;
+    }
+
+    .plan-menu-title {
+        font-size: 1.8rem;
+        margin-bottom: 28px;
+    }
+
+    .plan-menu-btn-primary,
+    .plan-menu-btn-secondary {
+        font-size: 1.1rem;
+        padding: 16px 0;
+    }
+}
+

@@ -45,7 +45,7 @@ function Statistics() {
                 {/* 과목별 성취도 */}
                 <div className="statistics-card">
                     <div className="statistics-card-title">과목별 성취도</div>
-                    <div style={{marginTop: 16}}>
+                    <div className="statistics-subject-list">
                         {subjectScores.map((s) => (
                             <div key={s.subject} className="statistics-bar-row">
                                 <span className="statistics-bar-label">{s.subject}</span>
@@ -60,13 +60,13 @@ function Statistics() {
                 {/* 학습 목표 달성률 */}
                 <div className="statistics-card">
                     <div className="statistics-card-title">학습 목표 달성률</div>
-                    <div style={{margin: "24px 0 8px 0", fontWeight: 600, color: "#2563eb"}}>
-                        진행중 <span style={{marginLeft: 16, color: "#222"}}>85%</span>
+                    <div className="statistics-goal-status">
+                        진행중 <span className="statistics-goal-status-value">85%</span>
                     </div>
-                    <div className="statistics-bar-bg" style={{height: 12}}>
-                        <div className="statistics-bar-fill" style={{width: "85%", height: 12, background: "#2563eb"}}/>
+                    <div className="statistics-bar-bg statistics-goal-bar">
+                        <div className="statistics-bar-fill statistics-goal-bar-fill"/>
                     </div>
-                    <div style={{fontSize: 13, color: "#888", marginTop: 8}}>
+                    <div className="statistics-goal-description">
                         목표: 전국 상위 10% 달성
                     </div>
                 </div>
@@ -76,12 +76,12 @@ function Statistics() {
                     <div className="statistics-weak-box">
                         <div>
                             <b>수학 · 미적분</b>
-                            <div style={{fontSize: 13, color: "#888"}}>최근 3회 평균 정답률: 65%</div>
+                            <div className="statistics-weak-info">최근 3회 평균 정답률: 65%</div>
                             <span className="statistics-badge-red">집중 필요</span>
                         </div>
-                        <div style={{marginTop: 18}}>
+                        <div className="statistics-weak-item">
                             <b>영어 · 어휘</b>
-                            <div style={{fontSize: 13, color: "#888"}}>최근 3회 평균 정답률: 72%</div>
+                            <div className="statistics-weak-info">최근 3회 평균 정답률: 72%</div>
                             <span className="statistics-badge-yellow">보통 필요</span>
                         </div>
                     </div>

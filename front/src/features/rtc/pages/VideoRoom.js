@@ -198,7 +198,7 @@ const VideoRoom = () => {
     };
 
     return (
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        <div className="video-grid">
             <div className="video-box">
                 <video ref={myVideoRef} autoPlay muted playsInline className="video" />
                 <div className="name-tag">{user.name}</div>
