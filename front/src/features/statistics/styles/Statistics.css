@@ -1,6 +1,6 @@
 .statistics-container {
     padding: 32px 24px;
-    background: #f7fafd;
+    background: #F3E5F5 !important; /* Light Purple Pastel - !important to override other styles */
     min-height: 100%;
     width: 100%;
 }

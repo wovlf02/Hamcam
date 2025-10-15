@@ -3,7 +3,7 @@
     margin-left: 160px; /* 사이드바 너비 */
     margin-right: auto;
     padding: 32px 24px;
-    background: #f7fafd;
+    background: #FFF8DC !important; /* Cornsilk Pastel - !important to override other styles */
     min-height: 100vh;
 }
 

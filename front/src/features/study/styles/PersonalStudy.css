@@ -5,6 +5,7 @@
     flex-direction: column; /* Stack title and card vertically */
     align-items: center; /* Center horizontally */
     min-height: 100vh;
+    background: #E1F5FE !important; /* Light Blue Pastel - !important to override other styles */
 }
 
 .personal-study-title {

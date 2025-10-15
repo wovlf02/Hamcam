@@ -1,6 +1,6 @@
 .plan-list-bg {
     min-height: 100vh;
-    background: linear-gradient(120deg, #f7fafd 60%, #e0e7ff 100%);
+    background: #FFF8DC !important; /* Cornsilk Pastel - !important to override other styles */
     padding: 0 0 60px 0;
     margin-left: 160px; /* 사이드바 만큼 띄우기 */
 }

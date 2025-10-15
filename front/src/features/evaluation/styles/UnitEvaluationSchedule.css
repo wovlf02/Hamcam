@@ -1,7 +1,7 @@
 .schedule-container {
     margin-left: 160px;
     padding: 48px 32px 32px 32px;
-    background: #f7fafd;
+    background: #FFF8DC !important; /* Cornsilk Pastel - !important to override other styles */
     min-height: 100vh;
     max-width: 1400px;
     box-sizing: border-box;

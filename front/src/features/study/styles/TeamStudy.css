@@ -18,7 +18,7 @@
 
 /* === Main Container: Google SaaS Style === */
 .team-study-container {
-    background-color: var(--primary-blue-100, #D9E5FC); /* Match StudyStart page background */
+    background-color: #E1F5FE !important; /* Light Blue Pastel - !important to override other styles */
     padding: 24px 32px;
     font-family: var(--font-main);
     color: var(--c-text-primary);

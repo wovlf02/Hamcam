@@ -10,7 +10,7 @@ function PlanMenu() {
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      background: "linear-gradient(120deg, #f7fafd 60%, #e0e7ff 100%)"
+      background: "#FFF8DC" /* Cornsilk Pastel - unified with evaluation section */
     }}>
       <div style={{
         background: "#fff",

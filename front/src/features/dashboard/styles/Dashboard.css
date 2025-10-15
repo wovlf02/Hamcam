@@ -52,7 +52,7 @@
 
 .dashboard-container {
     padding: 32px;
-    background: #F0F8FF; /* Alice Blue */
+    background: #E6E6FA !important; /* Lavender Pastel - !important to override other styles */
     min-height: 100vh;
     font-family: 'Roboto', sans-serif;
     color: var(--text-primary);
@@ -60,7 +60,7 @@
 
 /* Dashboard specific clay-panel - override global */
 .dashboard-container.clay-panel {
-    background: #FFF9F0; /* Light Peach Pastel for dashboard */
+    background: #E6E6FA !important; /* Lavender Pastel - ensure this takes precedence */
     border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     padding: 24px;
