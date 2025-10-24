@@ -103,75 +103,57 @@ const CamStudyPage = () => {
     return (
         <div className="camstudy-root">
             <div className="camstudy-container">
-                {/* 비디오 섹션 */}
-                <div className="camstudy-video-container">
-                    <video
-                        ref={videoRef}
-                        autoPlay
-                        muted
-                        className="camstudy-video"
-                    />
+                <video
+                    ref={videoRef}
+                    autoPlay
+                    muted
+                    className="camstudy-video"
+                />
+                {!modelsLoaded && <span>모델 로딩 중...</span>}
+
+                {/* 단원명 */}
+                <div className="camstudy-unitname">
+                    {unitName}
                 </div>
 
-                {/* 컨트롤 섹션 */}
-                <div className="camstudy-controls">
-                    {/* 단원명 */}
-                    <div className="camstudy-unitname">
-                        📚 {unitName}
-                    </div>
+                {/* 타이머 및 버튼 */}
+                <div className="camstudy-timer-row">
+          <span className="camstudy-timer">
+            <span className="camstudy-timer-dot"/>
+              {formatTime(secondsLeft)}
+          </span>
+                    <button
+                        onClick={() => setIsPaused(false)}
+                        disabled={!isPaused || isFinished || !faceDetected}
+                        className="camstudy-btn-play"
+                    >
+                        ▶ 재개
+                    </button>
+                    <button
+                        onClick={() => setIsPaused(true)}
+                        disabled={isPaused || isFinished}
+                        className="camstudy-btn-pause"
+                    >
+                        ■ 휴식
+                    </button>
+                </div>
 
-                    {/* 로딩 상태 */}
-                    {!modelsLoaded && (
-                        <div className="camstudy-status">
-                            <div className="loading-indicator">
-                                <div className="loading-spinner"></div>
-                                AI 모델 로딩 중...
-                            </div>
-                        </div>
-                    )}
-
-                    {/* 타이머 섹션 */}
-                    <div className="camstudy-timer-section">
-                        <div className="camstudy-timer">
-                            <span className="camstudy-timer-dot"></span>
-                            {formatTime(secondsLeft)}
-                        </div>
-                        <div className="camstudy-timer-row">
-                            <button
-                                onClick={() => setIsPaused(false)}
-                                disabled={!isPaused || isFinished || !faceDetected}
-                                className="camstudy-btn-play"
-                            >
-                                ▶️ 재개
-                            </button>
-                            <button
-                                onClick={() => setIsPaused(true)}
-                                disabled={isPaused || isFinished}
-                                className="camstudy-btn-pause"
-                            >
-                                ⏸️ 휴식
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* 얼굴 미인식 경고 */}
-                    {!faceDetected && modelsLoaded && (
-                        <div className="camstudy-warning">
-                            얼굴이 인식되지 않으면 타이머가 멈춥니다
-                        </div>
-                    )}
-
-                    {/* 집중 가이드 */}
-                    <div className="camstudy-alert">
-                        <span className="camstudy-alert-icon">💡</span>
-                        <div>
-                            <div className="camstudy-alert-title">학습 집중 가이드</div>
-                            <div className="camstudy-alert-desc">
-                                효과적인 학습을 위해 바른 자세를 유지하고, 주변 소음을 차단하여 집중력을 높여주세요.
-                            </div>
+                {/* 집중 알림 */}
+                <div className="camstudy-alert">
+                    <span className="camstudy-alert-icon">⚠️</span>
+                    <div>
+                        <div className="camstudy-alert-title">학습 집중 알림</div>
+                        <div className="camstudy-alert-desc">
+                            효과적인 학습을 위해 바른 자세를 유지하고, 주변 소음을 차단하여 집중력을 높여주세요.
                         </div>
                     </div>
                 </div>
+                {/* 얼굴 미인식 안내 */}
+                {!faceDetected && modelsLoaded && (
+                    <div className="camstudy-warning">
+                        얼굴이 인식되지 않으면 타이머가 멈춥니다.
+                    </div>
+                )}
             </div>
         </div>
     );
