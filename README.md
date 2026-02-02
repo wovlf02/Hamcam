@@ -1,275 +1,565 @@
-# 🎓 Hamcam
+<h1 align="center">🎓 Hamcam</h1>
 
-## 🚀 프로젝트 한눈에 보기
-Hamcam은 자기주도 학습의 한계를 보완하고 교육 격차를 완화하기 위해 설계된 학습 관리 및 협업 플랫폼입니다. 웹(React)과 Java(Spring Boot) 백엔드로 구성되며, 개인 학습 측정(Face API), AI 기반 학습계획(Gemini), 실시간 멀티미디어(WebRTC/LiveKit) 등 다양한 기능을 제공합니다.
+<p align="center">
+  <strong>학습 관리 및 협업 플랫폼</strong><br>
+  자기주도 학습의 한계를 보완하고 교육 격차를 완화하기 위해 설계된 종합 학습 플랫폼
+</p>
 
----
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-21.0.8-ED8B00?style=flat-square&logo=openjdk&logoColor=white" alt="Java 21"/>
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.4.2-6DB33F?style=flat-square&logo=spring-boot&logoColor=white" alt="Spring Boot"/>
+  <img src="https://img.shields.io/badge/React-19.1.0-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React"/>
+  <img src="https://img.shields.io/badge/Node.js-22.17.0-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js"/>
+</p>
 
-## 🛠️ 기술 스택
+<p align="center">
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat-square&logo=mysql&logoColor=white" alt="MySQL"/>
+  <img src="https://img.shields.io/badge/Redis-7.0-DC382D?style=flat-square&logo=redis&logoColor=white" alt="Redis"/>
+  <img src="https://img.shields.io/badge/Docker-Latest-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"/>
+  <img src="https://img.shields.io/badge/WebRTC-P2P-333333?style=flat-square&logo=webrtc&logoColor=white" alt="WebRTC"/>
+</p>
 
-| 🔧 영역            | 🛠️ 기술                | 🔢 버전 |
-|-------------------|---------------------|--------|
-| **Back-End**      | Java               | 21.0.8 |
-|                   | Spring Boot        | 3.4.2  |
-|                   | Gradle Wrapper     | 8.11.1 |
-| **Front-End**     | React              | ^19.1.0|
-|                   | Node.js            | 22.17.0|
-| **Realtime/Media**| LiveKit / WebRTC   | 사용    |
-| **AI/ML**         | Gemini, Face API   | 사용    |
-| **DB/Cache**      | MySQL, Redis       | 사용    |
-| **DevOps**        | Docker, GitHub     | 사용    |
-
----
-
-## 📖 프로젝트 개요
-
-### 배경 및 목적
-- 해결 대상
-  - 자기주도 학습의 7가지 과제: 명확한 목표 부족, 시간 관리의 어려움, 자원 접근 제한, 동기 부족, 집중력 문제, 과도한 부담감, 피드백 부족
-  - 교육 격차 심화: 가정·환경·자원 등 외부 요인에 의한 성취도 차이를 완화
-- 목표
-  - 개인별 학습 추적과 맞춤 피드백으로 학습 효율을 높이고, 협업 기능으로 문제 해결 능력과 동기를 강화합니다.
-
-### 핵심 기능
-
-| 기능 | 설명 | 관련 기술 |
-|---|---:|:---|
-| 대시보드 | Todo 리스트, 시험 D‑Day, 학습 통계 시각화로 목표와 진행을 한눈에 관리 | — |
-| 개인 학습 | Face API로 공부 시간 자동 측정·기록하여 실제 학습량 추적 | Face API |
-| 팀 학습 | WebRTC + WebSocket 기반 실시간 문제풀이방 및 시간 경쟁형 룸(화상/음성/채팅) | WebRTC / WebSocket |
-| 학습 계획 | Gemini 기반 AI가 학습 계획 초안 생성, 사용자가 수정·삭제·커스터마이징 가능 | Gemini |
-| 단원 평가 | 자동 채점 및 AI 오답 해설(오답노트)로 약점 보완 지원 | AI (Gemini 등) |
-| **수학 문제 평가** | **2025년 모의평가 기출문제 기반 맞춤형 수학 실력 진단** | **Spring Boot + React** |
-| 커뮤니티 | 친구 관리, 1:1·그룹 채팅, 게시판을 통한 피어 러닝 지원 | REST / WebSocket |
-
-## 📝 기대 효과 및 결론
-
-1) 체계적 학습 습관 형성
-- 자동 측정(Face API) + 대시보드 시각화 → 학습 몰입도 및 지속성 향상
-- Todo/D‑Day로 목표 점검·우선순위 관리로 꾸준한 학습 유도
-
-2) 심층적 사고력 확장 및 문제 해결 능력 강화
-- 팀문제풀이/발표로 풀이 과정 공유 → 다양한 풀이 방식 학습 및 사고 확장
-- 실전형 협업 경험 누적으로 문제 해결 역량 향상
-
-3) AI 기반 개인 맞춤 학습으로 학습 효율 극대화
-- Gemini 기반 맞춤 피드백·오답노트로 취약점 식별 및 최적 학습 경로 제공
-- 개인별 최적화로 동일 시간 대비 학습 성과 상승
+<p align="center">
+  <a href="#-주요-기능">주요 기능</a> •
+  <a href="#-기술-스택">기술 스택</a> •
+  <a href="#-빠른-시작">빠른 시작</a> •
+  <a href="#-프로젝트-구조">프로젝트 구조</a> •
+  <a href="#-api-문서">문서</a>
+</p>
 
 ---
 
-## 🗂️ 프로젝트 구조
+## 📖 목차
+
+- [프로젝트 소개](#-프로젝트-소개)
+- [주요 기능](#-주요-기능)
+- [기술 스택](#-기술-스택)
+- [시스템 아키텍처](#-시스템-아키텍처)
+- [빠른 시작](#-빠른-시작)
+- [프로젝트 구조](#-프로젝트-구조)
+- [환경 설정](#-환경-설정)
+- [API 문서](#-api-문서)
+- [기대 효과](#-기대-효과)
+- [기여 가이드](#-기여-가이드)
+- [라이선스](#-라이선스)
+- [연락처](#-연락처)
+
+---
+
+## 🎯 프로젝트 소개
+
+**Hamcam**은 자기주도 학습의 한계를 보완하고 교육 격차를 완화하기 위해 설계된 학습 관리 및 협업 플랫폼입니다.
+
+### 해결하고자 하는 문제
+
+| 과제 | 설명 | 해결 방안 |
+|------|------|----------|
+| 🎯 명확한 목표 부족 | 학습 방향성 설정의 어려움 | AI 기반 학습 계획 생성 |
+| ⏰ 시간 관리의 어려움 | 계획적인 학습 시간 배분 실패 | Todo/D-Day 대시보드 |
+| 📚 자원 접근 제한 | 양질의 학습 자료 부족 | 2025년 모의평가 기출문제 제공 |
+| 💪 동기 부족 | 지속적인 학습 의욕 유지 실패 | 팀 스터디 및 경쟁 시스템 |
+| 🧠 집중력 문제 | 외부 방해 요소로 인한 집중력 저하 | Face API 실시간 학습 측정 |
+| 📝 피드백 부족 | 학습 성과에 대한 즉각적 피드백 부재 | AI 기반 오답 해설 및 피드백 |
+
+---
+
+## ✨ 주요 기능
+
+### 📊 대시보드
+- **Todo 관리**: 생성/수정/삭제/완료 토글, 우선순위 설정
+- **시험 일정 관리**: D-Day 조회, 시험 일정 등록
+- **학습 통계**: 전체/과목별/주간/월간 통계 시각화 (Recharts)
+- **목표 설정**: AI 기반 목표 제안 및 수동 업데이트
+- **캘린더**: 월별 학습 일정 통합 관리
+
+### 📖 개인 학습
+- **Face API 학습 측정**: 실시간 얼굴 감지를 통한 학습 집중도 측정
+- **자동 타이머 제어**: 얼굴 감지 상태에 따라 학습 타이머 자동 시작/정지
+- **학습 데이터 자동 저장**: 측정된 학습 시간 백엔드 API를 통해 DB 저장
+
+### 👥 팀 학습
+- **스터디방 관리**: 생성/입장/삭제
+- **실시간 화상 통신**: WebRTC P2P 기반 화상 스터디
+- **퀴즈 풀이방 (QuizRoom)**: 실시간 문제 풀이 및 경쟁
+- **집중 경쟁방 (FocusRoom)**: 학습 시간 측정 및 순위 경쟁
+- **실시간 채팅**: 스터디방 내 실시간 메시지
+
+### 📝 수학 평가 시스템
+- **2025년 모의평가 기출문제**: 실제 6월, 9월 모의평가 문제 제공
+- **맞춤형 난이도 조절**: 1-5등급 문제를 학생 수준에 맞게 제공
+- **실시간 평가**: 즉시 채점 및 피드백 제공
+- **오답노트**: 틀린 문제 자동 수집 및 복습 관리
+
+### 🤖 AI 학습 지원
+- **AI 학습 계획 생성**: Gemini AI 기반 맞춤 학습 계획
+- **AI 오답 해설**: 틀린 문제에 대한 상세 해설 제공
+- **학습 회고 생성**: 주간/기간별 학습 회고 AI 생성
+
+### 💬 커뮤니티
+- **게시판**: 게시글 CRUD, 댓글, 좋아요
+- **그룹 채팅**: 채팅방 생성 및 실시간 메시지
+- **1:1 채팅**: 친구 간 다이렉트 메시지
+- **친구 관리**: 친구 요청/수락/차단
+
+---
+
+## 🛠 기술 스택
+
+### Frontend
+
+| 기술 | 버전 | 용도 |
+|------|------|------|
+| React | ^19.1.0 | SPA UI 프레임워크 |
+| React Router | ^7.4.1 | 클라이언트 사이드 라우팅 |
+| Axios | ^1.8.4 | HTTP 클라이언트 |
+| Socket.IO Client | ^4.8.1 | 실시간 통신 클라이언트 |
+| styled-components | ^6.1.18 | CSS-in-JS 스타일링 |
+| Recharts | ^2.15.3 | 차트 시각화 |
+| face-api.js | ^0.22.2 | 얼굴 인식 |
+
+### Backend
+
+| 기술 | 버전 | 용도 |
+|------|------|------|
+| Java | 21.0.8 (LTS) | 프로그래밍 언어 |
+| Spring Boot | 3.4.2 | 백엔드 프레임워크 |
+| Gradle | 8.11.1 | 빌드 도구 |
+| Spring Data JPA | - | ORM |
+| Spring WebSocket | - | WebSocket/STOMP |
+| JWT (jjwt) | 0.11.5 | 토큰 인증 |
+
+### Signaling Server
+
+| 기술 | 버전 | 용도 |
+|------|------|------|
+| Node.js | 22.17.0 | JavaScript 런타임 |
+| Socket.IO | 4.8.1 | WebRTC 시그널링 |
+| Axios | ^1.12.2 | HTTP 클라이언트 |
+
+### Database & Infrastructure
+
+| 기술 | 버전 | 용도 |
+|------|------|------|
+| MySQL | 8.0 | 주 데이터베이스 |
+| Redis | 7.0 | 세션/캐시 저장소 |
+| Docker | - | 컨테이너화 |
+
+### AI/ML
+
+| 기술 | 용도 |
+|------|------|
+| Gemini AI | AI 학습 계획, 피드백 생성 |
+| face-api.js | 브라우저 기반 얼굴 인식 |
+
+---
+
+## 🏗 시스템 아키텍처
 
 ```
-Hamcam/
-├── back/                  # Spring Boot 백엔드
-│   ├── build.gradle       # 의존성 및 빌드 설정
-│   ├── src/
-│   │  ├── main/
-│   │  │  ├── java/
-│   │  │  │  └── com/hamcam/back/
-│   │  │  │     ├── BackApplication.java  # 애플리케이션 진입점
-│   │  │  │     ├── config/               # 설정 파일
-│   │  │  │     │  ├── auth/               # 메일, JWT, 이메일 검증 등 인증 설정
-│   │  │  │     │  ├── socket/             # WebSocket/Socket 설정 (STOMP 등)
-│   │  │  │     │  └── web/                # CORS, MVC, 인터셉터 등 웹 설정
-│   │  │  │     ├── controller/           # REST 컨트롤러 계층 (엔드포인트)
-│   │  │  │     │  ├── admin/              # 관리자용 엔드포인트 (리포트·관리)
-│   │  │  │     │  ├── auth/               # 인증(로그인/회원가입/인증) 관련 엔드포인트
-│   │  │  │     │  ├── chat/               # 채팅·메시지 관련 API
-│   │  │  │     │  ├── community/          # 게시판·커뮤니티 API
-│   │  │  │     │  ├── friend/             # 친구 관리 API
-│   │  │  │     │  └── video/              # 실시간 비디오/회의 관련 엔드포인트
-│   │  │  │     ├── dto/                  # 요청/응답용 DTO
-│   │  │  │     │  ├── admin/              # 관리자 관련 DTO
-│   │  │  │     │  ├── auth/               # 로그인/회원가입/토큰 DTO
-│   │  │  │     │  ├── chat/               # 메시지/채팅방 DTO
-│   │  │  │     │  ├── community/          # 게시판 DTO
-│   │  │  │     │  ├── friend/             # 친구 관련 DTO
-│   │  │  │     │  └── video/              # 비디오 관련 DTO
-│   │  │  │     ├── entity/               # JPA 엔티티 (도메인 모델)
-│   │  │  │     │  ├── auth/               # User 등 인증 엔티티
-│   │  │  │     │  ├── chat/               # ChatMessage, ChatRoom 등
-│   │  │  │     │  ├── community/          # Post, Comment 등
-│   │  │  │     │  ├── friend/             # Friendship 등
-│   │  │  │     │  ├── **math/             # 수학 문제 관련 엔티티** 
-│   │  │  │     │  │  ├── **MathProblem          # 수학 문제 정보 (2025 모의평가)**
-│   │  │  │     │  │  ├── **Student              # 학생 정보 및 수학 레벨**
-│   │  │  │     │  │  ├── **MathProblemAttempt   # 수학 문제 시도 기록**
-│   │  │  │     │  │  ├── **StudentWrongAnswer   # 오답노트**
-│   │  │  │     │  │  └── **ReviewAttempt        # 복습 시도 기록** 
-│   │  │  │     │  └── video/              # VideoRoom 등 엔티티
-│   │  │  │     ├── repository/           # DB 접근 계층 (Spring Data JPA 등)
-│   │  │  │     │  ├── auth/               # UserRepository 등
-│   │  │  │     │  ├── chat/               # 채팅 관련 저장소
-│   │  │  │     │  ├── community/          # 게시판 저장소
-│   │  │  │     │  ├── friend/             # 친구 저장소
-│   │  │  │     │  └── video/              # 비디오 저장소
-│   │  │  │     ├── security/             # 보안 관련 코드
-│   │  │  │     │  └── auth/               # JWT 발급/검증, UserDetails 등
-│   │  │  │     ├── service/              # 비즈니스 로직
-│   │  │  │     │  ├── auth/               # 인증 로직, 토큰 관리, 이메일 검증
-│   │  │  │     │  └── video/              # LiveKit/WebRTC 연동, 룸 관리
-│   │  │  │     └── utils/                # 유틸리티 함수들
-│   │  │  │        ├── auth/              # 토큰/암호화/인증 보조 유틸
-│   │  │  │        ├── common/            # 공통 도우미(헬퍼) 함수
-│   │  │  │        └── file/              # 파일명 생성, 저장 처리 유틸
-│   │  │  └── resources/
-│   │  └── test/
-├── front_web/             # React 웹 프론트엔드
-│   ├── package.json       # 의존성 및 스크립트
-│   ├── package-lock.json
-│   ├── public/            # 정적 자원(앱 쉘, 아이콘, manifest 등)
-│   │  ├── index.html      # SPA 진입점
-│   │  ├── favicon.ico
-│   │  ├── logo192.png
-│   │  ├── logo512.png
-│   │  ├── manifest.json
-│   │  └── robots.txt
-│   ├── src/               # 애플리케이션 소스
-│   │  ├── App.js          # 루트 컴포넌트
-│   │  ├── index.js        # 클라이언트 진입점, 라우터/리덕스 초기화 등
-│   │  ├── components/     # 재사용 가능한 UI 요소 (버튼, 모달, 레이아웃 등)
-│   │  ├── pages/          # 페이지 단위 컴포넌트(라우팅 대상), 각 페이지는 여러 컴포넌트를 조합
-│   │  ├── **features/     # 기능별 모듈화된 컴포넌트**
-│   │  │  └── **evaluation/ # 수학 문제 평가 시스템**
-│   │  │     ├── **components/ # 수학 평가 컴포넌트들**
-│   │  │     │  ├── **MathEvaluationMain.jsx  # 수학 평가 메인 페이지**
-│   │  │     │  ├── **MathProblemSolver.jsx   # 문제 풀이 인터페이스**
-│   │  │     │  ├── **MathEvaluationMain.css  # 메인 페이지 스타일**
-│   │  │     │  └── **MathProblemSolver.css   # 문제 풀이 스타일**
-│   │  │     ├── **data/       # 수학 문제 데이터**
-│   │  │     │  └── **mathProblems.js         # 2025년 모의평가 문제 데이터**
-│   │  │     └── **index.js    # 모듈 내보내기**
-│   │  ├── css/            # 전역/모듈 CSS 파일
-│   │  ├── setupTests.js   # Jest 셋업
-│   │  └── App.test.js     # 기본 테스트
-│   └── public/
-└── lib/                   # 외부 라이브러리
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              클라이언트 (Browser)                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐  ┌──────────────┐  │
+│  │   React 19    │  │   Face API    │  │  Socket.IO    │  │   WebRTC     │  │
+│  │   (SPA)       │  │   (학습 측정)  │  │  Client       │  │   P2P        │  │
+│  │   Port:3000   │  │               │  │               │  │              │  │
+│  └───────┬───────┘  └───────┬───────┘  └───────┬───────┘  └──────┬───────┘  │
+└──────────┼──────────────────┼───────────────────┼─────────────────┼─────────┘
+           │                  │                   │                 │
+           ▼                  ▼                   ▼                 │
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                               서버 레이어                                    │
+├───────────────────────────────┬──────────────────────────────────────────────┤
+│     Spring Boot 3.4.2         │           Node.js 22.17                      │
+│     (REST API Server)         │           (Signaling Server)                 │
+│     Port: 8080                │           Port: 4000                         │
+└───────────────────────────────┴──────────────────────────────────────────────┘
+           │                                        │
+           ▼                                        │
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                            데이터 레이어                                     │
+├─────────────────────────────────┬────────────────────────────────────────────┤
+│         MySQL 8.0               │              Redis 7.0                     │
+│     (Primary Database)          │         (Session & Cache)                  │
+│     Port: 3306                  │         Port: 6379                         │
+└─────────────────────────────────┴────────────────────────────────────────────┘
 ```
 
-## 역할 정리
+### 포트 구성
 
-### Config
-- `config/auth`: 이메일 전송, JWT 키/만료 정책, 인증 관련 설정을 관리합니다.
-- `config/socket`: WebSocket/STOMP 및 메시지 브로커(예: Redis, RabbitMQ) 설정을 포함합니다.
-- `config/web`: CORS, 인터셉터, 리졸버 등 웹 관련 공통 설정을 담당합니다.
-
-### Controller (엔드포인트)
-- `controller/admin`: 관리자 전용 API(리포트 조회, 사용자 관리 등).
-- `controller/auth`: 로그인, 회원가입, 이메일/토큰 인증 관련 엔드포인트.
-- `controller/chat`: 채팅방 생성/메시지 송수신/첨부파일 처리 API.
-- `controller/community`: 게시글/댓글/검색/카테고리 관련 API.
-- `controller/friend`: 친구 요청/수락/차단 등 친구 관리 API.
-- `controller/video`: 실시간 화상 회의, 룸 입장/퇴장, 권한 관리 API.
-
-### DTO / Entity / Repository
-- `dto/*`: 각 API의 요청 및 응답 형식을 정의하는 객체 모음 (입력 검증 포함).
-- `entity/*`: 데이터베이스 테이블과 매핑되는 도메인 모델(JPA 엔티티).
-- `repository/*`: 엔티티 저장소 인터페이스 (쿼리, 페이징, 트랜잭션 경계 담당).
-
-### Security / Service / Utils
-- `security/auth`: 인증·인가 핵심 로직 (UserDetails, JWT 필터/프로바이더 등).
-- `service/auth`: 로그인/회원가입, 토큰 발급/갱신, 비밀번호 재설정 등 인증 비즈니스 로직.
-- `service/video`: LiveKit/WebRTC 연동, 룸 매니저, 실시간 권한 검증 로직.
-- `utils/auth`: 인증 보조 유틸 (토큰 생성/검증 등).
-- `utils/common`: 로깅, 변환, 날짜 등 프로젝트 전반에 쓰이는 공통 유틸.
-- `utils/file`: 파일명 생성, 업로드/다운로드 처리, 파일 타입 검사 유틸.
-
----
-
-## ⚙️ 환경 및 전제 조건
-
-### 개발 환경
-- ☕ **Java**: 21.0.8
-- 🖥️ **Node.js**: 22.17.0
-- ⚙️ **Gradle**: 8.11.1
-- 🐳 **Docker**: MySQL, Redis 컨테이너 실행
-
-### 필수 환경 변수
-- `SPRING_DATASOURCE_URL` — JDBC URL
-- `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD`
-- `JWT_SECRET` — JWT 서명 비밀
-- `SPRING_REDIS_HOST` / `SPRING_REDIS_PORT`
-- `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET`
-- `GEMINI_API_KEY`
-
-> **Tip**: 비밀값은 안전한 비밀 관리 시스템에 저장하세요.
+| 서비스 | 포트 | 프로토콜 | 설명 |
+|--------|------|----------|------|
+| Frontend (React) | 3000 | HTTP | 개발 서버 |
+| Backend (Spring Boot) | 8080 | HTTP/WS | REST API + WebSocket |
+| Signaling Server | 4000 | HTTP/WS | Socket.IO 시그널링 |
+| MySQL | 3306 | TCP | 데이터베이스 |
+| Redis | 6379 | TCP | 세션/캐시 |
 
 ---
 
 ## 🚀 빠른 시작
 
-### 백엔드 실행
-```powershell
+### 사전 요구사항
+
+- **Java**: 21.0.8 LTS
+- **Node.js**: 22.17.0
+- **Docker**: 최신 버전 (MySQL, Redis용)
+- **Git**: 최신 버전
+
+### 1. 저장소 클론
+
+```bash
+git clone https://github.com/wovlf02/Hamcam.git
+cd Hamcam
+```
+
+### 2. Docker 컨테이너 실행 (MySQL, Redis)
+
+```bash
+docker-compose up -d
+```
+
+### 3. 백엔드 실행
+
+```bash
 cd back
+
+# macOS/Linux
+./gradlew clean build
+./gradlew bootRun
+
+# Windows
 ./gradlew.bat clean build
 ./gradlew.bat bootRun
 ```
 
-### 프론트엔드 실행
-```powershell
-cd front_web
+### 4. 프론트엔드 실행
+
+```bash
+cd front
 npm install
 npm start
 ```
+
+### 5. 시그널링 서버 실행
+
+```bash
+cd signaling_server
+npm install
+node signalingServer.js
+```
+
+### 6. 접속
+
+브라우저에서 `http://localhost:3000` 접속
+
+---
+
+## 📁 프로젝트 구조
+
+```
+Hamcam/
+├── back/                           # Spring Boot 백엔드
+│   ├── build.gradle                # Gradle 빌드 설정
+│   ├── gradlew                     # Gradle Wrapper (Unix)
+│   ├── gradlew.bat                 # Gradle Wrapper (Windows)
+│   └── src/
+│       ├── main/
+│       │   ├── java/com/hamcam/back/
+│       │   │   ├── BackApplication.java    # 애플리케이션 진입점
+│       │   │   ├── config/                 # 설정 클래스
+│       │   │   │   ├── auth/               # 이메일 설정
+│       │   │   │   ├── socket/             # WebSocket 설정
+│       │   │   │   └── web/                # CORS, Redis, Jackson 설정
+│       │   │   ├── controller/             # REST 컨트롤러
+│       │   │   │   ├── auth/               # 인증 API
+│       │   │   │   ├── community/          # 커뮤니티 API
+│       │   │   │   ├── dashboard/          # 대시보드 API
+│       │   │   │   ├── evaluation/         # 평가 API
+│       │   │   │   ├── study/              # 학습 API
+│       │   │   │   └── user/               # 사용자 API
+│       │   │   ├── dto/                    # 데이터 전송 객체
+│       │   │   ├── entity/                 # JPA 엔티티
+│       │   │   ├── global/                 # 글로벌 설정 (예외처리, 응답)
+│       │   │   ├── handler/                # 핸들러
+│       │   │   ├── repository/             # 데이터 액세스
+│       │   │   ├── service/                # 비즈니스 로직
+│       │   │   └── util/                   # 유틸리티
+│       │   └── resources/
+│       │       └── application.properties  # 애플리케이션 설정
+│       └── test/                           # 테스트 코드
+│
+├── front/                          # React 프론트엔드
+│   ├── package.json                # 의존성 및 스크립트
+│   ├── public/
+│   │   ├── index.html              # SPA 진입점
+│   │   └── models/                 # Face API 모델 가중치
+│   └── src/
+│       ├── App.js                  # 루트 컴포넌트 (라우팅)
+│       ├── index.js                # 클라이언트 진입점
+│       ├── api/                    # API 통신 모듈
+│       │   ├── api.js              # Axios 인스턴스
+│       │   └── apiUrl.js           # API URL 설정
+│       ├── features/               # 기능별 모듈
+│       │   ├── auth/               # 인증 (로그인, 회원가입)
+│       │   ├── community/          # 커뮤니티 (게시판, 채팅, 친구)
+│       │   ├── dashboard/          # 대시보드
+│       │   ├── evaluation/         # 평가 (수학 문제)
+│       │   ├── plan/               # 학습 계획
+│       │   ├── profile/            # 프로필
+│       │   ├── rtc/                # 실시간 화상 통신
+│       │   ├── statistics/         # 통계
+│       │   └── study/              # 학습 (팀 스터디)
+│       ├── global/                 # 전역 컴포넌트/스타일
+│       ├── hooks/                  # 전역 커스텀 훅
+│       ├── utils/                  # 유틸리티 함수
+│       └── socket.js               # Socket.IO 설정
+│
+├── signaling_server/               # Node.js 시그널링 서버
+│   ├── package.json                # 의존성 정의
+│   └── signalingServer.js          # 메인 서버 코드
+│
+├── docs/                           # 프로젝트 문서
+│   ├── README.md                   # 문서 개요
+│   ├── 01_overview/                # 프로젝트 개요
+│   ├── 02_requirements/            # 요구사항 정의
+│   ├── 03_architecture/            # 아키텍처 설계
+│   ├── 04_database/                # 데이터베이스 설계
+│   ├── 05_api/                     # API 명세
+│   ├── 06_development/             # 개발 가이드
+│   ├── 07_realtime/                # 실시간 통신
+│   └── 08_features/                # 기능별 상세
+│
+├── docker-compose.yml              # Docker Compose 설정
+└── README.md                       # 프로젝트 README
+```
+
+---
+
+## ⚙ 환경 설정
+
+### 필수 환경 변수
+
+`back/src/main/resources/application.properties`:
+
+```properties
+# 데이터베이스
+spring.datasource.url=jdbc:mysql://localhost:3306/hamcam?useSSL=false&serverTimezone=Asia/Seoul
+spring.datasource.username=root
+spring.datasource.password=yourpassword
+
+# JPA
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# Redis
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+
+# 세션
+spring.session.store-type=redis
+spring.session.redis.namespace=hamcam:session
+
+# 이메일 (Naver SMTP)
+spring.mail.host=smtp.naver.com
+spring.mail.port=465
+spring.mail.username=your-email@naver.com
+spring.mail.password=your-password
+
+# Gemini AI
+gemini.api.key=your-gemini-api-key
+
+# 서버 포트
+server.port=8080
+```
+
+### API URL 설정
+
+`front/src/api/apiUrl.js`:
+
+```javascript
+export const API_BASE_URL_3000 = "http://localhost:3000";
+export const API_BASE_URL_8080 = "http://localhost:8080";
+```
+
+---
+
+## 📚 API 문서
+
+### 주요 API 엔드포인트
+
+| 카테고리 | Base Path | 설명 |
+|----------|-----------|------|
+| 인증 | `/api/auth` | 로그인, 회원가입, 탈퇴 |
+| 사용자 | `/api/users` | 프로필 조회/수정 |
+| 대시보드 | `/api/dashboard` | Todo, 시험일정, 통계 |
+| 커뮤니티 | `/api/community` | 게시판, 댓글 |
+| 채팅 | `/api/chat` | 그룹/1:1 채팅 |
+| 친구 | `/api/friends` | 친구 관리 |
+| 학습 | `/api/study` | 팀 스터디 |
+| 평가 | `/api/math` | 수학 문제 평가 |
+| 파일 | `/api/files` | 파일 업로드 |
+
+### 상세 문서
+
+📖 **[전체 API 문서 보기](./docs/05_api/README.md)**
+
+---
+
+## 📈 기대 효과
+
+### 1. 체계적 학습 습관 형성
+
+| 효과 | 구현 방법 |
+|------|-----------|
+| 학습 몰입도 향상 | Face API 자동 측정으로 실제 학습 시간 추적 |
+| 지속성 향상 | 대시보드 시각화를 통한 학습 현황 파악 |
+| 목표 관리 | Todo/D-Day로 목표 점검 및 우선순위 관리 |
+
+### 2. 문제 해결 능력 강화
+
+| 효과 | 구현 방법 |
+|------|-----------|
+| 다양한 풀이 방식 학습 | 팀 문제풀이/발표로 풀이 과정 공유 |
+| 사고 확장 | 다른 학습자의 접근 방식 관찰 및 학습 |
+| 협업 경험 | 실시간 화상 스터디 및 채팅 |
+
+### 3. AI 기반 학습 효율 극대화
+
+| 효과 | 구현 방법 |
+|------|-----------|
+| 취약점 식별 | Gemini 기반 맞춤 피드백 및 오답노트 |
+| 최적 학습 경로 | AI 기반 학습 계획 생성 |
+| 즉각적 피드백 | 평가 완료 후 AI 생성 피드백 |
+
+### 정량적 성과
+
+| 항목 | 개선율 |
+|------|--------|
+| 실시간 접속자 수 업데이트 | **98.3%** (HTTP 폴링 → Socket.IO) |
+| 평균 지연 시간 | **96%** (2.5초 → 0.1초) |
 
 ---
 
 ## 🧪 테스트
 
-- **백엔드**: `./gradlew.bat test`
-- **프론트엔드**: `npm test`
+### 백엔드 테스트
+
+```bash
+cd back
+./gradlew test
+```
+
+### 프론트엔드 테스트
+
+```bash
+cd front
+npm test
+```
 
 ---
 
 ## 🤝 기여 가이드
 
-1. 이슈 생성 및 설명 작성
-2. 브랜치 생성: `feature/` 또는 `fix/` 접두사 사용
-3. 코드 스타일 준수 및 테스트 통과 확인
-4. PR 생성 후 리뷰 요청
+### 기여 방법
+
+1. **Fork** 저장소를 포크합니다
+2. **Clone** 포크한 저장소를 클론합니다
+3. **Branch** 새 브랜치를 생성합니다: `git checkout -b feature/amazing-feature`
+4. **Commit** 변경사항을 커밋합니다: `git commit -m 'Add amazing feature'`
+5. **Push** 브랜치에 푸시합니다: `git push origin feature/amazing-feature`
+6. **PR** Pull Request를 생성합니다
+
+### 브랜치 네이밍
+
+- `feature/` - 새로운 기능
+- `fix/` - 버그 수정
+- `docs/` - 문서 수정
+- `refactor/` - 리팩토링
+
+### 커밋 메시지 규칙
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Type:**
+- `feat`: 새로운 기능
+- `fix`: 버그 수정
+- `docs`: 문서 변경
+- `style`: 코드 포맷팅
+- `refactor`: 리팩토링
+- `test`: 테스트 추가
+- `chore`: 빌드, 설정 변경
+
+### 코드 스타일
+
+- **Java**: Google Java Style Guide
+- **JavaScript**: ESLint + Prettier
+- **Commit**: Conventional Commits
 
 ---
 
-## 🧮 수학 문제 평가 시스템
+## 📄 라이선스
 
-### 주요 기능
-- **2025년 모의평가 기출문제**: 실제 6월, 9월 모의평가 문제 데이터베이스
-- **맞춤형 난이도 조절**: 1-5등급 문제를 학생 수준에 맞게 제공
-- **실시간 평가**: 즉시 채점 및 피드백 제공
-- **학습 분석**: 정답률, 소요시간, 약점 과목 분석
-- **오답노트**: 틀린 문제 자동 수집 및 복습 관리
+이 프로젝트는 **독점적 라이선스(Proprietary License)** 하에 보호됩니다. 
+자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
 
-### 기술 구현
-- **백엔드**: Spring Boot 3.4.2 + JPA를 통한 문제 데이터 관리
-- **프론트엔드**: React 19.1.0 기반 인터랙티브 문제 풀이 인터페이스
-- **데이터베이스**: MySQL을 통한 문제, 학생, 시도 기록 저장
-- **이미지 관리**: `/math_image/` 경로에 체계적으로 정리된 문제 이미지
+### ⚠️ 라이선스 요약
 
-### 평가 시스템 구조
+| 허용 | 제한 |
+|:----:|:----:|
+| ✅ 교육/학습 목적 코드 열람 | ❌ 상업적 사용 |
+| ✅ 개인 학습용 로컬 실행 | ❌ 복제 및 배포 |
+| ✅ 비상업적 교육 데모 | ❌ 수정 및 파생물 생성 |
+| | ❌ 역공학 |
+| | ❌ 서브라이선스 |
+
 ```
-수학 평가 플로우:
-1. 문제 세트 생성 (쉬움 3개 + 보통 4개 + 어려움 3개)
-2. 학생 답안 제출 및 실시간 채점
-3. 결과 분석 및 등급 산출 (1-5등급)
-4. 오답 문제 자동 오답노트 등록
-5. 학습 통계 업데이트 및 약점 분석
+Hamcam Proprietary License
+Copyright (c) 2025-2026 Hamcam Development Team. All Rights Reserved.
+
+본 소프트웨어는 독점적 라이선스 하에 제공됩니다.
+교육 및 학습 목적의 열람만 허용되며, 상업적 사용, 복제, 배포, 
+수정, 파생물 생성은 라이선서의 사전 서면 동의 없이 금지됩니다.
 ```
 
-### 지원 과목 및 범위
-- **공통**: 수학 I, II (기출문제 15개 수록)
-- **미적분**: 준비 중
-- **확률과통계**: 준비 중  
-- **기하**: 준비 중
+### 📦 제3자 오픈소스 라이브러리
+
+본 프로젝트는 Apache 2.0, MIT 라이선스의 오픈소스 라이브러리를 사용합니다.
+각 라이브러리의 저작권 및 라이선스 정보는 [LICENSE](LICENSE) 파일에 명시되어 있습니다.
+
+---
+
+## 📞 연락처
+
+- **GitHub**: [@wovlf02](https://github.com/wovlf02)
+- **Email**: nskfn02@gmail.com
+- **Project Link**: [https://github.com/wovlf02/Hamcam](https://github.com/wovlf02/Hamcam)
 
 ---
 
 ## 📚 참고 문서
-- [Spring Boot](https://spring.io/projects/spring-boot)
-- [React](https://reactjs.org/)
-- [LiveKit](https://livekit.io/)
-- [Face API](https://faceapi.com)
-- [Gemini](https://gemini.com)
+
+| 문서 | 링크 |
+|------|------|
+| Spring Boot | [spring.io/projects/spring-boot](https://spring.io/projects/spring-boot) |
+| React | [react.dev](https://react.dev) |
+| Socket.IO | [socket.io](https://socket.io) |
+| WebRTC | [webrtc.org](https://webrtc.org) |
+| face-api.js | [github.com/justadudewhohacks/face-api.js](https://github.com/justadudewhohacks/face-api.js) |
+| Gemini AI | [ai.google.dev](https://ai.google.dev) |
 
 ---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/wovlf02">wovlf02</a>
+</p>
+
+<p align="center">
+  <a href="#">🔝 맨 위로</a>
+</p>
